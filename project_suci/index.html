@@ -1,0 +1,1706 @@
+<!DOCTYPE html>
+<html lang="id" class="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AsramaKu - Sistem Manajemen Asrama Soft Pastel & Aesthetic</title>
+
+    <!-- PWA Manifest & Meta Tags -->
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#f43f5e">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="AsramaKu">
+    <link rel="icon" type="image/svg+xml" href="icons/icon.svg">
+    <link rel="apple-touch-icon" href="icons/icon-192.png">
+
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Font Awesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts Plus Jakarta Sans & Quicksand -->
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Fredoka:wght@400;500;600;700&display=swap" rel="stylesheet">
+    
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        pastelPink: {
+                            50: '#fff1f2',
+                            100: '#ffe4e6',
+                            200: '#fecdd3',
+                            300: '#fda4af',
+                            400: '#fb7185',
+                            500: '#f43f5e',
+                        },
+                        pastelLavender: {
+                            50: '#f5f3ff',
+                            100: '#ede9fe',
+                            200: '#ddd6fe',
+                            300: '#c4b5fd',
+                            400: '#a78bfa',
+                        },
+                        pastelCream: {
+                            50: '#fdfbf7',
+                            100: '#f7f3e9',
+                            200: '#eee5d3',
+                        },
+                        pastelSage: {
+                            50: '#f0fdf4',
+                            100: '#dcfce7',
+                            200: '#bbf7d0',
+                            300: '#86efac',
+                            400: '#4ade80',
+                            500: '#22c55e',
+                            600: '#16a34a',
+                            700: '#15803d'
+                        }
+                    },
+                    fontFamily: {
+                        sans: ['Plus Jakarta Sans', 'sans-serif'],
+                        cute: ['Fredoka', 'sans-serif']
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        /* SOFT PASTEL & GLASS AESTHETIC CUSTOM STYLES */
+        body {
+            transition: background-color 0.4s ease, color 0.4s ease;
+        }
+
+        /* Light Theme Background Gradient */
+        html.light body {
+            background: linear-gradient(135deg, #fff0f5 0%, #f3e8ff 40%, #f0fdf4 70%, #fffbeb 100%);
+            background-attachment: fixed;
+            color: #334155;
+        }
+
+        /* Dark Theme Background Gradient */
+        html.dark body {
+            background: linear-gradient(135deg, #0f172a 0%, #1e1b4b 50%, #111827 100%);
+            background-attachment: fixed;
+            color: #f1f5f9;
+        }
+
+        .glass-card {
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        html.light .glass-card {
+            background: rgba(255, 255, 255, 0.72);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.8);
+            box-shadow: 0 10px 30px -5px rgba(244, 63, 94, 0.05), 0 8px 20px -6px rgba(167, 139, 250, 0.08);
+        }
+
+        html.dark .glass-card {
+            background: rgba(30, 41, 59, 0.75);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 10px 30px -5px rgba(0, 0, 0, 0.3);
+        }
+
+        html.light .glass-pill {
+            background: rgba(255, 255, 255, 0.7);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.8);
+        }
+
+        html.dark .glass-pill {
+            background: rgba(51, 65, 85, 0.6);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+        }
+
+        html.light .glass-input {
+            background: rgba(255, 255, 255, 0.85);
+            border: 1px solid rgba(253, 164, 175, 0.4);
+            color: #1e293b;
+        }
+        html.light .glass-input:focus {
+            background: #ffffff;
+            border-color: #a78bfa;
+            box-shadow: 0 0 0 3px rgba(167, 139, 250, 0.2);
+        }
+
+        html.dark .glass-input {
+            background: rgba(15, 23, 42, 0.6);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            color: #f8fafc;
+        }
+        html.dark .glass-input:focus {
+            background: rgba(15, 23, 42, 0.9);
+            border-color: #c4b5fd;
+            box-shadow: 0 0 0 3px rgba(196, 181, 253, 0.2);
+        }
+
+        .btn-bounce {
+            transition: transform 0.15s cubic-bezier(0.175, 0.885, 0.32, 1.275), box-shadow 0.2s ease;
+        }
+        .btn-bounce:hover {
+            transform: translateY(-2px) scale(1.02);
+        }
+        .btn-bounce:active {
+            transform: translateY(0) scale(0.98);
+        }
+
+        /* Custom scrollbar */
+        ::-webkit-scrollbar {
+            width: 7px;
+            height: 7px;
+        }
+        ::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: rgba(167, 139, 250, 0.35);
+            border-radius: 9999px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: rgba(167, 139, 250, 0.6);
+        }
+
+        .no-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+        .no-scrollbar {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+
+        /* Toast animation */
+        @keyframes slideInRight {
+            from { transform: translateX(100%); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+        .toast-animate {
+            animation: slideInRight 0.3s ease forwards;
+        }
+
+        /* PWA Native Mobile App Enhancements */
+        html, body {
+            overscroll-behavior-y: contain;
+            -webkit-tap-highlight-color: transparent;
+            touch-action: manipulation;
+        }
+        .safe-bottom {
+            padding-bottom: calc(0.6rem + env(safe-area-inset-bottom, 0px));
+        }
+        button, a, .tab-btn, .bnav-btn {
+            user-select: none;
+            -webkit-user-select: none;
+        }
+    </style>
+</head>
+<body class="font-sans antialiased min-h-screen flex flex-col relative overflow-x-hidden selection:bg-pink-200 selection:text-pink-900">
+
+    <!-- Ambient Glowing Soft Background Elements -->
+    <div class="fixed top-[-5%] left-[-5%] w-96 h-96 bg-pink-200/40 dark:bg-pink-900/20 rounded-full blur-3xl pointer-events-none transition-all"></div>
+    <div class="fixed top-[35%] right-[-10%] w-[500px] h-[500px] bg-purple-200/40 dark:bg-purple-900/20 rounded-full blur-3xl pointer-events-none transition-all"></div>
+    <div class="fixed bottom-[-5%] left-[25%] w-[450px] h-[450px] bg-emerald-100/50 dark:bg-emerald-900/20 rounded-full blur-3xl pointer-events-none transition-all"></div>
+
+    <!-- Toast Notification Container -->
+    <div id="toastContainer" class="fixed top-20 right-5 z-50 flex flex-col gap-2.5 max-w-sm pointer-events-none"></div>
+
+    <!-- Top Navigation Header -->
+    <header class="sticky top-0 z-30 transition-all duration-300 backdrop-blur-xl border-b border-white/40 dark:border-slate-800/80 bg-white/60 dark:bg-slate-900/70">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between h-16 items-center">
+                <!-- Logo & Brand Name -->
+                <div class="flex items-center space-x-3 cursor-pointer" onclick="switchTab('jadwal')">
+                    <div class="w-10 h-10 rounded-2xl bg-gradient-to-tr from-pink-400 via-purple-300 to-indigo-300 flex items-center justify-center text-white shadow-lg shadow-pink-300/30 border border-white/60 transform rotate-3 hover:rotate-0 transition-transform">
+                        <span class="text-xl">🌸</span>
+                    </div>
+                    <div>
+                        <span class="text-xl font-cute font-bold bg-gradient-to-r from-pink-500 via-purple-600 to-indigo-600 bg-clip-text text-transparent tracking-tight">AsramaKu</span>
+                        <span class="text-[10px] block text-slate-500 dark:text-slate-400 font-medium tracking-wide">Soft, Pastel & Orderly 🌷</span>
+                    </div>
+                </div>
+
+                <!-- Right Action Bar: Theme Toggle, Notif & Profile -->
+                <div class="flex items-center space-x-2.5">
+                    <!-- PWA Install Button (Appears when browser detects installability) -->
+                    <button id="pwaInstallBtn" onclick="installPWA()" title="Install Aplikasi AsramaKu" class="hidden btn-bounce px-3 py-2 rounded-2xl glass-pill bg-gradient-to-r from-pink-500/90 to-purple-500/90 text-white shadow-sm border border-pink-300 text-xs font-bold flex items-center gap-1.5 transition-all">
+                        <i class="fa-solid fa-cloud-arrow-down text-xs"></i>
+                        <span class="hidden sm:inline">Install App</span>
+                    </button>
+
+                    <!-- Dark/Light Mode Toggle -->
+                    <button onclick="toggleDarkMode()" class="btn-bounce p-2.5 rounded-2xl glass-pill hover:bg-white/80 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 shadow-sm border border-white/60 dark:border-slate-700">
+                        <i id="themeIcon" class="fa-solid fa-moon text-base text-purple-500"></i>
+                    </button>
+
+                    <!-- Notif Badge -->
+                    <div id="notificationBadge" class="relative cursor-pointer p-2.5 rounded-2xl glass-pill hover:bg-white/80 dark:hover:bg-slate-700 transition text-slate-700 dark:text-slate-200 shadow-sm border border-white/60 dark:border-slate-700" onclick="toggleNotificationPanel()">
+                        <i class="fa-regular fa-bell text-base text-pink-500"></i>
+                        <span id="notifDot" class="absolute top-1.5 right-1.5 w-2.5 h-2.5 bg-rose-500 rounded-full animate-pulse ring-2 ring-white dark:ring-slate-900"></span>
+                    </div>
+                    
+                    <!-- Admin Profile Widget Header -->
+                    <div onclick="openProfileModal()" class="glass-pill p-1.5 pr-3 rounded-2xl flex items-center gap-2.5 cursor-pointer hover:bg-white/90 dark:hover:bg-slate-700 transition shadow-sm border border-white/80 dark:border-slate-700">
+                        <img id="headerProfileAvatar" src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&q=80&w=150" alt="Avatar Pengurus" class="w-8 h-8 rounded-xl object-cover ring-2 ring-pink-400/50">
+                        <div class="text-left hidden sm:block">
+                            <span id="headerProfileName" class="text-xs font-bold text-slate-800 dark:text-slate-100 block leading-tight">Ustadzah Dev</span>
+                            <span id="headerProfileRole" class="text-[10px] text-pink-600 dark:text-pink-400 font-semibold block leading-tight">Pengurus Utama</span>
+                        </div>
+                        <i class="fa-solid fa-chevron-down text-[10px] text-slate-400 ml-1"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Notification Panel Dropdown -->
+    <div id="notificationPanel" class="hidden fixed top-20 right-4 sm:right-8 w-80 sm:w-96 glass-card rounded-3xl shadow-2xl border border-white/80 dark:border-slate-700 z-50 p-5 transition-all duration-300">
+        <div class="flex justify-between items-center mb-3.5 pb-2.5 border-b border-slate-200/50 dark:border-slate-700">
+            <h3 class="font-bold text-slate-800 dark:text-slate-100 text-sm flex items-center gap-2">
+                <i class="fa-solid fa-bell text-pink-500"></i> Pengingat & Notifikasi
+            </h3>
+            <button onclick="toggleNotificationPanel()" class="text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 text-sm w-7 h-7 rounded-full flex items-center justify-center hover:bg-slate-100/50 dark:hover:bg-slate-700">
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+        </div>
+        <div id="notificationList" class="space-y-2.5 max-h-80 overflow-y-auto pr-1">
+            <!-- Dynamic Notifications Populated Here -->
+        </div>
+    </div>
+
+    <!-- MAIN CONTAINER -->
+    <main class="flex-grow max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6 pb-28 md:pb-8 relative z-10">
+
+        <!-- PWA Install Banner Card -->
+        <div id="pwaBannerCard" class="hidden mb-6 p-4 sm:p-5 rounded-3xl glass-card border border-pink-200 dark:border-pink-900/60 bg-gradient-to-r from-pink-500/10 via-purple-500/10 to-indigo-500/10 shadow-lg relative overflow-hidden transition-all duration-300">
+            <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 relative z-10">
+                <div class="flex items-center gap-3">
+                    <div class="w-12 h-12 rounded-2xl bg-gradient-to-tr from-pink-500 to-purple-500 text-white flex items-center justify-center text-2xl shadow-md shrink-0">
+                        <span>🌸</span>
+                    </div>
+                    <div>
+                        <div class="flex items-center gap-2">
+                            <h4 class="font-bold text-sm text-slate-800 dark:text-slate-100">Pasang Aplikasi AsramaKu</h4>
+                            <span class="text-[10px] font-bold px-2 py-0.5 rounded-full bg-pink-100 text-pink-600 dark:bg-pink-900/50 dark:text-pink-300">PWA Mandiri</span>
+                        </div>
+                        <p class="text-xs text-slate-600 dark:text-slate-300 mt-0.5">Akses cepat langsung dari layar utama perangkat Anda & tetap aktif saat offline.</p>
+                    </div>
+                </div>
+                <div class="flex items-center gap-2 w-full sm:w-auto justify-end">
+                    <button onclick="dismissPwaBanner()" class="px-3.5 py-2 text-xs font-semibold text-slate-500 hover:text-slate-700 dark:text-slate-400 glass-pill rounded-2xl">Nanti</button>
+                    <button onclick="installPWA()" class="btn-bounce px-4 py-2 text-xs font-bold text-white bg-gradient-to-r from-pink-500 to-purple-500 rounded-2xl shadow-md flex items-center gap-1.5">
+                        <i class="fa-solid fa-cloud-arrow-down"></i> Pasang Sekarang
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Banner Greeting & Quick Info -->
+        <div class="glass-card rounded-3xl p-6 sm:p-8 shadow-xl mb-8 relative overflow-hidden border border-white/80 dark:border-slate-700">
+            <div class="absolute -right-6 -bottom-8 opacity-10 text-9xl text-pink-500 dark:text-purple-400 pointer-events-none">
+                <i class="fa-solid fa-synagogue"></i>
+            </div>
+            <div class="relative z-10 flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+                <div>
+                    <div class="flex flex-wrap items-center gap-2 mb-3">
+                        <span id="roleBadge" class="glass-pill text-pink-600 dark:text-pink-300 text-xs px-3.5 py-1 rounded-full font-bold inline-flex items-center gap-1.5 border border-pink-200 dark:border-pink-800/40 shadow-sm">
+                            ✨ Mode Pengurus Asrama Soft Glass
+                        </span>
+                        <span id="pwaStatusBadge" class="glass-pill text-emerald-600 dark:text-emerald-300 text-xs px-3 py-1 rounded-full font-bold inline-flex items-center gap-1.5 border border-emerald-200 dark:border-emerald-800/40 shadow-sm">
+                            <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span> PWA Aktif
+                        </span>
+                    </div>
+                        ✨ Mode Pengurus Asrama Soft Glass
+                    </span>
+                    <h1 class="text-2xl sm:text-3xl font-extrabold tracking-tight bg-gradient-to-r from-pink-600 via-purple-600 to-indigo-600 dark:from-pink-300 dark:via-purple-300 dark:to-indigo-300 bg-clip-text text-transparent">
+                        Assalamu’alaikum, <span id="bannerGreetingName">Ustadzah Dev</span>! 🌷
+                    </h1>
+                    <p class="text-slate-600 dark:text-slate-300 text-xs sm:text-sm mt-1.5 font-medium">Monitoring presensi, kebersihan, dan kedisiplinan santriwati hari ini.</p>
+                </div>
+
+                <div class="flex items-center gap-3">
+                    <div class="glass-pill px-5 py-3 rounded-2xl border border-white/80 dark:border-slate-700 text-center shadow-sm min-w-[150px]">
+                        <div id="currentTime" class="text-2xl font-black tracking-wider text-slate-800 dark:text-slate-100 font-mono">00:00:00</div>
+                        <div id="currentDate" class="text-[11px] text-purple-600 dark:text-purple-300 font-semibold mt-0.5">Hari, Tanggal</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Navigation Tabs -->
+        <div class="flex overflow-x-auto space-x-2.5 pb-3 mb-6 no-scrollbar">
+            <button onclick="switchTab('jadwal')" id="tab-jadwal" class="tab-btn btn-bounce px-4 py-2.5 rounded-2xl text-xs sm:text-sm font-bold flex items-center gap-2 whitespace-nowrap bg-gradient-to-r from-pink-500 to-purple-500 text-white shadow-md shadow-pink-500/20 transition-all">
+                <i class="fa-regular fa-calendar-check"></i> Checklist Harian
+            </button>
+            <button onclick="switchTab('mushola')" id="tab-mushola" class="tab-btn btn-bounce px-4 py-2.5 rounded-2xl text-xs sm:text-sm font-semibold flex items-center gap-2 whitespace-nowrap glass-pill text-slate-700 dark:text-slate-300 hover:bg-white/80 transition-all">
+                <i class="fa-solid fa-mosque text-purple-500"></i> Presensi Mushola
+            </button>
+            <button onclick="switchTab('santri')" id="tab-santri" class="tab-btn btn-bounce px-4 py-2.5 rounded-2xl text-xs sm:text-sm font-semibold flex items-center gap-2 whitespace-nowrap glass-pill text-slate-700 dark:text-slate-300 hover:bg-white/80 transition-all">
+                <i class="fa-solid fa-users text-pink-500"></i> Data Santriwati
+            </button>
+            <button onclick="switchTab('piket')" id="tab-piket" class="tab-btn btn-bounce px-4 py-2.5 rounded-2xl text-xs sm:text-sm font-semibold flex items-center gap-2 whitespace-nowrap glass-pill text-slate-700 dark:text-slate-300 hover:bg-white/80 transition-all">
+                <i class="fa-solid fa-broom text-amber-500"></i> Piket Harian
+            </button>
+            <button onclick="switchTab('pengumuman')" id="tab-pengumuman" class="tab-btn btn-bounce px-4 py-2.5 rounded-2xl text-xs sm:text-sm font-semibold flex items-center gap-2 whitespace-nowrap glass-pill text-slate-700 dark:text-slate-300 hover:bg-white/80 transition-all">
+                <i class="fa-solid fa-bullhorn text-sky-500"></i> Pengumuman
+            </button>
+            <button onclick="switchTab('kedisiplinan')" id="tab-kedisiplinan" class="tab-btn btn-bounce px-4 py-2.5 rounded-2xl text-xs sm:text-sm font-semibold flex items-center gap-2 whitespace-nowrap glass-pill text-slate-700 dark:text-slate-300 hover:bg-white/80 transition-all">
+                <i class="fa-solid fa-scale-balanced text-rose-500"></i> Pelanggaran
+            </button>
+            <button onclick="switchTab('rekap')" id="tab-rekap" class="tab-btn btn-bounce px-4 py-2.5 rounded-2xl text-xs sm:text-sm font-semibold flex items-center gap-2 whitespace-nowrap glass-pill text-slate-700 dark:text-slate-300 hover:bg-white/80 transition-all">
+                <i class="fa-solid fa-chart-pie text-emerald-500"></i> Rekap Evaluasi
+            </button>
+        </div>
+
+        <!-- TAB CONTENT 1: Jadwal & Checklist Harian -->
+        <section id="content-jadwal" class="tab-content block space-y-6">
+            <div class="glass-card p-5 rounded-3xl border border-white/80 dark:border-slate-700 shadow-md flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+                <div>
+                    <h2 class="text-base sm:text-lg font-bold text-slate-800 dark:text-slate-100 flex items-center gap-2">
+                        <span>📋 Checklist Rutinitas Mandiri</span>
+                    </h2>
+                    <p class="text-xs text-slate-500 dark:text-slate-400 font-medium">Tandai checklist setelah Anda menuntaskan kegiatan harian.</p>
+                </div>
+                <div class="flex items-center gap-3 glass-pill px-4 py-2 rounded-2xl border border-white/80 dark:border-slate-700 shadow-sm">
+                    <span class="text-xs font-bold text-slate-600 dark:text-slate-300">Progres Mandiri:</span>
+                    <div class="w-28 bg-slate-200/80 dark:bg-slate-700 rounded-full h-2.5 overflow-hidden border border-white/40">
+                        <div id="dailyProgressBar" class="bg-gradient-to-r from-pink-400 to-purple-500 h-full transition-all duration-500" style="width: 0%"></div>
+                    </div>
+                    <span id="dailyProgressText" class="text-xs font-black text-pink-600 dark:text-pink-400">0%</span>
+                </div>
+            </div>
+
+            <!-- List Jadwal Harian -->
+            <div id="jadwalList" class="grid gap-3">
+                <!-- Dynamically Rendered -->
+            </div>
+        </section>
+
+        <!-- TAB CONTENT 2: PRESENSI MUSHOLA -->
+        <section id="content-mushola" class="tab-content hidden space-y-6">
+            <div class="glass-card p-6 rounded-3xl border border-white/80 dark:border-slate-700 shadow-md">
+                <div class="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-4 mb-6">
+                    <div>
+                        <h2 class="text-lg font-bold text-slate-800 dark:text-slate-100 flex items-center gap-2">
+                            <i class="fa-solid fa-mosque text-purple-500"></i> Presensi Kehadiran Mushola Per Santriwati
+                        </h2>
+                        <p class="text-xs text-slate-500 dark:text-slate-400 font-medium">Monitoring kehadiran shalat berjamaah (Subuh, Maghrib, Isya).</p>
+                    </div>
+
+                    <!-- Date Picker & Quick Actions -->
+                    <div class="flex flex-wrap items-center gap-3">
+                        <div class="flex items-center gap-2 glass-pill border border-white/80 dark:border-slate-700 px-3.5 py-2 rounded-2xl shadow-sm">
+                            <i class="fa-regular fa-calendar text-pink-500 text-xs"></i>
+                            <span class="text-xs font-semibold text-slate-600 dark:text-slate-300">Tanggal:</span>
+                            <input type="date" id="musholaDatePicker" onchange="changeMusholaDate(this.value)" class="bg-transparent text-xs font-bold text-slate-800 dark:text-slate-100 focus:outline-none cursor-pointer">
+                        </div>
+                        <button onclick="openSantriModal()" class="btn-bounce px-4 py-2 bg-slate-800 hover:bg-slate-900 text-white rounded-2xl text-xs font-bold shadow-md transition flex items-center gap-1.5">
+                            <i class="fa-solid fa-user-plus text-xs"></i> + Santri
+                        </button>
+                        <button onclick="markAllMusholaPresent()" class="btn-bounce px-4 py-2 bg-gradient-to-r from-pink-500 to-purple-500 text-white rounded-2xl text-xs font-bold shadow-md transition flex items-center gap-1.5">
+                            <i class="fa-solid fa-check-double"></i> Tandai Subuh Hadir Semua
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Search, Room Filter & Favorites Toggle -->
+                <div class="flex flex-col sm:flex-row items-center gap-3 mb-5">
+                    <div class="relative w-full sm:w-64">
+                        <i class="fa-solid fa-magnifying-glass absolute left-3.5 top-3 text-slate-400 text-xs"></i>
+                        <input type="text" id="musholaSearch" oninput="renderMusholaPresensi()" placeholder="Cari santriwati..." class="glass-input pl-9 pr-4 py-2 rounded-2xl text-xs w-full focus:outline-none">
+                    </div>
+                    <select id="musholaRoomFilter" onchange="renderMusholaPresensi()" class="glass-input px-4 py-2 rounded-2xl text-xs w-full sm:w-48 focus:outline-none">
+                        <option value="ALL">🌸 Semua Kelas</option>
+                        <option value="Kelas 7">Kelas 7</option>
+                        <option value="Kelas 8">Kelas 8</option>
+                        <option value="Kelas 9">Kelas 9</option>
+                        <option value="Kelas 10">Kelas 10</option>
+                        <option value="Kelas 11">Kelas 11</option>
+                        <option value="Kelas 12">Kelas 12</option>
+                    </select>
+                    <button id="toggleFavFilterBtn" onclick="toggleFavFilter()" class="btn-bounce w-full sm:w-auto px-4 py-2 rounded-2xl text-xs font-bold glass-pill border border-pink-300 text-pink-600 dark:text-pink-300 flex items-center justify-center gap-1.5">
+                        <i class="fa-solid fa-star text-amber-400"></i> Hanya Favorit
+                    </button>
+                </div>
+
+                <!-- Table Presensi Mushola -->
+                <div class="overflow-x-auto rounded-2xl border border-white/80 dark:border-slate-700 bg-white/40 dark:bg-slate-800/40">
+                    <table class="w-full text-left text-sm">
+                        <thead class="bg-pink-50/60 dark:bg-slate-800/80 text-slate-600 dark:text-slate-300 text-xs uppercase tracking-wider border-b border-white/80 dark:border-slate-700">
+                            <tr>
+                                <th class="p-4 font-bold">Favorit</th>
+                                <th class="p-4 font-bold">Nama Santriwati</th>
+                                <th class="p-3 text-center font-bold">Subuh</th>
+                                <th class="p-3 text-center font-bold">Maghrib</th>
+                                <th class="p-3 text-center font-bold">Isya</th>
+                                <th class="p-4 text-center font-bold">Kehadiran</th>
+                            </tr>
+                        </thead>
+                        <tbody id="musholaPresensiBody" class="divide-y divide-white/60 dark:divide-slate-700/60">
+                            <!-- Dynamically Rendered -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+
+        <!-- TAB CONTENT 3: DATA SANTRIWATI -->
+        <section id="content-santri" class="tab-content hidden space-y-6">
+            <div class="glass-card p-6 rounded-3xl border border-white/80 dark:border-slate-700 shadow-md">
+                <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6">
+                    <div>
+                        <h2 class="text-lg font-bold text-slate-800 dark:text-slate-100 flex items-center gap-2">
+                            <i class="fa-solid fa-users text-pink-500"></i> Kelola Data Santriwati Asrama
+                        </h2>
+                        <p class="text-xs text-slate-500 dark:text-slate-400 font-medium">Tambah, edit, dan kelola daftar santriwati beserta pembagian kelas.</p>
+                    </div>
+                    <button onclick="openSantriModal()" class="btn-bounce px-4 py-2.5 bg-gradient-to-r from-pink-500 to-purple-500 text-white rounded-2xl text-xs font-bold shadow-md flex items-center gap-2">
+                        <i class="fa-solid fa-user-plus"></i> Tambah Santriwati Baru
+                    </button>
+                </div>
+
+                <!-- Table Data Santriwati -->
+                <div class="overflow-x-auto rounded-2xl border border-white/80 dark:border-slate-700 bg-white/40 dark:bg-slate-800/40">
+                    <table class="w-full text-left text-sm">
+                        <thead class="bg-pink-50/60 dark:bg-slate-800/80 text-slate-600 dark:text-slate-300 text-xs uppercase tracking-wider border-b border-white/80 dark:border-slate-700">
+                            <tr>
+                                <th class="p-4 font-bold">ID Santri</th>
+                                <th class="p-4 font-bold">Nama Lengkap</th>
+                                <th class="p-4 font-bold">Kelas</th>
+                                <th class="p-4 text-right font-bold">Aksi / Hapus</th>
+                            </tr>
+                        </thead>
+                        <tbody id="santriTableBody" class="divide-y divide-white/60 dark:divide-slate-700/60">
+                            <!-- Dynamically Rendered -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+
+        <!-- TAB CONTENT 4: PIKET HARIAN -->
+        <section id="content-piket" class="tab-content hidden space-y-6">
+            <div class="glass-card p-6 rounded-3xl border border-white/80 dark:border-slate-700 shadow-md">
+                <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6">
+                    <div>
+                        <h2 class="text-lg font-bold text-slate-800 dark:text-slate-100 flex items-center gap-2">
+                            <i class="fa-solid fa-broom text-amber-500"></i> Pembagian Tugas Piket Harian
+                        </h2>
+                        <p class="text-xs text-slate-500 dark:text-slate-400 font-medium">Monitoring pengerjaan piket harian santriwati.</p>
+                    </div>
+                    <button onclick="openPiketModal()" class="btn-bounce px-4 py-2.5 bg-gradient-to-r from-amber-400 to-orange-500 text-white rounded-2xl text-xs font-bold shadow-md flex items-center gap-2">
+                        <i class="fa-solid fa-plus"></i> Tambah Tugas Piket
+                    </button>
+                </div>
+
+                <!-- Table Piket -->
+                <div class="overflow-x-auto rounded-2xl border border-white/80 dark:border-slate-700 bg-white/40 dark:bg-slate-800/40">
+                    <table class="w-full text-left text-sm">
+                        <thead class="bg-amber-50/60 dark:bg-slate-800/80 text-slate-600 dark:text-slate-300 text-xs uppercase tracking-wider border-b border-white/80 dark:border-slate-700">
+                            <tr>
+                                <th class="p-4 font-bold">Area Piket</th>
+                                <th class="p-4 font-bold">Petugas (Santriwati)</th>
+                                <th class="p-4 font-bold">Detail Tugas</th>
+                                <th class="p-4 font-bold">Status</th>
+                                <th class="p-4 text-right font-bold">Aksi / Sanksi</th>
+                            </tr>
+                        </thead>
+                        <tbody id="piketTableBody" class="divide-y divide-white/60 dark:divide-slate-700/60">
+                            <!-- Dynamically Rendered -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+
+        <!-- TAB CONTENT 5: PAPAN PENGUMUMAN -->
+        <section id="content-pengumuman" class="tab-content hidden space-y-6">
+            <div class="flex justify-between items-center">
+                <div>
+                    <h2 class="text-lg font-bold text-slate-800 dark:text-slate-100 flex items-center gap-2">
+                        <i class="fa-solid fa-bullhorn text-sky-500"></i> Papan Pengumuman Asrama
+                    </h2>
+                    <p class="text-xs text-slate-500 dark:text-slate-400 font-medium">Informasi resmi dari pengurus & pengasuh asrama.</p>
+                </div>
+                <button onclick="openPengumumanModal()" class="btn-bounce px-4 py-2.5 bg-gradient-to-r from-sky-400 to-blue-500 text-white rounded-2xl text-xs font-bold shadow-md flex items-center gap-2">
+                    <i class="fa-solid fa-bullhorn"></i> Buat Pengumuman
+                </button>
+            </div>
+
+            <div id="pengumumanList" class="grid grid-cols-1 md:grid-cols-2 gap-5">
+                <!-- Dynamically Rendered -->
+            </div>
+        </section>
+
+        <!-- TAB CONTENT 6: KEDISIPLINAN & HUKUMAN -->
+        <section id="content-kedisiplinan" class="tab-content hidden space-y-6">
+            <div class="glass-card p-6 rounded-3xl border border-white/80 dark:border-slate-700 shadow-md">
+                <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6">
+                    <div>
+                        <h2 class="text-lg font-bold text-slate-800 dark:text-slate-100 flex items-center gap-2">
+                            <i class="fa-solid fa-scale-balanced text-rose-500"></i> Catatan Kedisiplinan & Hukuman
+                        </h2>
+                        <p class="text-xs text-slate-500 dark:text-slate-400 font-medium">Transparansi kedisiplinan dan kewajiban konsekuensi santriwati.</p>
+                    </div>
+                    <button onclick="openHukumanModal()" class="btn-bounce px-4 py-2.5 bg-gradient-to-r from-rose-500 to-red-600 text-white rounded-2xl text-xs font-bold shadow-md flex items-center gap-2">
+                        <i class="fa-solid fa-plus"></i> Catat Pelanggaran
+                    </button>
+                </div>
+
+                <!-- List Pelanggaran -->
+                <div class="overflow-x-auto rounded-2xl border border-white/80 dark:border-slate-700 bg-white/40 dark:bg-slate-800/40">
+                    <table class="w-full text-left text-sm">
+                        <thead class="bg-rose-50/60 dark:bg-slate-800/80 text-slate-600 dark:text-slate-300 text-xs uppercase tracking-wider border-b border-white/80 dark:border-slate-700">
+                            <tr>
+                                <th class="p-4 font-bold">Nama Santriwati</th>
+                                <th class="p-4 font-bold">Bentuk Pelanggaran</th>
+                                <th class="p-4 font-bold">Bentuk Konsekuensi / Hukuman</th>
+                                <th class="p-4 font-bold">Status</th>
+                                <th class="p-4 text-right font-bold">Aksi</th>
+                            </tr>
+                        </thead>
+                        <tbody id="hukumanTableBody" class="divide-y divide-white/60 dark:divide-slate-700/60">
+                            <!-- Dynamically Rendered -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+
+        <!-- TAB CONTENT 7: REKAP EVALUASI -->
+        <section id="content-rekap" class="tab-content hidden space-y-6">
+            <div class="glass-card p-6 rounded-3xl border border-white/80 dark:border-slate-700 shadow-md space-y-6">
+                <div>
+                    <h2 class="text-lg font-bold text-slate-800 dark:text-slate-100 flex items-center gap-2">
+                        <i class="fa-solid fa-chart-pie text-emerald-500"></i> Rekap Kedisiplinan & Evaluasi
+                    </h2>
+                    <p class="text-xs text-slate-500 dark:text-slate-400 font-medium">Panel pemantauan statistik menyeluruh untuk Pengurus Asrama.</p>
+                </div>
+
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                    <div class="glass-pill p-4 rounded-2xl border border-white/80 dark:border-slate-700 flex items-center gap-4">
+                        <div class="w-12 h-12 rounded-2xl bg-pink-100 dark:bg-pink-900/40 text-pink-500 flex items-center justify-center text-xl shrink-0">
+                            <i class="fa-solid fa-users"></i>
+                        </div>
+                        <div>
+                            <span class="text-xs text-slate-500 dark:text-slate-400 font-semibold block">Total Santriwati</span>
+                            <span id="statTotalSantri" class="text-lg font-extrabold text-slate-800 dark:text-slate-100">0 Santriwati</span>
+                        </div>
+                    </div>
+
+                    <div class="glass-pill p-4 rounded-2xl border border-white/80 dark:border-slate-700 flex items-center gap-4">
+                        <div class="w-12 h-12 rounded-2xl bg-emerald-100 dark:bg-emerald-900/40 text-emerald-500 flex items-center justify-center text-xl shrink-0">
+                            <i class="fa-solid fa-mosque"></i>
+                        </div>
+                        <div>
+                            <span class="text-xs text-slate-500 dark:text-slate-400 font-semibold block">Presensi Mushola</span>
+                            <span id="statMusholaRate" class="text-lg font-extrabold text-slate-800 dark:text-slate-100">100%</span>
+                        </div>
+                    </div>
+
+                    <div class="glass-pill p-4 rounded-2xl border border-white/80 dark:border-slate-700 flex items-center gap-4">
+                        <div class="w-12 h-12 rounded-2xl bg-amber-100 dark:bg-amber-900/40 text-amber-500 flex items-center justify-center text-xl shrink-0">
+                            <i class="fa-solid fa-broom"></i>
+                        </div>
+                        <div>
+                            <span class="text-xs text-slate-500 dark:text-slate-400 font-semibold block">Piket Selesai</span>
+                            <span id="statPiketCompleted" class="text-lg font-extrabold text-slate-800 dark:text-slate-100">0 / 0</span>
+                        </div>
+                    </div>
+
+                    <div class="glass-pill p-4 rounded-2xl border border-white/80 dark:border-slate-700 flex items-center gap-4">
+                        <div class="w-12 h-12 rounded-2xl bg-rose-100 dark:bg-rose-900/40 text-rose-500 flex items-center justify-center text-xl shrink-0">
+                            <i class="fa-solid fa-triangle-exclamation"></i>
+                        </div>
+                        <div>
+                            <span class="text-xs text-slate-500 dark:text-slate-400 font-semibold block">Pelanggaran Active</span>
+                            <span id="statPendingPunishment" class="text-lg font-extrabold text-slate-800 dark:text-slate-100">0 Santri</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- PWA MOBILE BOTTOM NAVIGATION BAR -->
+    <nav class="md:hidden fixed bottom-0 left-0 right-0 z-40 bg-white/85 dark:bg-slate-900/90 backdrop-blur-2xl border-t border-white/60 dark:border-slate-800 shadow-[0_-8px_30px_rgba(0,0,0,0.06)] safe-bottom">
+        <div class="grid grid-cols-5 items-center max-w-lg mx-auto py-1 px-1">
+            <button onclick="switchTab('jadwal')" id="bnav-jadwal" class="bnav-btn py-1.5 px-1 rounded-2xl flex flex-col items-center justify-center text-pink-600 dark:text-pink-400 font-bold bg-pink-100/60 dark:bg-pink-950/40 transition-all">
+                <i class="fa-regular fa-calendar-check text-base"></i>
+                <span class="text-[9px] mt-0.5 tracking-tight font-bold">Checklist</span>
+            </button>
+            <button onclick="switchTab('mushola')" id="bnav-mushola" class="bnav-btn py-1.5 px-1 rounded-2xl flex flex-col items-center justify-center text-slate-500 dark:text-slate-400 font-medium transition-all">
+                <i class="fa-solid fa-mosque text-base"></i>
+                <span class="text-[9px] mt-0.5 tracking-tight">Mushola</span>
+            </button>
+            <button onclick="switchTab('santri')" id="bnav-santri" class="bnav-btn py-1.5 px-1 rounded-2xl flex flex-col items-center justify-center text-slate-500 dark:text-slate-400 font-medium transition-all">
+                <i class="fa-solid fa-users text-base"></i>
+                <span class="text-[9px] mt-0.5 tracking-tight">Santri</span>
+            </button>
+            <button onclick="switchTab('piket')" id="bnav-piket" class="bnav-btn py-1.5 px-1 rounded-2xl flex flex-col items-center justify-center text-slate-500 dark:text-slate-400 font-medium transition-all">
+                <i class="fa-solid fa-broom text-base"></i>
+                <span class="text-[9px] mt-0.5 tracking-tight">Piket</span>
+            </button>
+            <button onclick="switchTab('rekap')" id="bnav-rekap" class="bnav-btn py-1.5 px-1 rounded-2xl flex flex-col items-center justify-center text-slate-500 dark:text-slate-400 font-medium transition-all">
+                <i class="fa-solid fa-chart-pie text-base"></i>
+                <span class="text-[9px] mt-0.5 tracking-tight">Rekap</span>
+            </button>
+        </div>
+    </nav>
+
+    <!-- MODAL TAMBAH SANTRIWATI -->
+    <div id="modalSantri" class="hidden fixed inset-0 bg-slate-900/40 backdrop-blur-md z-50 flex items-center justify-center p-4">
+        <div class="glass-card rounded-3xl max-w-md w-full p-6 shadow-2xl border border-white/80 dark:border-slate-700">
+            <div class="flex justify-between items-center mb-4">
+                <h3 class="font-bold text-slate-800 dark:text-slate-100 text-base flex items-center gap-2">
+                    <i class="fa-solid fa-user-plus text-pink-500"></i> Tambah Santriwati Baru
+                </h3>
+                <button onclick="closeSantriModal()" class="text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 w-8 h-8 rounded-full flex items-center justify-center hover:bg-slate-100/50">
+                    <i class="fa-solid fa-xmark text-lg"></i>
+                </button>
+            </div>
+            <form id="formSantri" onsubmit="saveSantri(event)" class="space-y-4">
+                <div>
+                    <label class="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">Nama Lengkap Santriwati</label>
+                    <input type="text" id="santriNama" required placeholder="Contoh: Maryam Al-Batuul" class="w-full glass-input px-3.5 py-2.5 rounded-2xl text-xs focus:outline-none">
+                </div>
+                <div>
+                    <label class="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">Pilih Kelas</label>
+                    <select id="santriKelas" class="w-full glass-input px-3.5 py-2.5 rounded-2xl text-xs focus:outline-none">
+                        <option value="Kelas 7">Kelas 7</option>
+                        <option value="Kelas 8">Kelas 8</option>
+                        <option value="Kelas 9">Kelas 9</option>
+                        <option value="Kelas 10">Kelas 10</option>
+                        <option value="Kelas 11">Kelas 11</option>
+                        <option value="Kelas 12">Kelas 12</option>
+                    </select>
+                </div>
+                <div class="flex justify-end gap-2 pt-2">
+                    <button type="button" onclick="closeSantriModal()" class="px-4 py-2 text-xs font-bold text-slate-600 dark:text-slate-300 glass-pill hover:bg-white/80 rounded-2xl">Batal</button>
+                    <button type="submit" class="btn-bounce px-4 py-2 text-xs font-bold text-white bg-gradient-to-r from-pink-500 to-purple-500 rounded-2xl shadow-md">Simpan Data Santri</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- MODAL PROFILE PENGURUS -->
+    <div id="modalProfile" class="hidden fixed inset-0 bg-slate-900/40 backdrop-blur-md z-50 flex items-center justify-center p-4">
+        <div class="glass-card rounded-3xl max-w-md w-full p-6 shadow-2xl border border-white/80 dark:border-slate-700">
+            <div class="flex justify-between items-center mb-4">
+                <h3 class="font-bold text-slate-800 dark:text-slate-100 text-base flex items-center gap-2">
+                    <i class="fa-solid fa-user-gear text-purple-500"></i> Profil Pengurus Asrama
+                </h3>
+                <button onclick="closeProfileModal()" class="text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 w-8 h-8 rounded-full flex items-center justify-center hover:bg-slate-100/50">
+                    <i class="fa-solid fa-xmark text-lg"></i>
+                </button>
+            </div>
+            
+            <form id="formProfile" onsubmit="saveProfile(event)" class="space-y-4">
+                <div class="flex flex-col items-center justify-center pb-2">
+                    <div class="relative group">
+                        <img id="modalAvatarPreview" src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&q=80&w=150" alt="Avatar Preview" class="w-20 h-20 rounded-2xl object-cover ring-4 ring-pink-400/50 shadow-md">
+                    </div>
+                </div>
+
+                <div>
+                    <label class="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">Nama Lengkap Pengurus</label>
+                    <input type="text" id="profName" required class="w-full glass-input px-3.5 py-2.5 rounded-2xl text-xs focus:outline-none">
+                </div>
+
+                <div>
+                    <label class="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">Jabatan / Amanah</label>
+                    <input type="text" id="profRole" required class="w-full glass-input px-3.5 py-2.5 rounded-2xl text-xs focus:outline-none">
+                </div>
+
+                <div>
+                    <label class="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">URL Foto Profil</label>
+                    <input type="url" id="profAvatarUrl" required onchange="updateAvatarPreview(this.value)" class="w-full glass-input px-3.5 py-2.5 rounded-2xl text-xs focus:outline-none">
+                </div>
+
+                <div>
+                    <label class="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">Nomor Kontak WhatsApp</label>
+                    <input type="text" id="profPhone" placeholder="+62 812-3456-7890" class="w-full glass-input px-3.5 py-2.5 rounded-2xl text-xs focus:outline-none">
+                </div>
+
+                <div class="flex justify-end gap-2 pt-2">
+                    <button type="button" onclick="closeProfileModal()" class="px-4 py-2 text-xs font-bold text-slate-600 dark:text-slate-300 glass-pill hover:bg-white/80 rounded-2xl">Batal</button>
+                    <button type="submit" class="btn-bounce px-4 py-2 text-xs font-bold text-white bg-gradient-to-r from-pink-500 to-purple-500 rounded-2xl shadow-md">Simpan Profil</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- MODAL PIKET -->
+    <div id="modalPiket" class="hidden fixed inset-0 bg-slate-900/40 backdrop-blur-md z-50 flex items-center justify-center p-4">
+        <div class="glass-card rounded-3xl max-w-md w-full p-6 shadow-2xl border border-white/80 dark:border-slate-700">
+            <div class="flex justify-between items-center mb-4">
+                <h3 class="font-bold text-slate-800 dark:text-slate-100 text-base">Tambah Tugas Piket Baru</h3>
+                <button onclick="closePiketModal()" class="text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 w-8 h-8 rounded-full flex items-center justify-center hover:bg-slate-100/50">
+                    <i class="fa-solid fa-xmark text-lg"></i>
+                </button>
+            </div>
+            <form id="formPiket" onsubmit="savePiket(event)" class="space-y-4">
+                <div>
+                    <label class="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">Nama Area Piket</label>
+                    <input type="text" id="piketArea" required placeholder="Contoh: Teras & Koridor Depan" class="w-full glass-input px-3.5 py-2.5 rounded-2xl text-xs focus:outline-none">
+                </div>
+                <div>
+                    <label class="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">Nama Petugas Piket</label>
+                    <input type="text" id="piketPetugas" required placeholder="Contoh: Fatimah & Nabila" class="w-full glass-input px-3.5 py-2.5 rounded-2xl text-xs focus:outline-none">
+                </div>
+                <div>
+                    <label class="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">Detail Rincian Tugas</label>
+                    <textarea id="piketDetail" rows="2" required placeholder="Contoh: Menyapu, mengepel, dan merapikan rak sepatu." class="w-full glass-input px-3.5 py-2.5 rounded-2xl text-xs focus:outline-none"></textarea>
+                </div>
+                <div class="flex justify-end gap-2 pt-2">
+                    <button type="button" onclick="closePiketModal()" class="px-4 py-2 text-xs font-bold text-slate-600 dark:text-slate-300 glass-pill hover:bg-white/80 rounded-2xl">Batal</button>
+                    <button type="submit" class="btn-bounce px-4 py-2 text-xs font-bold text-white bg-gradient-to-r from-amber-500 to-orange-500 rounded-2xl shadow-md">Simpan Piket</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- MODAL PENGUMUMAN -->
+    <div id="modalPengumuman" class="hidden fixed inset-0 bg-slate-900/40 backdrop-blur-md z-50 flex items-center justify-center p-4">
+        <div class="glass-card rounded-3xl max-w-md w-full p-6 shadow-2xl border border-white/80 dark:border-slate-700">
+            <div class="flex justify-between items-center mb-4">
+                <h3 class="font-bold text-slate-800 dark:text-slate-100 text-base">Buat Pengumuman Baru</h3>
+                <button onclick="closePengumumanModal()" class="text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 w-8 h-8 rounded-full flex items-center justify-center hover:bg-slate-100/50">
+                    <i class="fa-solid fa-xmark text-lg"></i>
+                </button>
+            </div>
+            <form id="formPengumuman" onsubmit="savePengumuman(event)" class="space-y-4">
+                <div>
+                    <label class="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">Judul Pengumuman</label>
+                    <input type="text" id="annTitle" required placeholder="Contoh: Kajian Rutin Malam Jumat" class="w-full glass-input px-3.5 py-2.5 rounded-2xl text-xs focus:outline-none">
+                </div>
+                <div>
+                    <label class="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">Kategori / Label</label>
+                    <select id="annCategory" class="w-full glass-input px-3.5 py-2.5 rounded-2xl text-xs focus:outline-none">
+                        <option value="Kegiatan">Kegiatan Asrama</option>
+                        <option value="Aturan">Peraturan / Himbauan</option>
+                        <option value="Penting">Penting / Mendesak</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">Isi Pengumuman</label>
+                    <textarea id="annContent" rows="3" required placeholder="Tuliskan detail pengumuman..." class="w-full glass-input px-3.5 py-2.5 rounded-2xl text-xs focus:outline-none"></textarea>
+                </div>
+                <div class="flex justify-end gap-2 pt-2">
+                    <button type="button" onclick="closePengumumanModal()" class="px-4 py-2 text-xs font-bold text-slate-600 dark:text-slate-300 glass-pill hover:bg-white/80 rounded-2xl">Batal</button>
+                    <button type="submit" class="btn-bounce px-4 py-2 text-xs font-bold text-white bg-gradient-to-r from-sky-500 to-blue-500 rounded-2xl shadow-md">Terbitkan</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- MODAL PELANGGARAN -->
+    <div id="modalHukuman" class="hidden fixed inset-0 bg-slate-900/40 backdrop-blur-md z-50 flex items-center justify-center p-4">
+        <div class="glass-card rounded-3xl max-w-md w-full p-6 shadow-2xl border border-white/80 dark:border-slate-700">
+            <div class="flex justify-between items-center mb-4">
+                <h3 class="font-bold text-slate-800 dark:text-slate-100 text-base">Catat Pelanggaran Santriwati</h3>
+                <button onclick="closeHukumanModal()" class="text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 w-8 h-8 rounded-full flex items-center justify-center hover:bg-slate-100/50">
+                    <i class="fa-solid fa-xmark text-lg"></i>
+                </button>
+            </div>
+            <form id="formHukuman" onsubmit="saveHukuman(event)" class="space-y-4">
+                <div>
+                    <label class="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">Nama Santriwati</label>
+                    <input type="text" id="punishName" required placeholder="Contoh: Nabila Putri" class="w-full glass-input px-3.5 py-2.5 rounded-2xl text-xs focus:outline-none">
+                </div>
+                <div>
+                    <label class="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">Jenis Pelanggaran</label>
+                    <input type="text" id="punishViolation" required placeholder="Contoh: Terlambat mengikuti shalat berjamaah" class="w-full glass-input px-3.5 py-2.5 rounded-2xl text-xs focus:outline-none">
+                </div>
+                <div>
+                    <label class="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">Bentuk Hukuman / Konsekuensi</label>
+                    <textarea id="punishTask" rows="2" required placeholder="Contoh: Membaca Al-Qur'an Surat Al-Mulk & merapikan mushola." class="w-full glass-input px-3.5 py-2.5 rounded-2xl text-xs focus:outline-none"></textarea>
+                </div>
+                <div class="flex justify-end gap-2 pt-2">
+                    <button type="button" onclick="closeHukumanModal()" class="px-4 py-2 text-xs font-bold text-slate-600 dark:text-slate-300 glass-pill hover:bg-white/80 rounded-2xl">Batal</button>
+                    <button type="submit" class="btn-bounce px-4 py-2 text-xs font-bold text-white bg-gradient-to-r from-rose-500 to-red-600 rounded-2xl shadow-md">Simpan Catatan</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        // --- HELPER STORAGE & TOAST SYSTEM ---
+        function getStorage(key, defaultData) {
+            try {
+                const stored = localStorage.getItem(key);
+                return stored ? JSON.parse(stored) : defaultData;
+            } catch (e) {
+                return defaultData;
+            }
+        }
+
+        function setStorage(key, data) {
+            try {
+                localStorage.setItem(key, JSON.stringify(data));
+            } catch (e) {
+                console.error('Storage Error:', e);
+            }
+        }
+
+        function showToast(message, type = 'success') {
+            const container = document.getElementById('toastContainer');
+            if (!container) return;
+
+            const toast = document.createElement('div');
+            let bgClass = 'bg-emerald-500 text-white';
+            let icon = 'fa-circle-check';
+
+            if (type === 'info') { bgClass = 'bg-purple-500 text-white'; icon = 'fa-circle-info'; }
+            if (type === 'warning') { bgClass = 'bg-amber-500 text-white'; icon = 'fa-triangle-exclamation'; }
+            if (type === 'error') { bgClass = 'bg-rose-500 text-white'; icon = 'fa-circle-xmark'; }
+
+            toast.className = `toast-animate px-4 py-3 rounded-2xl shadow-lg font-bold text-xs flex items-center gap-2.5 pointer-events-auto ${bgClass}`;
+            toast.innerHTML = `<i class="fa-solid ${icon}"></i> <span>${message}</span>`;
+
+            container.appendChild(toast);
+            setTimeout(() => {
+                toast.style.opacity = '0';
+                toast.style.transition = 'opacity 0.3s ease';
+                setTimeout(() => toast.remove(), 300);
+            }, 3000);
+        }
+
+        // --- DARK MODE CONFIG ---
+        let isDarkMode = localStorage.getItem('asramaku_theme') === 'dark';
+
+        function applyTheme() {
+            const html = document.documentElement;
+            const icon = document.getElementById('themeIcon');
+            if (isDarkMode) {
+                html.classList.add('dark');
+                html.classList.remove('light');
+                if (icon) { icon.className = 'fa-solid fa-sun text-base text-amber-400'; }
+            } else {
+                html.classList.add('light');
+                html.classList.remove('dark');
+                if (icon) { icon.className = 'fa-solid fa-moon text-base text-purple-500'; }
+            }
+        }
+
+        function toggleDarkMode() {
+            isDarkMode = !isDarkMode;
+            localStorage.setItem('asramaku_theme', isDarkMode ? 'dark' : 'light');
+            applyTheme();
+            showToast(isDarkMode ? 'Mode Gelap Aktif 🌙' : 'Mode Terang Aktif ☀️', 'info');
+        }
+
+        // --- APP STATE ---
+        let selectedMusholaDate = new Date().toISOString().split('T')[0];
+        let onlyFavoriteSantri = false;
+
+        // Default Datasets
+        const initialProfile = {
+            nama: 'Ustadzah Dev',
+            jabatan: 'Pengurus Utama Asrama',
+            avatar: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&q=80&w=150',
+            kontak: '+62 812-3456-7890'
+        };
+
+        const initialJadwal = [
+            { id: 1, waktu: '04:00 - 05:00', nama: 'Bangun Tidur & Shalat Subuh Berjamaah', tempat: 'Mushola Utama', checked: true },
+            { id: 2, waktu: '05:00 - 06:00', nama: 'Setoran Hafalan & Muroja\'ah Al-Qur\'an', tempat: 'Halaman / Mushola', checked: true },
+            { id: 3, waktu: '06:00 - 07:00', nama: 'Piket Kebersihan & Persiapan Sekolah', tempat: 'Area Kamar & Lingkungan', checked: false },
+            { id: 4, waktu: '15:30 - 16:30', nama: 'Shalat Asar Berjamaah & Kajian Kitab', tempat: 'Mushola Utama', checked: false },
+            { id: 5, waktu: '18:00 - 19:15', nama: 'Shalat Maghrib Berjamaah & Makan Malam', tempat: 'Mushola & Ruang Makan', checked: false },
+            { id: 6, waktu: '19:15 - 20:30', nama: 'Shalat Isya Berjamaah & Belajar Mandiri', tempat: 'Ruang Belajar', checked: false },
+            { id: 7, waktu: '21:30 - 04:00', nama: 'Istirahat Malam / Jam Malam', tempat: 'Kamar Masing-masing', checked: false }
+        ];
+
+        const initialSantri = [
+            { id: 'S1', nama: 'Aisyah Az-Zahra', kelas: 'Kelas 10', favorite: true },
+            { id: 'S2', nama: 'Khadijah Maryam', kelas: 'Kelas 10', favorite: false },
+            { id: 'S3', nama: 'Fatimah Az-Zahra', kelas: 'Kelas 11', favorite: true },
+            { id: 'S4', nama: 'Nabila Putri', kelas: 'Kelas 11', favorite: false },
+            { id: 'S5', nama: 'Zahra Humaira', kelas: 'Kelas 12', favorite: false },
+            { id: 'S6', nama: 'Siti Safiyah', kelas: 'Kelas 12', favorite: false },
+            { id: 'S7', nama: 'Siti Aminah', kelas: 'Kelas 7', favorite: false },
+            { id: 'S8', nama: 'Ruqayyah Mufidah', kelas: 'Kelas 8', favorite: false }
+        ];
+
+        const initialPiket = [
+            { id: 1, area: 'Kamar Mandi Depan', petugas: 'Aisyah & Khadijah', detail: 'Sikat lantai, isi bak mandi, bersihkan cermin', status: 'Selesai' },
+            { id: 2, area: 'Mushola Asrama', petugas: 'Fatimah & Nabila', detail: 'Sapu, pel, rapikan sajadah dan al-qur\'an', status: 'Selesai' },
+            { id: 3, area: 'Dapur & Ruang Makan', petugas: 'Zahra & Safiyah', detail: 'Cuci piring, sapu dapur, buang sampah', status: 'Selesai' },
+            { id: 4, area: 'Teras & Koridor', petugas: 'Aminah & Ruqayyah', detail: 'Sapu koridor utama dan rapikan rak sepatu', status: 'Belum' }
+        ];
+
+        const initialPengumuman = [
+            {
+                id: 1,
+                judul: 'Kerja Bakti Akbar Persiapan Bulan Ramadhan',
+                kategori: 'Kegiatan',
+                tanggal: '18 Oktober 2026',
+                isi: 'Diberitahukan kepada seluruh santriwati bahwa Hari Minggu pukul 07.30 WIB akan dilaksanakan kerja bakti pembersihan lingkungan asrama.'
+            },
+            {
+                id: 2,
+                judul: 'Pengingat Jam Buka & Tutup Gerbang Utama',
+                kategori: 'Aturan',
+                tanggal: '15 Oktober 2026',
+                isi: 'Gerbang asrama akan dikunci tepat pukul 17.00 WIB. Bagi santriwati yang terlambat wajib melapor ke pengurus piket.'
+            }
+        ];
+
+        const initialHukuman = [
+            {
+                id: 1,
+                nama: 'Nabila Putri',
+                pelanggaran: 'Terlambat shalat Subuh jamaah di Mushola (2x)',
+                hukuman: 'Membaca Surat Yasin 1x setelah Maghrib & merapikan mukena mushola',
+                status: 'Belum Selesai'
+            },
+            {
+                id: 2,
+                nama: 'Ruqayyah Mufidah',
+                pelanggaran: 'Lupa melaksanakan piket teras koridor',
+                hukuman: 'Membersihkan halaman depan dan koridor utama sore hari',
+                status: 'Selesai'
+            }
+        ];
+
+        const initialNotifikasi = [
+            { id: 1, judul: 'Pengingat Piket Koridor', pesan: 'Waktu piket sore jam 16.30 WIB untuk area Koridor.', waktu: '10 min lalu' },
+            { id: 2, judul: 'Waktu Shalat Maghrib', pesan: 'Bersiap menuju Mushola untuk Shalat Maghrib Berjamaah.', waktu: '1 jam lalu' }
+        ];
+
+        // Retrieve or Init State
+        let adminProfile = getStorage('asramaku_profile', initialProfile);
+        let jadwalList = getStorage('asramaku_jadwal', initialJadwal);
+        let santriList = getStorage('asramaku_santri', initialSantri).map(s => {
+            if (!s.kelas) {
+                s.kelas = s.kamar ? s.kamar.replace('Kamar ', 'Kelas ') : 'Kelas 10';
+            }
+            return s;
+        });
+        let piketList = getStorage('asramaku_piket', initialPiket);
+        let pengumumanList = getStorage('asramaku_pengumuman', initialPengumuman);
+        let hukumanList = getStorage('asramaku_hukuman', initialHukuman);
+        let notifikasiList = getStorage('asramaku_notifikasi', initialNotifikasi);
+        let musholaPresensiRecords = getStorage('asramaku_mushola', {
+            [`${selectedMusholaDate}_S1`]: { subuh: 'hadir', maghrib: 'hadir', isya: 'hadir' },
+            [`${selectedMusholaDate}_S2`]: { subuh: 'hadir', maghrib: 'hadir', isya: 'hadir' },
+            [`${selectedMusholaDate}_S3`]: { subuh: 'uzur', maghrib: 'uzur', isya: 'uzur' },
+            [`${selectedMusholaDate}_S4`]: { subuh: 'terlambat', maghrib: 'hadir', isya: 'hadir' }
+        });
+
+        // --- RENDER FUNCTIONS ---
+
+        function renderSantriTable() {
+            const tbody = document.getElementById('santriTableBody');
+            if (!tbody) return;
+            tbody.innerHTML = '';
+
+            if (santriList.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="4" class="p-8 text-center text-slate-400 font-medium">Belum ada data santriwati. Klik "+ Tambah Santriwati Baru" untuk memasukkan data.</td></tr>`;
+                return;
+            }
+
+            santriList.forEach(santri => {
+                const tr = document.createElement('tr');
+                tr.className = "hover:bg-pink-50/30 dark:hover:bg-slate-700/30 transition border-b border-white/40 dark:border-slate-700/40";
+                tr.innerHTML = `
+                    <td class="p-4 font-bold text-xs text-pink-600 dark:text-pink-400">${santri.id}</td>
+                    <td class="p-4 font-bold text-xs text-slate-800 dark:text-slate-100 flex items-center gap-2">
+                        <button onclick="toggleFavoriteSantri('${santri.id}')" class="text-amber-400 text-sm hover:scale-125 transition-transform">
+                            <i class="${santri.favorite ? 'fa-solid' : 'fa-regular'} fa-star"></i>
+                        </button>
+                        <span>${santri.nama}</span>
+                    </td>
+                    <td class="p-4 text-xs font-semibold text-slate-600 dark:text-slate-300">${santri.kelas || santri.kamar || '-'}</td>
+                    <td class="p-4 text-right">
+                        <button onclick="deleteSantri('${santri.id}')" class="btn-bounce px-2.5 py-1.5 rounded-xl text-xs font-bold text-rose-600 hover:bg-rose-50 dark:hover:bg-rose-950/40 transition">
+                            <i class="fa-solid fa-trash-can mr-1"></i> Hapus
+                        </button>
+                    </td>
+                `;
+                tbody.appendChild(tr);
+            });
+        }
+
+        function toggleFavoriteSantri(id) {
+            const santri = santriList.find(s => s.id === id);
+            if (santri) {
+                santri.favorite = !santri.favorite;
+                setStorage('asramaku_santri', santriList);
+                renderSantriTable();
+                renderMusholaPresensi();
+                showToast(santri.favorite ? `${santri.nama} ditambah ke favorit ✨` : `Favorit ${santri.nama} dihapus`, 'info');
+            }
+        }
+
+        function openSantriModal() { document.getElementById('modalSantri').classList.remove('hidden'); }
+        function closeSantriModal() { document.getElementById('modalSantri').classList.add('hidden'); }
+
+        function saveSantri(e) {
+            e.preventDefault();
+            const nama = document.getElementById('santriNama').value.trim();
+            const kelasInput = document.getElementById('santriKelas') || document.getElementById('santriKamar');
+            const kelas = kelasInput ? kelasInput.value : 'Kelas 10';
+            const newId = 'S' + (santriList.length + 1);
+
+            santriList.push({ id: newId, nama, kelas, favorite: false });
+            setStorage('asramaku_santri', santriList);
+
+            renderSantriTable();
+            renderMusholaPresensi();
+            closeSantriModal();
+            document.getElementById('formSantri').reset();
+            showToast('Santriwati baru berhasil ditambahkan! 🌸');
+        }
+
+        function deleteSantri(id) {
+            santriList = santriList.filter(s => s.id !== id);
+            setStorage('asramaku_santri', santriList);
+            renderSantriTable();
+            renderMusholaPresensi();
+            showToast('Data santriwati dihapus.', 'warning');
+        }
+
+        function renderJadwal() {
+            const container = document.getElementById('jadwalList');
+            if (!container) return;
+            container.innerHTML = '';
+
+            let completedCount = 0;
+
+            jadwalList.forEach(item => {
+                if (item.checked) completedCount++;
+
+                const card = document.createElement('div');
+                card.className = `glass-pill p-4 rounded-2xl flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 border transition-all ${
+                    item.checked 
+                        ? 'border-pink-300 dark:border-pink-900 bg-pink-50/40 dark:bg-pink-950/20' 
+                        : 'border-white/80 dark:border-slate-700 hover:bg-white/70 dark:hover:bg-slate-800/60'
+                }`;
+
+                card.innerHTML = `
+                    <div class="flex items-center gap-3">
+                        <button onclick="toggleJadwalCheck(${item.id})" class="btn-bounce w-6 h-6 rounded-xl flex items-center justify-center transition ${
+                            item.checked 
+                                ? 'bg-gradient-to-tr from-pink-500 to-purple-500 text-white shadow-md shadow-pink-500/30' 
+                                : 'border-2 border-slate-300 dark:border-slate-600 hover:border-pink-400 bg-white/50 dark:bg-slate-700/50'
+                        }">
+                            ${item.checked ? '<i class="fa-solid fa-check text-xs"></i>' : ''}
+                        </button>
+                        <div>
+                            <span class="text-xs font-bold ${item.checked ? 'line-through text-slate-400 dark:text-slate-500' : 'text-slate-800 dark:text-slate-100'}">${item.nama}</span>
+                            <div class="flex items-center gap-2 mt-0.5">
+                                <span class="text-[10px] font-semibold text-purple-600 dark:text-purple-300"><i class="fa-regular fa-clock mr-1"></i>${item.waktu}</span>
+                                <span class="text-[10px] text-slate-400">•</span>
+                                <span class="text-[10px] font-medium text-slate-500 dark:text-slate-400"><i class="fa-solid fa-location-dot mr-1"></i>${item.tempat}</span>
+                            </div>
+                        </div>
+                    </div>
+                    ${item.nama.includes('Shalat') ? '<span class="text-[10px] font-bold px-2.5 py-1 rounded-full bg-pink-100 text-pink-700 dark:bg-pink-900/40 dark:text-pink-300 border border-pink-200 dark:border-pink-800">Wajib Jamaah</span>' : ''}
+                `;
+                container.appendChild(card);
+            });
+
+            const percent = jadwalList.length > 0 ? Math.round((completedCount / jadwalList.length) * 100) : 0;
+            document.getElementById('dailyProgressBar').style.width = `${percent}%`;
+            document.getElementById('dailyProgressText').innerText = `${percent}%`;
+        }
+
+        function toggleJadwalCheck(id) {
+            const item = jadwalList.find(j => j.id === id);
+            if (item) {
+                item.checked = !item.checked;
+                setStorage('asramaku_jadwal', jadwalList);
+                renderJadwal();
+            }
+        }
+
+        function toggleFavFilter() {
+            onlyFavoriteSantri = !onlyFavoriteSantri;
+            const btn = document.getElementById('toggleFavFilterBtn');
+            if (onlyFavoriteSantri) {
+                btn.className = "btn-bounce w-full sm:w-auto px-4 py-2 rounded-2xl text-xs font-bold bg-pink-500 text-white shadow-md flex items-center justify-center gap-1.5";
+            } else {
+                btn.className = "btn-bounce w-full sm:w-auto px-4 py-2 rounded-2xl text-xs font-bold glass-pill border border-pink-300 text-pink-600 dark:text-pink-300 flex items-center justify-center gap-1.5";
+            }
+            renderMusholaPresensi();
+        }
+
+        function renderMusholaPresensi() {
+            const tbody = document.getElementById('musholaPresensiBody');
+            if (!tbody) return;
+            tbody.innerHTML = '';
+
+            const searchVal = (document.getElementById('musholaSearch')?.value || '').toLowerCase();
+            const roomVal = document.getElementById('musholaRoomFilter')?.value || 'ALL';
+
+            const filteredSantri = santriList.filter(s => {
+                const matchName = s.nama.toLowerCase().includes(searchVal);
+                const santriKelas = s.kelas || s.kamar || '';
+                const matchRoom = roomVal === 'ALL' || santriKelas === roomVal;
+                const matchFav = !onlyFavoriteSantri || s.favorite;
+                return matchName && matchRoom && matchFav;
+            });
+
+            if (filteredSantri.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="6" class="p-8 text-center text-slate-400 font-medium">Tidak ada data santriwati yang cocok dengan pencarian / filter.</td></tr>`;
+                return;
+            }
+
+            const prayers = ['subuh', 'maghrib', 'isya'];
+
+            filteredSantri.forEach(santri => {
+                const key = `${selectedMusholaDate}_${santri.id}`;
+                if (!musholaPresensiRecords[key]) {
+                    musholaPresensiRecords[key] = { subuh: 'belum', maghrib: 'belum', isya: 'belum' };
+                }
+                const record = musholaPresensiRecords[key];
+
+                let hadirCount = 0;
+                prayers.forEach(p => { if (record[p] === 'hadir') hadirCount++; });
+                const percentage = Math.round((hadirCount / prayers.length) * 100);
+
+                const tr = document.createElement('tr');
+                tr.className = "hover:bg-pink-50/30 dark:hover:bg-slate-700/30 transition border-b border-white/40 dark:border-slate-700/40";
+
+                let prayerCellsHtml = '';
+                prayers.forEach(p => {
+                    const status = record[p] || 'belum';
+                    let btnStyle = "bg-slate-100 dark:bg-slate-700 text-slate-500 dark:text-slate-300";
+                    let label = "Belum";
+
+                    if (status === 'hadir') { btnStyle = "bg-emerald-500 text-white shadow-sm"; label = "Hadir"; }
+                    else if (status === 'terlambat') { btnStyle = "bg-amber-500 text-white shadow-sm"; label = "Telat"; }
+                    else if (status === 'uzur') { btnStyle = "bg-sky-500 text-white shadow-sm"; label = "Uzur"; }
+                    else if (status === 'alpha') { btnStyle = "bg-rose-500 text-white shadow-sm"; label = "Alpha"; }
+
+                    prayerCellsHtml += `
+                        <td class="p-3 text-center">
+                            <button onclick="cycleMusholaStatus('${santri.id}', '${p}')" class="btn-bounce px-2.5 py-1 rounded-xl text-[11px] font-bold transition-all ${btnStyle}">
+                                ${label}
+                            </button>
+                        </td>
+                    `;
+                });
+
+                tr.innerHTML = `
+                    <td class="p-4 text-center">
+                        <button onclick="toggleFavoriteSantri('${santri.id}')" class="text-amber-400 text-sm hover:scale-125 transition-transform">
+                            <i class="${santri.favorite ? 'fa-solid' : 'fa-regular'} fa-star"></i>
+                        </button>
+                    </td>
+                    <td class="p-4">
+                        <span class="font-bold text-xs text-slate-800 dark:text-slate-100 block">${santri.nama}</span>
+                        <span class="text-[10px] text-slate-500 dark:text-slate-400 font-semibold">${santri.kelas || santri.kamar || '-'}</span>
+                    </td>
+                    ${prayerCellsHtml}
+                    <td class="p-4 text-center">
+                        <span class="text-xs font-black text-purple-600 dark:text-purple-300 glass-pill px-2.5 py-1 rounded-full border border-purple-200 dark:border-purple-800">${percentage}%</span>
+                    </td>
+                `;
+                tbody.appendChild(tr);
+            });
+
+            updateMusholaStatSummary();
+        }
+
+        function cycleMusholaStatus(santriId, prayer) {
+            const key = `${selectedMusholaDate}_${santriId}`;
+            if (!musholaPresensiRecords[key]) {
+                musholaPresensiRecords[key] = { subuh: 'belum', maghrib: 'belum', isya: 'belum' };
+            }
+
+            const current = musholaPresensiRecords[key][prayer];
+            const states = ['belum', 'hadir', 'terlambat', 'uzur', 'alpha'];
+            const nextIdx = (states.indexOf(current) + 1) % states.length;
+            musholaPresensiRecords[key][prayer] = states[nextIdx];
+
+            setStorage('asramaku_mushola', musholaPresensiRecords);
+            renderMusholaPresensi();
+        }
+
+        function changeMusholaDate(val) {
+            if (val) {
+                selectedMusholaDate = val;
+                renderMusholaPresensi();
+            }
+        }
+
+        function markAllMusholaPresent() {
+            santriList.forEach(s => {
+                const key = `${selectedMusholaDate}_${s.id}`;
+                if (!musholaPresensiRecords[key]) {
+                    musholaPresensiRecords[key] = { subuh: 'hadir', maghrib: 'belum', isya: 'belum' };
+                } else {
+                    musholaPresensiRecords[key].subuh = 'hadir';
+                }
+            });
+            setStorage('asramaku_mushola', musholaPresensiRecords);
+            renderMusholaPresensi();
+            showToast('Semua santri ditandai Hadir Subuh ✨');
+        }
+
+        function updateMusholaStatSummary() {
+            let totalChecks = 0;
+            let totalHadir = 0;
+
+            santriList.forEach(s => {
+                const key = `${selectedMusholaDate}_${s.id}`;
+                const rec = musholaPresensiRecords[key];
+                if (rec) {
+                    ['subuh', 'maghrib', 'isya'].forEach(p => {
+                        totalChecks++;
+                        if (rec[p] === 'hadir' || rec[p] === 'uzur') totalHadir++;
+                    });
+                }
+            });
+
+            const rate = totalChecks > 0 ? Math.round((totalHadir / totalChecks) * 100) : 100;
+            const statElem = document.getElementById('statMusholaRate');
+            if (statElem) statElem.innerText = `${rate}%`;
+        }
+
+        function renderPiket() {
+            const tbody = document.getElementById('piketTableBody');
+            if (!tbody) return;
+            tbody.innerHTML = '';
+
+            if (piketList.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="5" class="p-8 text-center text-slate-400 font-medium">Belum ada tugas piket. Klik "+ Tambah Tugas Piket".</td></tr>`;
+                return;
+            }
+
+            let completed = 0;
+
+            piketList.forEach(item => {
+                if (item.status === 'Selesai') completed++;
+
+                const tr = document.createElement('tr');
+                tr.className = "hover:bg-pink-50/30 dark:hover:bg-slate-700/30 transition border-b border-white/40 dark:border-slate-700/40";
+                tr.innerHTML = `
+                    <td class="p-4 font-bold text-xs text-slate-800 dark:text-slate-100">${item.area}</td>
+                    <td class="p-4 text-xs text-slate-700 dark:text-slate-300 font-semibold">${item.petugas}</td>
+                    <td class="p-4 text-xs text-slate-600 dark:text-slate-400">${item.detail}</td>
+                    <td class="p-4">
+                        <span class="px-2.5 py-1 rounded-full text-[10px] font-bold ${
+                            item.status === 'Selesai' 
+                                ? 'bg-emerald-100 text-emerald-700 dark:bg-emerald-950/50 dark:text-emerald-300 border border-emerald-300' 
+                                : 'bg-amber-100 text-amber-700 dark:bg-amber-950/50 dark:text-amber-300 border border-amber-300'
+                        }">${item.status}</span>
+                    </td>
+                    <td class="p-4 text-right flex items-center justify-end gap-2">
+                        <button onclick="togglePiketStatus(${item.id})" class="btn-bounce px-2.5 py-1.5 rounded-xl text-xs font-bold text-white transition ${
+                            item.status === 'Selesai' ? 'bg-slate-400 hover:bg-slate-500' : 'bg-gradient-to-r from-pink-500 to-purple-500'
+                        }">
+                            ${item.status === 'Selesai' ? 'Batalkan' : 'Selesai'}
+                        </button>
+                        ${item.status !== 'Selesai' ? `
+                            <button onclick="hukumPiket('${item.petugas}', '${item.area}')" title="Catat Pelanggaran Piket" class="btn-bounce px-2.5 py-1.5 bg-rose-500 hover:bg-rose-600 text-white rounded-xl text-xs font-bold transition shadow-sm">
+                                <i class="fa-solid fa-gavel mr-1"></i> Sanksi
+                            </button>
+                        ` : ''}
+                    </td>
+                `;
+                tbody.appendChild(tr);
+            });
+
+            const statElem = document.getElementById('statPiketCompleted');
+            if (statElem) statElem.innerText = `${completed} / ${piketList.length}`;
+        }
+
+        function openPiketModal() { document.getElementById('modalPiket').classList.remove('hidden'); }
+        function closePiketModal() { document.getElementById('modalPiket').classList.add('hidden'); }
+
+        function savePiket(e) {
+            e.preventDefault();
+            const area = document.getElementById('piketArea').value.trim();
+            const petugas = document.getElementById('piketPetugas').value.trim();
+            const detail = document.getElementById('piketDetail').value.trim();
+
+            piketList.push({ id: Date.now(), area, petugas, detail, status: 'Belum' });
+            setStorage('asramaku_piket', piketList);
+
+            renderPiket();
+            closePiketModal();
+            document.getElementById('formPiket').reset();
+            showToast('Tugas piket baru ditambahkan! 🧹');
+        }
+
+        function togglePiketStatus(id) {
+            const item = piketList.find(p => p.id === id);
+            if (item) {
+                item.status = item.status === 'Selesai' ? 'Belum' : 'Selesai';
+                setStorage('asramaku_piket', piketList);
+                renderPiket();
+            }
+        }
+
+        function hukumPiket(petugas, area) {
+            document.getElementById('punishName').value = petugas;
+            document.getElementById('punishViolation').value = `Tidak mengerjakan piket harian (${area})`;
+            document.getElementById('punishTask').value = `Membersihkan ${area} dua kali lipat & merapikan lingkungan asrama`;
+            openHukumanModal();
+        }
+
+        function renderPengumuman() {
+            const container = document.getElementById('pengumumanList');
+            if (!container) return;
+            container.innerHTML = '';
+
+            if (pengumumanList.length === 0) {
+                container.innerHTML = `<div class="col-span-2 glass-card p-8 text-center text-slate-400 font-medium rounded-3xl">Belum ada pengumuman yang diterbitkan.</div>`;
+                return;
+            }
+
+            pengumumanList.forEach(item => {
+                let catBadge = "bg-pink-100 text-pink-800 dark:bg-pink-900/50 dark:text-pink-300 border-pink-300";
+                if (item.kategori === 'Aturan') catBadge = "bg-amber-100 text-amber-800 dark:bg-amber-950/50 dark:text-amber-300 border-amber-300";
+                if (item.kategori === 'Penting') catBadge = "bg-rose-100 text-rose-800 dark:bg-rose-950/50 dark:text-rose-300 border-rose-300";
+
+                const card = document.createElement('div');
+                card.className = "glass-card p-5 rounded-3xl border border-white/80 dark:border-slate-700 shadow-md space-y-3";
+                card.innerHTML = `
+                    <div class="flex justify-between items-start">
+                        <span class="px-2.5 py-1 rounded-full text-[10px] font-bold border ${catBadge}">${item.kategori}</span>
+                        <span class="text-[10px] text-slate-400 font-semibold">${item.tanggal}</span>
+                    </div>
+                    <h3 class="font-bold text-slate-800 dark:text-slate-100 text-sm sm:text-base">${item.judul}</h3>
+                    <p class="text-xs text-slate-600 dark:text-slate-300 leading-relaxed">${item.isi}</p>
+                `;
+                container.appendChild(card);
+            });
+        }
+
+        function openPengumumanModal() { document.getElementById('modalPengumuman').classList.remove('hidden'); }
+        function closePengumumanModal() { document.getElementById('modalPengumuman').classList.add('hidden'); }
+
+        function savePengumuman(e) {
+            e.preventDefault();
+            const judul = document.getElementById('annTitle').value.trim();
+            const kategori = document.getElementById('annCategory').value;
+            const isi = document.getElementById('annContent').value.trim();
+            const dateStr = new Date().toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' });
+
+            pengumumanList.unshift({ id: Date.now(), judul, kategori, tanggal: dateStr, isi });
+            setStorage('asramaku_pengumuman', pengumumanList);
+
+            renderPengumuman();
+            closePengumumanModal();
+            document.getElementById('formPengumuman').reset();
+            showToast('Pengumuman baru telah diterbitkan! 📢');
+        }
+
+        function renderHukuman() {
+            const tbody = document.getElementById('hukumanTableBody');
+            if (!tbody) return;
+            tbody.innerHTML = '';
+
+            if (hukumanList.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="5" class="p-8 text-center text-slate-400 font-medium">Tidak ada catatan pelanggaran aktif. Asrama tertib & kondusif! 🎉</td></tr>`;
+                return;
+            }
+
+            let pendingCount = 0;
+
+            hukumanList.forEach(item => {
+                if (item.status === 'Belum Selesai') pendingCount++;
+
+                const tr = document.createElement('tr');
+                tr.className = "hover:bg-rose-50/30 dark:hover:bg-slate-700/30 transition border-b border-white/40 dark:border-slate-700/40";
+                tr.innerHTML = `
+                    <td class="p-4 font-bold text-xs text-slate-800 dark:text-slate-100">${item.nama}</td>
+                    <td class="p-4 text-xs text-rose-600 dark:text-rose-400 font-semibold">${item.pelanggaran}</td>
+                    <td class="p-4 text-xs text-slate-700 dark:text-slate-300">${item.hukuman}</td>
+                    <td class="p-4">
+                        <span class="px-2.5 py-1 rounded-full text-[10px] font-bold ${
+                            item.status === 'Selesai' 
+                                ? 'bg-emerald-100 text-emerald-700 dark:bg-emerald-950/50 dark:text-emerald-300 border border-emerald-300' 
+                                : 'bg-rose-100 text-rose-700 dark:bg-rose-950/50 dark:text-rose-300 border border-rose-300'
+                        }">${item.status}</span>
+                    </td>
+                    <td class="p-4 text-right">
+                        <button onclick="toggleHukumanStatus(${item.id})" class="btn-bounce px-3 py-1.5 rounded-xl text-xs font-bold text-white transition ${
+                            item.status === 'Selesai' ? 'bg-slate-400 hover:bg-slate-500' : 'bg-rose-500 hover:bg-rose-600'
+                        }">
+                            ${item.status === 'Selesai' ? 'Batalkan' : 'Tandai Tuntas'}
+                        </button>
+                    </td>
+                `;
+                tbody.appendChild(tr);
+            });
+
+            const statElem = document.getElementById('statPendingPunishment');
+            if (statElem) statElem.innerText = `${pendingCount} Santri`;
+
+            const statSantriElem = document.getElementById('statTotalSantri');
+            if (statSantriElem) statSantriElem.innerText = `${santriList.length} Santriwati`;
+        }
+
+        function openHukumanModal() { document.getElementById('modalHukuman').classList.remove('hidden'); }
+        function closeHukumanModal() { document.getElementById('modalHukuman').classList.add('hidden'); }
+
+        function saveHukuman(e) {
+            e.preventDefault();
+            const nama = document.getElementById('punishName').value.trim();
+            const pelanggaran = document.getElementById('punishViolation').value.trim();
+            const hukuman = document.getElementById('punishTask').value.trim();
+
+            hukumanList.push({ id: Date.now(), nama, pelanggaran, hukuman, status: 'Belum Selesai' });
+            setStorage('asramaku_hukuman', hukumanList);
+
+            renderHukuman();
+            closeHukumanModal();
+            document.getElementById('formHukuman').reset();
+            showToast('Catatan pelanggaran disimpan.', 'warning');
+        }
+
+        function toggleHukumanStatus(id) {
+            const item = hukumanList.find(h => h.id === id);
+            if (item) {
+                item.status = item.status === 'Selesai' ? 'Belum Selesai' : 'Selesai';
+                setStorage('asramaku_hukuman', hukumanList);
+                renderHukuman();
+            }
+        }
+
+        function renderNotifikasi() {
+            const container = document.getElementById('notificationList');
+            if (!container) return;
+            container.innerHTML = '';
+
+            notifikasiList.forEach(notif => {
+                const item = document.createElement('div');
+                item.className = "p-3 rounded-2xl glass-pill hover:bg-white/90 dark:hover:bg-slate-700 transition border border-white/80 dark:border-slate-700 shadow-sm flex items-start gap-3";
+                item.innerHTML = `
+                    <div class="w-8 h-8 rounded-xl bg-pink-100 dark:bg-pink-900/40 text-pink-500 flex items-center justify-center shrink-0 mt-0.5">
+                        <i class="fa-solid fa-bell text-xs"></i>
+                    </div>
+                    <div>
+                        <div class="flex justify-between items-center">
+                            <h4 class="text-xs font-bold text-slate-800 dark:text-slate-100">${notif.judul}</h4>
+                            <span class="text-[9px] text-slate-400 font-medium">${notif.waktu}</span>
+                        </div>
+                        <p class="text-[11px] text-slate-600 dark:text-slate-300 mt-0.5 leading-snug">${notif.pesan}</p>
+                    </div>
+                `;
+                container.appendChild(item);
+            });
+        }
+
+        function toggleNotificationPanel() {
+            const panel = document.getElementById('notificationPanel');
+            if (panel) {
+                panel.classList.toggle('hidden');
+            }
+        }
+
+        // --- PROFILE EDITING ---
+        function openProfileModal() {
+            document.getElementById('profName').value = adminProfile.nama;
+            document.getElementById('profRole').value = adminProfile.jabatan;
+            document.getElementById('profAvatarUrl').value = adminProfile.avatar;
+            document.getElementById('profPhone').value = adminProfile.kontak;
+            document.getElementById('modalAvatarPreview').src = adminProfile.avatar;
+            
+            document.getElementById('modalProfile').classList.remove('hidden');
+        }
+
+        function closeProfileModal() {
+            document.getElementById('modalProfile').classList.add('hidden');
+        }
+
+        function updateAvatarPreview(url) {
+            if (url) {
+                document.getElementById('modalAvatarPreview').src = url;
+            }
+        }
+
+        function saveProfile(e) {
+            e.preventDefault();
+            adminProfile.nama = document.getElementById('profName').value.trim();
+            adminProfile.jabatan = document.getElementById('profRole').value.trim();
+            adminProfile.avatar = document.getElementById('profAvatarUrl').value.trim();
+            adminProfile.kontak = document.getElementById('profPhone').value.trim();
+
+            setStorage('asramaku_profile', adminProfile);
+            renderAdminProfileUI();
+            closeProfileModal();
+            showToast('Profil pengurus berhasil diperbarui! ✨');
+        }
+
+        function renderAdminProfileUI() {
+            document.getElementById('headerProfileName').innerText = adminProfile.nama;
+            document.getElementById('headerProfileRole').innerText = adminProfile.jabatan;
+            document.getElementById('headerProfileAvatar').src = adminProfile.avatar;
+            document.getElementById('bannerGreetingName').innerText = adminProfile.nama;
+        }
+
+        function updateRekapStats() {
+            const statSantriElem = document.getElementById('statTotalSantri');
+            if (statSantriElem) statSantriElem.innerText = `${santriList.length} Santriwati`;
+
+            updateMusholaStatSummary();
+
+            const piketDone = piketList.filter(p => p.status === 'Selesai').length;
+            const statPiketElem = document.getElementById('statPiketCompleted');
+            if (statPiketElem) statPiketElem.innerText = `${piketDone} / ${piketList.length}`;
+
+            const pendingHukuman = hukumanList.filter(h => h.status === 'Belum Selesai').length;
+            const statHukumanElem = document.getElementById('statPendingPunishment');
+            if (statHukumanElem) statHukumanElem.innerText = `${pendingHukuman} Santri`;
+        }
+
+        // Tab Switching Logic
+        function switchTab(tabName) {
+            document.querySelectorAll('.tab-content').forEach(el => el.classList.add('hidden'));
+            document.querySelectorAll('.tab-btn').forEach(btn => {
+                btn.className = "tab-btn btn-bounce px-4 py-2.5 rounded-2xl text-xs sm:text-sm font-semibold flex items-center gap-2 whitespace-nowrap glass-pill text-slate-700 dark:text-slate-300 hover:bg-white/80 transition-all";
+            });
+
+            // Update Desktop/Top Tabs
+            document.getElementById(`content-${tabName}`).classList.remove('hidden');
+            const activeBtn = document.getElementById(`tab-${tabName}`);
+            if (activeBtn) {
+                activeBtn.className = "tab-btn btn-bounce px-4 py-2.5 rounded-2xl text-xs sm:text-sm font-bold flex items-center gap-2 whitespace-nowrap bg-gradient-to-r from-pink-500 to-purple-500 text-white shadow-md shadow-pink-500/20 transition-all";
+            }
+
+            // Update PWA Mobile Bottom Navigation Bar
+            document.querySelectorAll('.bnav-btn').forEach(btn => {
+                btn.className = "bnav-btn py-1.5 px-1 rounded-2xl flex flex-col items-center justify-center text-slate-500 dark:text-slate-400 font-medium transition-all";
+            });
+            const activeBnav = document.getElementById(`bnav-${tabName}`);
+            if (activeBnav) {
+                activeBnav.className = "bnav-btn py-1.5 px-1 rounded-2xl flex flex-col items-center justify-center text-pink-600 dark:text-pink-400 font-bold bg-pink-100/70 dark:bg-pink-950/40 shadow-sm transition-all";
+            }
+
+            if (tabName === 'rekap') {
+                updateRekapStats();
+            }
+        }
+
+        // Realtime Clock
+        function updateClock() {
+            const now = new Date();
+            const hours = String(now.getHours()).padStart(2, '0');
+            const minutes = String(now.getMinutes()).padStart(2, '0');
+            const seconds = String(now.getSeconds()).padStart(2, '0');
+            
+            const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+            const dateString = now.toLocaleDateString('id-ID', options);
+
+            const timeElem = document.getElementById('currentTime');
+            const dateElem = document.getElementById('currentDate');
+            if (timeElem) timeElem.innerText = `${hours}:${minutes}:${seconds}`;
+            if (dateElem) dateElem.innerText = dateString;
+        }
+
+        // --- PWA SERVICE WORKER & INSTALL LOGIC ---
+        let deferredPrompt;
+
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('./sw.js')
+                    .then(reg => {
+                        console.log('[PWA] Service Worker terdaftar dengan scope:', reg.scope);
+                    })
+                    .catch(err => {
+                        console.error('[PWA] Service Worker gagal didaftarkan:', err);
+                    });
+            });
+        }
+
+        window.addEventListener('beforeinstallprompt', (e) => {
+            // Cegah prompt default browser
+            e.preventDefault();
+            deferredPrompt = e;
+            // Tampilkan tombol install di header & banner card
+            const installBtn = document.getElementById('pwaInstallBtn');
+            if (installBtn) installBtn.classList.remove('hidden');
+
+            const bannerCard = document.getElementById('pwaBannerCard');
+            if (bannerCard && !localStorage.getItem('asramaku_pwa_banner_dismissed')) {
+                bannerCard.classList.remove('hidden');
+            }
+        });
+
+        function dismissPwaBanner() {
+            const bannerCard = document.getElementById('pwaBannerCard');
+            if (bannerCard) bannerCard.classList.add('hidden');
+            localStorage.setItem('asramaku_pwa_banner_dismissed', 'true');
+        }
+
+        function installPWA() {
+            if (!deferredPrompt) {
+                showToast('Aplikasi sudah terpasang atau gunakan opsi install di menu browser 🌸', 'info');
+                return;
+            }
+            deferredPrompt.prompt();
+            deferredPrompt.userChoice.then((choiceResult) => {
+                if (choiceResult.outcome === 'accepted') {
+                    showToast('Terima kasih! AsramaKu berhasil dipasang 🌷', 'success');
+                    dismissPwaBanner();
+                }
+                deferredPrompt = null;
+                const installBtn = document.getElementById('pwaInstallBtn');
+                if (installBtn) installBtn.classList.add('hidden');
+            });
+        }
+
+        window.addEventListener('appinstalled', () => {
+            showToast('AsramaKu siap digunakan secara mandiri (PWA)! ✨', 'success');
+            const installBtn = document.getElementById('pwaInstallBtn');
+            if (installBtn) installBtn.classList.add('hidden');
+            dismissPwaBanner();
+        });
+
+        // Deteksi status koneksi online / offline
+        window.addEventListener('online', () => showToast('Kembali online! Sinkronisasi data siap 🟢', 'success'));
+        window.addEventListener('offline', () => showToast('Anda dalam mode offline. AsramaKu tetap dapat digunakan 📡', 'warning'));
+
+        // Window Init
+        window.onload = function () {
+            applyTheme();
+            updateClock();
+            setInterval(updateClock, 1000);
+
+            // Deteksi jika dibuka dalam mode Standalone PWA
+            const isStandalone = window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone;
+            const pwaBadge = document.getElementById('pwaStatusBadge');
+            if (isStandalone) {
+                if (pwaBadge) pwaBadge.innerHTML = '<span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span> PWA Mode Mandiri';
+                const installBtn = document.getElementById('pwaInstallBtn');
+                if (installBtn) installBtn.classList.add('hidden');
+                const bannerCard = document.getElementById('pwaBannerCard');
+                if (bannerCard) bannerCard.classList.add('hidden');
+            }
+
+            // Cek hash URL untuk shortcut PWA (contoh: #mushola, #santri)
+            if (window.location.hash) {
+                const targetTab = window.location.hash.replace('#', '');
+                if (['jadwal', 'mushola', 'santri', 'piket', 'pengumuman', 'kedisiplinan', 'rekap'].includes(targetTab)) {
+                    switchTab(targetTab);
+                }
+            }
+
+            const picker = document.getElementById('musholaDatePicker');
+            if (picker) {
+                picker.value = selectedMusholaDate;
+            }
+
+            renderAdminProfileUI();
+            renderSantriTable();
+            renderJadwal();
+            renderMusholaPresensi();
+            renderPiket();
+            renderPengumuman();
+            renderHukuman();
+            renderNotifikasi();
+        };
+    </script>
+</body>
+</html>

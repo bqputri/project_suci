@@ -1,0 +1,63 @@
+{
+  "id": "./?source=pwa",
+  "name": "AsramaKu - Manajemen Asrama Putri",
+  "short_name": "AsramaKu",
+  "description": "Sistem Manajemen Asrama Soft Pastel & Aesthetic",
+  "start_url": "./index.html",
+  "scope": "./",
+  "display": "standalone",
+  "display_override": ["window-controls-overlay", "standalone", "minimal-ui"],
+  "orientation": "any",
+  "background_color": "#fff0f5",
+  "theme_color": "#f43f5e",
+  "categories": ["productivity", "education", "lifestyle"],
+  "icons": [
+    {
+      "src": "icons/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "icons/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "icons/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    },
+    {
+      "src": "icons/icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "Presensi Mushola",
+      "short_name": "Mushola",
+      "description": "Buka presensi shalat berjamaah mushola",
+      "url": "./index.html#mushola",
+      "icons": [{ "src": "icons/icon-192.png", "sizes": "192x192" }]
+    },
+    {
+      "name": "Checklist Rutinitas",
+      "short_name": "Checklist",
+      "description": "Buka checklist harian santriwati",
+      "url": "./index.html#jadwal",
+      "icons": [{ "src": "icons/icon-192.png", "sizes": "192x192" }]
+    },
+    {
+      "name": "Data Santriwati",
+      "short_name": "Santri",
+      "description": "Kelola data santriwati dan kelas",
+      "url": "./index.html#santri",
+      "icons": [{ "src": "icons/icon-192.png", "sizes": "192x192" }]
+    }
+  ]
+}
