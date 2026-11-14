@@ -700,9 +700,46 @@
             </div>
             
             <form id="formProfile" onsubmit="saveProfile(event)" class="space-y-4">
+                <!-- Avatar Preview + Drag & Drop Upload -->
                 <div class="flex flex-col items-center justify-center pb-2">
                     <div class="relative group">
-                        <img id="modalAvatarPreview" src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&q=80&w=150" alt="Avatar Preview" class="w-20 h-20 rounded-2xl object-cover ring-4 ring-pink-400/50 shadow-md">
+                        <img id="modalAvatarPreview" src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&q=80&w=150" alt="Avatar Preview" class="w-24 h-24 rounded-2xl object-cover ring-4 ring-pink-400/50 shadow-md">
+                    </div>
+                </div>
+
+                <!-- Drag & Drop Zone -->
+                <div>
+                    <label class="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1.5">
+                        <i class="fa-solid fa-camera-retro text-pink-500 mr-1"></i> Upload Foto Profil
+                    </label>
+                    <div id="dropZone"
+                        class="relative border-2 border-dashed border-pink-300 dark:border-pink-600 rounded-2xl p-5 text-center cursor-pointer transition-all duration-300 hover:border-pink-500 hover:bg-pink-50/50 dark:hover:bg-pink-900/20 group"
+                        ondragover="handleDragOver(event)" ondragleave="handleDragLeave(event)" ondrop="handleDrop(event)" onclick="document.getElementById('fileInput').click()">
+                        <input type="file" id="fileInput" accept="image/*" class="hidden" onchange="handleFileSelect(event)">
+                        <div id="dropZoneContent" class="flex flex-col items-center gap-2">
+                            <div class="w-12 h-12 rounded-2xl bg-gradient-to-br from-pink-100 to-purple-100 dark:from-pink-900/40 dark:to-purple-900/40 flex items-center justify-center group-hover:scale-110 transition-transform">
+                                <i class="fa-solid fa-cloud-arrow-up text-xl text-pink-500 dark:text-pink-400"></i>
+                            </div>
+                            <p class="text-xs font-semibold text-slate-600 dark:text-slate-300">
+                                Drag & drop foto di sini
+                            </p>
+                            <p class="text-[10px] text-slate-400 dark:text-slate-500">
+                                atau <span class="text-pink-500 font-bold underline">klik untuk pilih</span> • JPG, PNG, WebP
+                            </p>
+                        </div>
+                        <!-- Compress Progress (hidden by default) -->
+                        <div id="compressProgress" class="hidden flex flex-col items-center gap-2 py-1">
+                            <div class="w-10 h-10 rounded-full border-4 border-pink-200 border-t-pink-500 animate-spin"></div>
+                            <p class="text-xs font-semibold text-pink-500">Mengompres foto...</p>
+                        </div>
+                        <!-- Upload Success Info -->
+                        <div id="uploadInfo" class="hidden mt-2 pt-2 border-t border-pink-100 dark:border-pink-800">
+                            <div class="flex items-center justify-center gap-2">
+                                <i class="fa-solid fa-circle-check text-emerald-500"></i>
+                                <span id="uploadFileName" class="text-[11px] font-semibold text-emerald-600 dark:text-emerald-400 truncate max-w-[180px]"></span>
+                            </div>
+                            <p id="uploadSizeInfo" class="text-[10px] text-slate-400 dark:text-slate-500 mt-1"></p>
+                        </div>
                     </div>
                 </div>
 
@@ -714,11 +751,6 @@
                 <div>
                     <label class="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">Jabatan / Amanah</label>
                     <input type="text" id="profRole" required class="w-full glass-input px-3.5 py-2.5 rounded-2xl text-xs focus:outline-none">
-                </div>
-
-                <div>
-                    <label class="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">URL Foto Profil</label>
-                    <input type="url" id="profAvatarUrl" required onchange="updateAvatarPreview(this.value)" class="w-full glass-input px-3.5 py-2.5 rounded-2xl text-xs focus:outline-none">
                 </div>
 
                 <div>
@@ -1500,13 +1532,20 @@
         }
 
         // --- PROFILE EDITING ---
+        let pendingAvatarData = null; // Holds compressed base64 until Save
+
         function openProfileModal() {
             document.getElementById('profName').value = adminProfile.nama;
             document.getElementById('profRole').value = adminProfile.jabatan;
-            document.getElementById('profAvatarUrl').value = adminProfile.avatar;
             document.getElementById('profPhone').value = adminProfile.kontak;
             document.getElementById('modalAvatarPreview').src = adminProfile.avatar;
-            
+            pendingAvatarData = null;
+            // Reset upload UI
+            document.getElementById('dropZoneContent').classList.remove('hidden');
+            document.getElementById('compressProgress').classList.add('hidden');
+            document.getElementById('uploadInfo').classList.add('hidden');
+            document.getElementById('dropZone').classList.remove('border-pink-500','bg-pink-50/50','border-emerald-400');
+
             document.getElementById('modalProfile').classList.remove('hidden');
         }
 
@@ -1514,17 +1553,116 @@
             document.getElementById('modalProfile').classList.add('hidden');
         }
 
-        function updateAvatarPreview(url) {
-            if (url) {
-                document.getElementById('modalAvatarPreview').src = url;
+        // --- DRAG & DROP HANDLERS ---
+        function handleDragOver(e) {
+            e.preventDefault();
+            e.stopPropagation();
+            const zone = document.getElementById('dropZone');
+            zone.classList.add('border-pink-500', 'bg-pink-50/50', 'scale-[1.02]');
+        }
+
+        function handleDragLeave(e) {
+            e.preventDefault();
+            e.stopPropagation();
+            const zone = document.getElementById('dropZone');
+            zone.classList.remove('border-pink-500', 'bg-pink-50/50', 'scale-[1.02]');
+        }
+
+        function handleDrop(e) {
+            e.preventDefault();
+            e.stopPropagation();
+            const zone = document.getElementById('dropZone');
+            zone.classList.remove('border-pink-500', 'bg-pink-50/50', 'scale-[1.02]');
+            const files = e.dataTransfer.files;
+            if (files.length > 0) processImageFile(files[0]);
+        }
+
+        function handleFileSelect(e) {
+            const files = e.target.files;
+            if (files.length > 0) processImageFile(files[0]);
+        }
+
+        // --- IMAGE COMPRESSION ---
+        function processImageFile(file) {
+            if (!file.type.startsWith('image/')) {
+                showToast('⚠️ File harus berupa gambar (JPG, PNG, WebP)!');
+                return;
             }
+
+            const originalSize = file.size;
+            const maxSizeKB = 150; // Target max ~150KB
+            const maxDim = 400;    // Max width/height in pixels
+
+            // Show progress
+            document.getElementById('dropZoneContent').classList.add('hidden');
+            document.getElementById('compressProgress').classList.remove('hidden');
+            document.getElementById('uploadInfo').classList.add('hidden');
+
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                const img = new Image();
+                img.onload = function() {
+                    // Calculate scaled dimensions
+                    let w = img.width, h = img.height;
+                    if (w > maxDim || h > maxDim) {
+                        if (w > h) { h = Math.round(h * maxDim / w); w = maxDim; }
+                        else       { w = Math.round(w * maxDim / h); h = maxDim; }
+                    }
+
+                    // Draw to canvas
+                    const canvas = document.createElement('canvas');
+                    canvas.width = w;
+                    canvas.height = h;
+                    const ctx = canvas.getContext('2d');
+                    ctx.drawImage(img, 0, 0, w, h);
+
+                    // Iteratively compress to stay under maxSizeKB
+                    let quality = 0.8;
+                    let dataUrl = canvas.toDataURL('image/jpeg', quality);
+                    while (dataUrl.length > maxSizeKB * 1370 && quality > 0.1) {
+                        quality -= 0.1;
+                        dataUrl = canvas.toDataURL('image/jpeg', quality);
+                    }
+
+                    const compressedSize = Math.round(dataUrl.length * 0.75); // Approx bytes
+
+                    // Update preview
+                    document.getElementById('modalAvatarPreview').src = dataUrl;
+                    pendingAvatarData = dataUrl;
+
+                    // Show success info
+                    document.getElementById('compressProgress').classList.add('hidden');
+                    document.getElementById('dropZoneContent').classList.remove('hidden');
+                    document.getElementById('uploadInfo').classList.remove('hidden');
+                    document.getElementById('uploadFileName').textContent = file.name;
+                    const ratio = ((1 - compressedSize / originalSize) * 100).toFixed(0);
+                    document.getElementById('uploadSizeInfo').textContent =
+                        `${formatBytes(originalSize)} → ${formatBytes(compressedSize)} (hemat ${ratio > 0 ? ratio : 0}%)`;
+
+                    // Style the drop zone as success
+                    document.getElementById('dropZone').classList.add('border-emerald-400');
+                    document.getElementById('dropZone').classList.remove('border-pink-300');
+
+                    showToast('📸 Foto berhasil diupload & dikompres!');
+                };
+                img.src = e.target.result;
+            };
+            reader.readAsDataURL(file);
+        }
+
+        function formatBytes(bytes) {
+            if (bytes < 1024) return bytes + ' B';
+            if (bytes < 1048576) return (bytes / 1024).toFixed(1) + ' KB';
+            return (bytes / 1048576).toFixed(1) + ' MB';
         }
 
         function saveProfile(e) {
             e.preventDefault();
             adminProfile.nama = document.getElementById('profName').value.trim();
             adminProfile.jabatan = document.getElementById('profRole').value.trim();
-            adminProfile.avatar = document.getElementById('profAvatarUrl').value.trim();
+            if (pendingAvatarData) {
+                adminProfile.avatar = pendingAvatarData;
+            }
             adminProfile.kontak = document.getElementById('profPhone').value.trim();
 
             setStorage('asramaku_profile', adminProfile);
