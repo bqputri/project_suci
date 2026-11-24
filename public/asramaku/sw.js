@@ -1,5 +1,5 @@
 // AsramaKu Service Worker (PWA)
-const CACHE_NAME = 'asramaku-pwa-v1';
+const CACHE_NAME = 'asramaku-pwa-v2';
 const PRECACHE_ASSETS = [
   './',
   './index.html',
@@ -48,9 +48,23 @@ self.addEventListener('fetch', (event) => {
   // Only handle GET requests
   if (request.method !== 'GET') return;
 
-  const url = new URL(request.url);
+  // Strategy: Network-First for navigation (HTML), Stale-While-Revalidate for static assets
+  if (request.mode === 'navigate') {
+    event.respondWith(
+      fetch(request)
+        .then((networkResponse) => {
+          if (networkResponse && networkResponse.status === 200) {
+            const copy = networkResponse.clone();
+            caches.open(CACHE_NAME).then((cache) => cache.put(request, copy));
+          }
+          return networkResponse;
+        })
+        .catch(() => caches.match('./index.html'))
+    );
+    return;
+  }
 
-  // Strategy: Stale-While-Revalidate for app assets
+  // Assets: Cache with Network Update
   event.respondWith(
     caches.match(request).then((cachedResponse) => {
       const fetchPromise = fetch(request).then((networkResponse) => {
@@ -61,12 +75,7 @@ self.addEventListener('fetch', (event) => {
           });
         }
         return networkResponse;
-      }).catch(() => {
-        // Fallback for HTML navigation requests if offline
-        if (request.mode === 'navigate') {
-          return caches.match('./index.html');
-        }
-      });
+      }).catch(() => null);
 
       return cachedResponse || fetchPromise;
     })

@@ -209,6 +209,202 @@
     <!-- Toast Notification Container -->
     <div id="toastContainer" class="fixed top-20 right-5 z-50 flex flex-col gap-2.5 max-w-sm pointer-events-none"></div>
 
+    <!-- AUTHENTICATION SCREEN: LOGIN / REGISTER EMAIL -->
+    <div id="authScreen" class="fixed inset-0 z-50 bg-slate-900/50 backdrop-blur-xl flex items-center justify-center p-4 transition-all duration-300">
+        <div class="glass-card rounded-[2.5rem] max-w-md w-full p-6 sm:p-8 shadow-2xl border border-white/80 dark:border-slate-700 relative overflow-hidden bg-white/95 dark:bg-slate-900/95">
+            <!-- Decorative pastel bloom -->
+            <div class="absolute -top-16 -right-16 w-40 h-40 bg-pink-400/20 rounded-full blur-2xl pointer-events-none"></div>
+            <div class="absolute -bottom-16 -left-16 w-40 h-40 bg-purple-400/20 rounded-full blur-2xl pointer-events-none"></div>
+
+            <!-- Header / Brand -->
+            <div class="text-center mb-5 relative z-10">
+                <div class="w-16 h-16 mx-auto rounded-3xl bg-gradient-to-tr from-pink-400 to-purple-500 text-white flex items-center justify-center text-3xl shadow-lg shadow-pink-500/25 mb-3">
+                    🌸
+                </div>
+                <h2 class="text-2xl font-black text-slate-800 dark:text-slate-100 tracking-tight">AsramaKu</h2>
+                <p class="text-xs text-slate-500 dark:text-slate-400 font-medium mt-1">Masuk dengan Akun Google untuk mengakses data & checklist pribadi Anda.</p>
+            </div>
+
+            <!-- ONE-CLICK GOOGLE SIGN IN (UTAMA) -->
+            <div class="mb-4 relative z-10">
+                <button type="button" onclick="handleGoogleSignIn()" class="btn-bounce w-full py-3 px-4 rounded-2xl font-bold text-xs text-slate-700 dark:text-slate-100 bg-white dark:bg-slate-800 border-2 border-pink-200 dark:border-pink-900/50 hover:border-pink-400 dark:hover:border-pink-500 shadow-md shadow-pink-500/10 flex items-center justify-center gap-3 transition-all hover:scale-[1.01]">
+                    <svg class="w-5 h-5 shrink-0" viewBox="0 0 24 24">
+                        <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
+                        <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
+                        <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.06H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.94l2.85-2.22.81-.63z"/>
+                        <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.52 6.16-4.52z"/>
+                    </svg>
+                    <span class="text-xs sm:text-sm font-extrabold">Masuk dengan Akun Google</span>
+                </button>
+                <div class="mt-2 text-center">
+                    <p class="text-[11px] text-pink-600 dark:text-pink-400 font-semibold flex items-center justify-center gap-1.5">
+                        <i class="fa-solid fa-sparkles text-[10px]"></i> Belum terdaftar? Langsung login pake akun Google Anda ✨
+                    </p>
+                </div>
+            </div>
+
+            <!-- Divider -->
+            <div class="flex items-center gap-3 my-4 relative z-10">
+                <div class="h-px bg-slate-200/80 dark:bg-slate-700/80 flex-1"></div>
+                <span class="text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider">atau opsi email sandi</span>
+                <div class="h-px bg-slate-200/80 dark:bg-slate-700/80 flex-1"></div>
+            </div>
+
+            <!-- Auth Mode Switcher Tabs -->
+            <div class="flex p-1 rounded-2xl glass-pill border border-pink-200 dark:border-slate-700 mb-5 relative z-10">
+                <button type="button" id="tabAuthLogin" onclick="switchAuthTab('login')" class="flex-1 py-2 rounded-xl text-xs font-bold transition-all bg-gradient-to-r from-pink-500 to-purple-500 text-white shadow-md">
+                    <i class="fa-solid fa-right-to-bracket mr-1"></i> Masuk Akun
+                </button>
+                <button type="button" id="tabAuthRegister" onclick="switchAuthTab('register')" class="flex-1 py-2 rounded-xl text-xs font-bold text-slate-600 dark:text-slate-400 transition-all hover:text-pink-600">
+                    <i class="fa-solid fa-user-plus mr-1"></i> Daftar Baru
+                </button>
+            </div>
+
+            <!-- FORM 1: LOGIN -->
+            <form id="formEmailLogin" onsubmit="handleEmailLogin(event)" class="space-y-4 relative z-10">
+                <div>
+                    <label class="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1.5 flex items-center gap-1.5">
+                        <i class="fa-regular fa-envelope text-pink-500"></i> Alamat Email
+                    </label>
+                    <input type="email" id="loginEmail" required placeholder="contoh: suci@asrama.id" class="w-full glass-input px-4 py-3 rounded-2xl text-xs focus:outline-none border border-pink-200 dark:border-slate-700">
+                </div>
+
+                <div>
+                    <label class="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1.5 flex items-center gap-1.5">
+                        <i class="fa-solid fa-lock text-purple-500"></i> Kata Sandi
+                    </label>
+                    <div class="relative">
+                        <input type="password" id="loginPassword" required placeholder="••••••••" class="w-full glass-input px-4 py-3 pr-10 rounded-2xl text-xs focus:outline-none border border-pink-200 dark:border-slate-700">
+                        <button type="button" onclick="togglePasswordVisibility('loginPassword', 'eyeIconLogin')" class="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 text-xs">
+                            <i id="eyeIconLogin" class="fa-regular fa-eye"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <button type="submit" class="btn-bounce w-full py-3.5 rounded-2xl font-black text-xs text-white bg-gradient-to-r from-pink-500 via-rose-500 to-purple-600 shadow-lg shadow-pink-500/25 transition-all">
+                    Masuk ke AsramaKu ✨
+                </button>
+
+                <!-- Quick Demo Login Buttons -->
+                <div class="pt-3 border-t border-slate-200/60 dark:border-slate-700/60">
+                    <span class="block text-[11px] font-bold text-slate-400 dark:text-slate-500 text-center mb-2">Atau masuk cepat dengan akun demo:</span>
+                    <div class="grid grid-cols-2 gap-2">
+                        <button type="button" onclick="loginWithGoogleAccount({ email: 'suci.ramadhani@gmail.com', nama: 'Suci Ramadhani' })" class="btn-bounce p-2 rounded-xl text-left glass-pill border border-pink-200 dark:border-pink-800 hover:bg-pink-50 text-[11px] font-bold text-slate-700 dark:text-slate-200 flex items-center gap-2">
+                            <span class="w-6 h-6 rounded-lg bg-pink-100 text-pink-600 flex items-center justify-center text-xs shrink-0">🌸</span>
+                            <div class="truncate">
+                                <span class="block truncate">Google Suci</span>
+                                <span class="block text-[9px] text-pink-500 truncate font-mono">suci.ramadhani@gmail.com</span>
+                            </div>
+                        </button>
+                        <button type="button" onclick="loginWithGoogleAccount({ email: 'aisyah.azzahra@gmail.com', nama: 'Aisyah Az-Zahra' })" class="btn-bounce p-2 rounded-xl text-left glass-pill border border-purple-200 dark:border-purple-800 hover:bg-purple-50 text-[11px] font-bold text-slate-700 dark:text-slate-200 flex items-center gap-2">
+                            <span class="w-6 h-6 rounded-lg bg-purple-100 text-purple-600 flex items-center justify-center text-xs shrink-0">🌷</span>
+                            <div class="truncate">
+                                <span class="block truncate">Google Aisyah</span>
+                                <span class="block text-[9px] text-purple-500 truncate font-mono">aisyah.azzahra@gmail.com</span>
+                            </div>
+                        </button>
+                    </div>
+                </div>
+            </form>
+
+            <!-- FORM 2: REGISTER -->
+            <form id="formEmailRegister" onsubmit="handleEmailRegister(event)" class="hidden space-y-3.5 relative z-10">
+                <div>
+                    <label class="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1 flex items-center gap-1.5">
+                        <i class="fa-regular fa-user text-pink-500"></i> Nama Lengkap
+                    </label>
+                    <input type="text" id="regFullName" required placeholder="Contoh: Suci Ramadhani" class="w-full glass-input px-3.5 py-2.5 rounded-2xl text-xs focus:outline-none border border-pink-200 dark:border-slate-700">
+                </div>
+
+                <div>
+                    <label class="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1 flex items-center gap-1.5">
+                        <i class="fa-regular fa-envelope text-pink-500"></i> Alamat Email
+                    </label>
+                    <input type="email" id="regEmail" required placeholder="nama@email.com" class="w-full glass-input px-3.5 py-2.5 rounded-2xl text-xs focus:outline-none border border-pink-200 dark:border-slate-700">
+                </div>
+
+                <div class="grid grid-cols-2 gap-2">
+                    <div>
+                        <label class="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">Peran / Role</label>
+                        <select id="regRole" class="w-full glass-input px-3 py-2.5 rounded-2xl text-xs focus:outline-none border border-pink-200 dark:border-slate-700">
+                            <option value="Santriwati">Santriwati</option>
+                            <option value="Pengurus Asrama">Pengurus Asrama</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">Kata Sandi</label>
+                        <input type="password" id="regPassword" required placeholder="Minimal 4 karakter" class="w-full glass-input px-3 py-2.5 rounded-2xl text-xs focus:outline-none border border-pink-200 dark:border-slate-700">
+                    </div>
+                </div>
+
+                <button type="submit" class="btn-bounce w-full py-3.5 rounded-2xl font-black text-xs text-white bg-gradient-to-r from-purple-500 via-pink-500 to-rose-500 shadow-lg shadow-purple-500/25 transition-all">
+                    Buat Akun & Masuk Sekarang 🌸
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <!-- MODAL GOOGLE SIGN IN (PILIH ATAU MASUKKAN AKUN GOOGLE) -->
+    <div id="modalGoogleAuth" class="hidden fixed inset-0 z-[60] bg-slate-900/60 backdrop-blur-md flex items-center justify-center p-4">
+        <div class="glass-card rounded-[2rem] max-w-md w-full p-6 sm:p-7 shadow-2xl border border-white/90 dark:border-slate-700 bg-white/95 dark:bg-slate-900/95 relative animate-in fade-in zoom-in-95 duration-200">
+            <!-- Close button -->
+            <button type="button" onclick="closeGoogleAuthModal()" class="absolute top-5 right-5 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 w-8 h-8 rounded-full flex items-center justify-center hover:bg-slate-100 dark:hover:bg-slate-800 transition">
+                <i class="fa-solid fa-xmark text-sm"></i>
+            </button>
+
+            <!-- Header Google -->
+            <div class="text-center mb-5">
+                <div class="w-12 h-12 mx-auto mb-2 rounded-2xl bg-white dark:bg-slate-800 shadow-md border border-slate-100 dark:border-slate-700 flex items-center justify-center">
+                    <svg class="w-7 h-7" viewBox="0 0 24 24">
+                        <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
+                        <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
+                        <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.06H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.94l2.85-2.22.81-.63z"/>
+                        <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.52 6.16-4.52z"/>
+                    </svg>
+                </div>
+                <h3 class="text-base sm:text-lg font-black text-slate-800 dark:text-slate-100">Login dengan Google</h3>
+                <p class="text-xs text-slate-500 dark:text-slate-400 mt-0.5">Pilih akun Google Anda untuk masuk ke <strong>AsramaKu</strong></p>
+            </div>
+
+            <!-- List of Detected / Registered Accounts -->
+            <div id="googleAccountsList" class="space-y-2 mb-4">
+                <!-- Rendered dynamically -->
+            </div>
+
+            <!-- Toggle Custom Google Email Form -->
+            <div class="pt-3 border-t border-slate-200/70 dark:border-slate-800">
+                <button type="button" onclick="toggleGoogleCustomInput()" id="btnToggleGoogleCustom" class="w-full p-3 rounded-2xl glass-pill hover:bg-pink-50/50 dark:hover:bg-slate-800 border border-dashed border-pink-300 dark:border-pink-800 text-xs font-bold text-pink-600 dark:text-pink-400 flex items-center justify-center gap-2 transition">
+                    <i class="fa-solid fa-plus-circle text-xs"></i> Gunakan Akun Google Lain (Email Baru)
+                </button>
+
+                <!-- Form Custom Google Account Input -->
+                <form id="formGoogleCustom" onsubmit="handleGoogleCustomSubmit(event)" class="hidden mt-4 space-y-3 p-4 rounded-2xl bg-pink-50/40 dark:bg-slate-800/40 border border-pink-100 dark:border-slate-700">
+                    <div class="flex items-center gap-1.5 text-[11px] font-bold text-pink-600 dark:text-pink-400">
+                        <i class="fa-solid fa-wand-magic-sparkles"></i> Masuk Langsung Tanpa Kata Sandi
+                    </div>
+                    <p class="text-[11px] text-slate-500 dark:text-slate-400 leading-relaxed">
+                        Jika email belum pernah terdaftar, akun baru akan <strong>langsung dibuat otomatis</strong> dan checklist Anda akan dibuat terpisah.
+                    </p>
+                    <div>
+                        <label class="block text-[11px] font-bold text-slate-600 dark:text-slate-300 mb-1">Nama Santriwati / Lengkap</label>
+                        <input type="text" id="googleCustomName" required placeholder="Contoh: Fatimah Az-Zahra" class="w-full glass-input px-3.5 py-2.5 rounded-xl text-xs focus:outline-none border border-pink-200 dark:border-slate-700">
+                    </div>
+                    <div>
+                        <label class="block text-[11px] font-bold text-slate-600 dark:text-slate-300 mb-1">Alamat Email Google (@gmail.com)</label>
+                        <input type="email" id="googleCustomEmail" required placeholder="nama.santri@gmail.com" class="w-full glass-input px-3.5 py-2.5 rounded-xl text-xs focus:outline-none border border-pink-200 dark:border-slate-700">
+                    </div>
+                    <button type="submit" class="btn-bounce w-full py-2.5 rounded-xl font-bold text-xs text-white bg-gradient-to-r from-pink-500 to-purple-600 shadow-md transition">
+                        Lanjutkan & Masuk Sekarang ✨
+                    </button>
+                </form>
+            </div>
+
+            <p class="text-[10px] text-center text-slate-400 mt-4 flex items-center justify-center gap-1">
+                <i class="fa-solid fa-shield-halved text-[9px] text-emerald-500"></i> Data pribadi & checklist Anda terisolasi secara otomatis.
+            </p>
+        </div>
+    </div>
+
     <!-- Top Navigation Header -->
     <header class="sticky top-0 z-30 transition-all duration-300 backdrop-blur-xl border-b border-white/40 dark:border-slate-800/80 bg-white/60 dark:bg-slate-900/70">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -248,13 +444,19 @@
                         <i class="fa-regular fa-bell text-base text-pink-500"></i>
                         <span id="notifDot" class="absolute top-1.5 right-1.5 w-2.5 h-2.5 bg-rose-500 rounded-full animate-pulse ring-2 ring-white dark:ring-slate-900"></span>
                     </div>
-                    
+
+                    <!-- Logout Button -->
+                    <button onclick="handleUserLogout()" class="btn-bounce px-3 py-1.5 rounded-2xl glass-pill hover:bg-rose-50 dark:hover:bg-rose-950/40 transition shadow-sm border border-rose-300 dark:border-rose-700/60 flex items-center gap-1.5 text-xs font-bold text-rose-600 dark:text-rose-400">
+                        <i class="fa-solid fa-right-from-bracket text-xs"></i>
+                        <span class="hidden md:inline">Keluar</span>
+                    </button>
+
                     <!-- Admin Profile Widget Header -->
                     <div onclick="openProfileModal()" class="glass-pill p-1.5 pr-3 rounded-2xl flex items-center gap-2.5 cursor-pointer hover:bg-white/90 dark:hover:bg-slate-700 transition shadow-sm border border-white/80 dark:border-slate-700">
                         <img id="headerProfileAvatar" src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&q=80&w=150" alt="Avatar Pengurus" class="w-8 h-8 rounded-xl object-cover ring-2 ring-pink-400/50">
                         <div class="text-left hidden sm:block">
-                            <span id="headerProfileName" class="text-xs font-bold text-slate-800 dark:text-slate-100 block leading-tight">Ustadzah Dev</span>
-                            <span id="headerProfileRole" class="text-[10px] text-pink-600 dark:text-pink-400 font-semibold block leading-tight">Pengurus Utama</span>
+                            <span id="headerProfileName" class="text-xs font-bold text-slate-800 dark:text-slate-100 block leading-tight">Suci Ramadhani</span>
+                            <span id="headerProfileRole" class="text-[10px] text-pink-600 dark:text-pink-400 font-semibold block leading-tight">Santriwati</span>
                         </div>
                         <i class="fa-solid fa-chevron-down text-[10px] text-slate-400 ml-1"></i>
                     </div>
@@ -264,17 +466,65 @@
     </header>
 
     <!-- Notification Panel Dropdown -->
-    <div id="notificationPanel" class="hidden fixed top-20 right-4 sm:right-8 w-80 sm:w-96 glass-card rounded-3xl shadow-2xl border border-white/80 dark:border-slate-700 z-50 p-5 transition-all duration-300">
-        <div class="flex justify-between items-center mb-3.5 pb-2.5 border-b border-slate-200/50 dark:border-slate-700">
-            <h3 class="font-bold text-slate-800 dark:text-slate-100 text-sm flex items-center gap-2">
-                <i class="fa-solid fa-bell text-pink-500"></i> Pengingat & Notifikasi
-            </h3>
-            <button onclick="toggleNotificationPanel()" class="text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 text-sm w-7 h-7 rounded-full flex items-center justify-center hover:bg-slate-100/50 dark:hover:bg-slate-700">
-                <i class="fa-solid fa-xmark"></i>
+    <div id="notificationPanel" class="hidden fixed top-20 right-4 sm:right-8 w-84 sm:w-96 glass-card rounded-3xl shadow-2xl border border-white/80 dark:border-slate-700 z-50 p-5 transition-all duration-300 max-h-[85vh] flex flex-col">
+        <!-- Panel Header -->
+        <div class="flex justify-between items-center mb-3 pb-2.5 border-b border-slate-200/50 dark:border-slate-700">
+            <div class="flex items-center gap-2">
+                <div class="w-8 h-8 rounded-xl bg-pink-100 dark:bg-pink-900/40 text-pink-500 flex items-center justify-center text-sm shadow-sm">
+                    <i class="fa-solid fa-bell"></i>
+                </div>
+                <div>
+                    <h3 class="font-bold text-slate-800 dark:text-slate-100 text-sm">Pengingat & Notifikasi</h3>
+                    <span id="notifActiveStatusText" class="text-[10px] text-emerald-600 dark:text-emerald-400 font-semibold flex items-center gap-1">
+                        <span class="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span> Sistem Pengingat Aktif
+                    </span>
+                </div>
+            </div>
+            <div class="flex items-center gap-1">
+                <button onclick="clearAllNotifications()" title="Bersihkan semua notifikasi" class="text-slate-400 hover:text-rose-500 text-xs px-2 py-1 rounded-xl hover:bg-rose-50 dark:hover:bg-rose-950/40 transition font-semibold">
+                    Bersihkan
+                </button>
+                <button onclick="toggleNotificationPanel()" class="text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 text-sm w-7 h-7 rounded-full flex items-center justify-center hover:bg-slate-100/50 dark:hover:bg-slate-700">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+        </div>
+
+        <!-- Alarm & Sound Notification Toggle Banner -->
+        <div class="mb-3 p-3 rounded-2xl bg-gradient-to-r from-pink-50/70 to-purple-50/70 dark:from-slate-800/80 dark:to-slate-800/50 border border-pink-200/70 dark:border-slate-700 flex items-center justify-between gap-2">
+            <div class="flex items-center gap-2">
+                <i class="fa-solid fa-volume-high text-pink-500 text-xs"></i>
+                <div>
+                    <span class="text-xs font-bold text-slate-800 dark:text-slate-100 block">Alarm & Suara Pengingat</span>
+                    <span class="text-[10px] text-slate-500 dark:text-slate-400 block">Bunyikan nada saat waktu tiba</span>
+                </div>
+            </div>
+            <label class="relative inline-flex items-center cursor-pointer">
+                <input type="checkbox" id="toggleSoundNotif" onchange="toggleSoundNotificationState(this.checked)" class="sr-only peer" checked>
+                <div class="w-9 h-5 bg-slate-200 peer-focus:outline-none rounded-full peer dark:bg-slate-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-pink-500"></div>
+            </label>
+        </div>
+
+        <!-- Action Buttons: Tes Suara & Buat Pengingat -->
+        <div class="grid grid-cols-2 gap-2 mb-3">
+            <button type="button" onclick="testNotificationChime()" class="btn-bounce py-1.5 px-2.5 rounded-xl text-[11px] font-bold text-pink-600 dark:text-pink-300 glass-pill border border-pink-200 dark:border-pink-800 hover:bg-pink-50 flex items-center justify-center gap-1.5">
+                <i class="fa-solid fa-music text-[10px]"></i> Tes Suara Alarm
+            </button>
+            <button type="button" onclick="openAddPengingatModal()" class="btn-bounce py-1.5 px-2.5 rounded-xl text-[11px] font-bold text-white bg-gradient-to-r from-pink-500 to-purple-500 shadow-sm flex items-center justify-center gap-1.5">
+                <i class="fa-solid fa-plus text-[10px]"></i> + Buat Pengingat
             </button>
         </div>
-        <div id="notificationList" class="space-y-2.5 max-h-80 overflow-y-auto pr-1">
+
+        <!-- Notification List -->
+        <div id="notificationList" class="space-y-2.5 flex-1 overflow-y-auto pr-1 max-h-72">
             <!-- Dynamic Notifications Populated Here -->
+        </div>
+
+        <!-- Footer Info -->
+        <div class="pt-2.5 mt-2 border-t border-slate-200/50 dark:border-slate-700 text-center">
+            <p class="text-[10px] text-slate-400 flex items-center justify-center gap-1">
+                <i class="fa-solid fa-clock text-[9px] text-pink-400"></i> Pengingat aktif memeriksa jadwal shalat & piket setiap saat.
+            </p>
         </div>
     </div>
 
@@ -345,11 +595,11 @@
             <button onclick="switchTab('jadwal')" id="tab-jadwal" class="tab-btn btn-bounce px-4 py-2.5 rounded-2xl text-xs sm:text-sm font-bold flex items-center gap-2 whitespace-nowrap bg-gradient-to-r from-pink-500 to-purple-500 text-white shadow-md shadow-pink-500/20 transition-all">
                 <i class="fa-regular fa-calendar-check"></i> Checklist Harian
             </button>
-            <button onclick="switchTab('mushola')" id="tab-mushola" class="tab-btn btn-bounce px-4 py-2.5 rounded-2xl text-xs sm:text-sm font-semibold flex items-center gap-2 whitespace-nowrap glass-pill text-slate-700 dark:text-slate-300 hover:bg-white/80 transition-all">
-                <i class="fa-solid fa-mosque text-purple-500"></i> Presensi Mushola
-            </button>
             <button onclick="switchTab('santri')" id="tab-santri" class="tab-btn btn-bounce px-4 py-2.5 rounded-2xl text-xs sm:text-sm font-semibold flex items-center gap-2 whitespace-nowrap glass-pill text-slate-700 dark:text-slate-300 hover:bg-white/80 transition-all">
                 <i class="fa-solid fa-users text-pink-500"></i> Data Santriwati
+            </button>
+            <button onclick="switchTab('mushola')" id="tab-mushola" class="tab-btn btn-bounce px-4 py-2.5 rounded-2xl text-xs sm:text-sm font-semibold flex items-center gap-2 whitespace-nowrap glass-pill text-slate-700 dark:text-slate-300 hover:bg-white/80 transition-all">
+                <i class="fa-solid fa-mosque text-purple-500"></i> Presensi Mushola
             </button>
             <button onclick="switchTab('piket')" id="tab-piket" class="tab-btn btn-bounce px-4 py-2.5 rounded-2xl text-xs sm:text-sm font-semibold flex items-center gap-2 whitespace-nowrap glass-pill text-slate-700 dark:text-slate-300 hover:bg-white/80 transition-all">
                 <i class="fa-solid fa-broom text-amber-500"></i> Piket Harian
@@ -366,15 +616,36 @@
         </div>
 
         <!-- TAB CONTENT 1: Jadwal & Checklist Harian -->
-        <section id="content-jadwal" class="tab-content block space-y-6">
+        <section id="content-jadwal" class="tab-content block space-y-5">
+            <!-- Profile Switcher for Multi-User Checklist (Aku & Teman) -->
+            <div class="glass-card p-4 rounded-3xl border border-pink-200 dark:border-slate-700 shadow-sm flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 bg-gradient-to-r from-pink-50/70 via-purple-50/50 to-pink-50/70 dark:from-pink-950/20 dark:via-purple-950/20 dark:to-pink-950/20">
+                <div class="flex flex-wrap items-center gap-2">
+                    <span class="text-xs font-bold text-slate-700 dark:text-slate-200 flex items-center gap-1.5 shrink-0">
+                        <i class="fa-solid fa-users text-pink-500"></i> Profil Pengguna:
+                    </span>
+                    <div id="checklistUserList" class="flex flex-wrap items-center gap-1.5">
+                        <!-- Populated dynamically: Aku & Teman -->
+                    </div>
+                </div>
+                <div class="flex items-center gap-2 w-full sm:w-auto justify-end">
+                    <button onclick="openAddChecklistUserModal()" class="btn-bounce px-3 py-1.5 rounded-xl text-xs font-bold glass-pill border border-pink-300 dark:border-pink-700 text-pink-600 dark:text-pink-300 hover:bg-white/80 transition flex items-center gap-1.5">
+                        <i class="fa-solid fa-user-plus text-[10px]"></i> + Tambah Teman
+                    </button>
+                    <button onclick="openAddJadwalModal()" class="btn-bounce px-3.5 py-1.5 rounded-xl text-xs font-bold bg-gradient-to-r from-pink-500 to-purple-500 text-white shadow-md shadow-pink-500/20 hover:opacity-95 transition flex items-center gap-1.5">
+                        <i class="fa-solid fa-plus text-[10px]"></i> + Tambah Kegiatan
+                    </button>
+                </div>
+            </div>
+
             <div class="glass-card p-5 rounded-3xl border border-white/80 dark:border-slate-700 shadow-md flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
                 <div>
                     <h2 class="text-base sm:text-lg font-bold text-slate-800 dark:text-slate-100 flex items-center gap-2">
                         <span>📋 Checklist Rutinitas Mandiri</span>
+                        <span id="badgeActiveChecklistUser" class="text-xs font-extrabold px-2.5 py-0.5 rounded-full bg-pink-100 dark:bg-pink-900/40 text-pink-700 dark:text-pink-300">Aku (Suci)</span>
                     </h2>
-                    <p class="text-xs text-slate-500 dark:text-slate-400 font-medium">Tandai checklist setelah Anda menuntaskan kegiatan harian.</p>
+                    <p class="text-xs text-slate-500 dark:text-slate-400 font-medium">Data checklist ini terisolasi per profil dan tidak akan mengubah checklist temanmu.</p>
                 </div>
-                <div class="flex items-center gap-3 glass-pill px-4 py-2 rounded-2xl border border-white/80 dark:border-slate-700 shadow-sm">
+                <div class="flex items-center gap-3 glass-pill px-4 py-2 rounded-2xl border border-white/80 dark:border-slate-700 shadow-sm shrink-0">
                     <span class="text-xs font-bold text-slate-600 dark:text-slate-300">Progres Mandiri:</span>
                     <div class="w-28 bg-slate-200/80 dark:bg-slate-700 rounded-full h-2.5 overflow-hidden border border-white/40">
                         <div id="dailyProgressBar" class="bg-gradient-to-r from-pink-400 to-purple-500 h-full transition-all duration-500" style="width: 0%"></div>
@@ -387,9 +658,91 @@
             <div id="jadwalList" class="grid gap-3">
                 <!-- Dynamically Rendered -->
             </div>
+
+            <!-- Quick Link / Shortcut ke Data Santriwati -->
+            <div class="glass-card p-4 rounded-3xl border border-pink-200/80 dark:border-slate-700 flex flex-col sm:flex-row items-center justify-between gap-3 bg-gradient-to-r from-pink-50/50 via-purple-50/30 to-pink-50/50 dark:from-slate-800/60 dark:to-slate-800/40 mt-2">
+                <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 rounded-2xl bg-gradient-to-tr from-pink-400 to-purple-500 text-white flex items-center justify-center text-lg shadow-sm">
+                        <i class="fa-solid fa-users"></i>
+                    </div>
+                    <div>
+                        <h4 class="text-xs font-bold text-slate-800 dark:text-slate-100 flex items-center gap-2">
+                            Data Santriwati Asrama
+                            <span class="text-[10px] px-2 py-0.5 rounded-full bg-pink-100 dark:bg-pink-900/40 text-pink-600 dark:text-pink-300 font-bold">8 Santri Terdaftar</span>
+                        </h4>
+                        <p class="text-[11px] text-slate-500 dark:text-slate-400">Terurut rapi sesuai abjad nama (A-Z) dan tingkatan kelas.</p>
+                    </div>
+                </div>
+                <button onclick="switchTab('santri')" class="btn-bounce w-full sm:w-auto px-4 py-2 rounded-xl text-xs font-bold bg-white dark:bg-slate-700 text-pink-600 dark:text-pink-300 hover:bg-pink-50 border border-pink-200 dark:border-pink-800 shadow-sm flex items-center justify-center gap-1.5 transition">
+                    Buka Data Santriwati <i class="fa-solid fa-arrow-right text-[10px]"></i>
+                </button>
+            </div>
         </section>
 
-        <!-- TAB CONTENT 2: PRESENSI MUSHOLA -->
+        <!-- TAB CONTENT 2: DATA SANTRIWATI (DIPINDAH DI SEBELAH CHECKLIST HARIAN) -->
+        <section id="content-santri" class="tab-content hidden space-y-6">
+            <div class="glass-card p-6 rounded-3xl border border-white/80 dark:border-slate-700 shadow-md">
+                <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6">
+                    <div>
+                        <h2 class="text-lg font-bold text-slate-800 dark:text-slate-100 flex items-center gap-2">
+                            <i class="fa-solid fa-users text-pink-500"></i> Kelola Data Santriwati Asrama
+                        </h2>
+                        <p class="text-xs text-slate-500 dark:text-slate-400 font-medium">Daftar santriwati terurut otomatis berdasarkan abjad (A-Z) dan tingkatan kelas.</p>
+                    </div>
+                    <button onclick="openSantriModal()" class="btn-bounce px-4 py-2.5 bg-gradient-to-r from-pink-500 to-purple-500 text-white rounded-2xl text-xs font-bold shadow-md flex items-center gap-2">
+                        <i class="fa-solid fa-user-plus"></i> Tambah Santriwati Baru
+                    </button>
+                </div>
+
+                <!-- Search, Filter & Sort Bar (Abjad & Kelas) -->
+                <div class="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 mb-5">
+                    <div class="flex flex-wrap items-center gap-2.5 flex-1">
+                        <div class="relative w-full sm:w-64">
+                            <i class="fa-solid fa-magnifying-glass absolute left-3.5 top-3 text-slate-400 text-xs"></i>
+                            <input type="text" id="santriSearchInput" oninput="renderSantriTable()" placeholder="Cari nama santriwati..." class="glass-input pl-9 pr-4 py-2 rounded-2xl text-xs w-full focus:outline-none">
+                        </div>
+                        <select id="santriClassFilter" onchange="renderSantriTable()" class="glass-input px-3.5 py-2 rounded-2xl text-xs focus:outline-none">
+                            <option value="ALL">🌸 Semua Kelas</option>
+                            <option value="Kelas 7">Kelas 7</option>
+                            <option value="Kelas 8">Kelas 8</option>
+                            <option value="Kelas 9">Kelas 9</option>
+                            <option value="Kelas 10">Kelas 10</option>
+                            <option value="Kelas 11">Kelas 11</option>
+                            <option value="Kelas 12">Kelas 12</option>
+                        </select>
+                    </div>
+
+                    <div class="flex items-center gap-2">
+                        <span class="text-xs font-bold text-slate-600 dark:text-slate-300 flex items-center gap-1.5 shrink-0">
+                            <i class="fa-solid fa-arrow-down-a-z text-pink-500"></i> Urutkan:
+                        </span>
+                        <select id="santriSortBy" onchange="renderSantriTable()" class="glass-input px-3 py-2 rounded-2xl text-xs font-bold text-pink-600 dark:text-pink-300 focus:outline-none border border-pink-200 dark:border-pink-800">
+                            <option value="abjad_kelas">Abjad Nama (A - Z) lalu Kelas</option>
+                            <option value="kelas_abjad">Kelas (7 - 12) lalu Abjad Nama</option>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- Table Data Santriwati -->
+                <div class="overflow-x-auto rounded-2xl border border-white/80 dark:border-slate-700 bg-white/40 dark:bg-slate-800/40">
+                    <table class="w-full text-left text-sm">
+                        <thead class="bg-pink-50/60 dark:bg-slate-800/80 text-slate-600 dark:text-slate-300 text-xs uppercase tracking-wider border-b border-white/80 dark:border-slate-700">
+                            <tr>
+                                <th class="p-4 font-bold">ID Santri</th>
+                                <th class="p-4 font-bold">Nama Lengkap</th>
+                                <th class="p-4 font-bold">Kelas</th>
+                                <th class="p-4 text-right font-bold">Aksi / Hapus</th>
+                            </tr>
+                        </thead>
+                        <tbody id="santriTableBody" class="divide-y divide-white/60 dark:divide-slate-700/60">
+                            <!-- Dynamically Rendered -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+
+        <!-- TAB CONTENT 3: PRESENSI MUSHOLA -->
         <section id="content-mushola" class="tab-content hidden space-y-6">
             <div class="glass-card p-6 rounded-3xl border border-white/80 dark:border-slate-700 shadow-md">
                 <div class="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-4 mb-6">
@@ -450,40 +803,6 @@
                             </tr>
                         </thead>
                         <tbody id="musholaPresensiBody" class="divide-y divide-white/60 dark:divide-slate-700/60">
-                            <!-- Dynamically Rendered -->
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-        </section>
-
-        <!-- TAB CONTENT 3: DATA SANTRIWATI -->
-        <section id="content-santri" class="tab-content hidden space-y-6">
-            <div class="glass-card p-6 rounded-3xl border border-white/80 dark:border-slate-700 shadow-md">
-                <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6">
-                    <div>
-                        <h2 class="text-lg font-bold text-slate-800 dark:text-slate-100 flex items-center gap-2">
-                            <i class="fa-solid fa-users text-pink-500"></i> Kelola Data Santriwati Asrama
-                        </h2>
-                        <p class="text-xs text-slate-500 dark:text-slate-400 font-medium">Tambah, edit, dan kelola daftar santriwati beserta pembagian kelas.</p>
-                    </div>
-                    <button onclick="openSantriModal()" class="btn-bounce px-4 py-2.5 bg-gradient-to-r from-pink-500 to-purple-500 text-white rounded-2xl text-xs font-bold shadow-md flex items-center gap-2">
-                        <i class="fa-solid fa-user-plus"></i> Tambah Santriwati Baru
-                    </button>
-                </div>
-
-                <!-- Table Data Santriwati -->
-                <div class="overflow-x-auto rounded-2xl border border-white/80 dark:border-slate-700 bg-white/40 dark:bg-slate-800/40">
-                    <table class="w-full text-left text-sm">
-                        <thead class="bg-pink-50/60 dark:bg-slate-800/80 text-slate-600 dark:text-slate-300 text-xs uppercase tracking-wider border-b border-white/80 dark:border-slate-700">
-                            <tr>
-                                <th class="p-4 font-bold">ID Santri</th>
-                                <th class="p-4 font-bold">Nama Lengkap</th>
-                                <th class="p-4 font-bold">Kelas</th>
-                                <th class="p-4 text-right font-bold">Aksi / Hapus</th>
-                            </tr>
-                        </thead>
-                        <tbody id="santriTableBody" class="divide-y divide-white/60 dark:divide-slate-700/60">
                             <!-- Dynamically Rendered -->
                         </tbody>
                     </table>
@@ -642,13 +961,13 @@
                 <i class="fa-regular fa-calendar-check text-base"></i>
                 <span class="text-[9px] mt-0.5 tracking-tight font-bold">Checklist</span>
             </button>
-            <button onclick="switchTab('mushola')" id="bnav-mushola" class="bnav-btn py-1.5 px-0.5 rounded-2xl flex flex-col items-center justify-center text-slate-500 dark:text-slate-400 font-medium transition-all">
-                <i class="fa-solid fa-mosque text-base"></i>
-                <span class="text-[9px] mt-0.5 tracking-tight">Mushola</span>
-            </button>
             <button onclick="switchTab('santri')" id="bnav-santri" class="bnav-btn py-1.5 px-0.5 rounded-2xl flex flex-col items-center justify-center text-slate-500 dark:text-slate-400 font-medium transition-all">
                 <i class="fa-solid fa-users text-base"></i>
                 <span class="text-[9px] mt-0.5 tracking-tight">Santri</span>
+            </button>
+            <button onclick="switchTab('mushola')" id="bnav-mushola" class="bnav-btn py-1.5 px-0.5 rounded-2xl flex flex-col items-center justify-center text-slate-500 dark:text-slate-400 font-medium transition-all">
+                <i class="fa-solid fa-mosque text-base"></i>
+                <span class="text-[9px] mt-0.5 tracking-tight">Mushola</span>
             </button>
             <button onclick="switchTab('piket')" id="bnav-piket" class="bnav-btn py-1.5 px-0.5 rounded-2xl flex flex-col items-center justify-center text-slate-500 dark:text-slate-400 font-medium transition-all">
                 <i class="fa-solid fa-broom text-base"></i>
@@ -882,20 +1201,6 @@
                                 <p class="text-[11px] text-slate-500 dark:text-slate-400 mt-0.5 line-clamp-2">Pasang di homescreen HP atau desktop, tetap dapat diakses saat internet offline.</p>
                             </div>
                         </div>
-
-                        <!-- Feature: Anti Boros (Keuangan) -->
-                        <a href="../" class="feature-item glass-card p-3.5 rounded-2xl border border-white/70 dark:border-slate-800 hover:border-emerald-400 dark:hover:border-emerald-500/50 cursor-pointer transition-all hover:scale-[1.01] hover:shadow-md group flex items-start gap-3" data-name="anti boros keuangan uang kas dompet pencatat pengeluaran">
-                            <div class="w-10 h-10 rounded-xl bg-emerald-100 dark:bg-emerald-950/60 text-emerald-600 dark:text-emerald-400 flex items-center justify-center text-base shrink-0 group-hover:scale-110 transition-transform">
-                                <i class="fa-solid fa-wallet"></i>
-                            </div>
-                            <div class="flex-1 min-w-0">
-                                <div class="flex items-center justify-between">
-                                    <h5 class="text-xs font-bold text-slate-800 dark:text-slate-100 group-hover:text-emerald-600 transition-colors">Aplikasi Anti Boros</h5>
-                                    <span class="text-[9px] px-1.5 py-0.5 rounded-md bg-emerald-50 dark:bg-emerald-900/30 text-emerald-600 dark:text-emerald-300 font-bold">Proyek Suci 💎</span>
-                                </div>
-                                <p class="text-[11px] text-slate-500 dark:text-slate-400 mt-0.5 line-clamp-2">Beralih ke aplikasi pencatat dan pengatur keuangan harian Anti Boros.</p>
-                            </div>
-                        </a>
                     </div>
                 </div>
             </div>
@@ -1129,6 +1434,172 @@
         </div>
     </div>
 
+    <!-- MODAL TAMBAH & EDIT JADWAL CHECKLIST -->
+    <div id="modalJadwal" class="hidden fixed inset-0 bg-slate-900/40 backdrop-blur-md z-50 flex items-center justify-center p-4">
+        <div class="glass-card rounded-3xl max-w-md w-full p-6 shadow-2xl border border-white/80 dark:border-slate-700">
+            <div class="flex justify-between items-center mb-4">
+                <h3 id="modalJadwalTitle" class="font-bold text-slate-800 dark:text-slate-100 text-base flex items-center gap-2">
+                    <i class="fa-regular fa-calendar-check text-pink-500"></i> Tambah Kegiatan Rutinitas
+                </h3>
+                <button onclick="closeJadwalModal()" class="text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 w-8 h-8 rounded-full flex items-center justify-center hover:bg-slate-100/50">
+                    <i class="fa-solid fa-xmark text-lg"></i>
+                </button>
+            </div>
+            <form id="formJadwal" onsubmit="saveJadwal(event)" class="space-y-4">
+                <input type="hidden" id="jadwalEditId" value="">
+                <div>
+                    <label class="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">Nama Kegiatan Rutinitas</label>
+                    <input type="text" id="jadwalNama" required placeholder="Contoh: Shalat Tahajjud & Muroja'ah" class="w-full glass-input px-3.5 py-2.5 rounded-2xl text-xs focus:outline-none">
+                </div>
+                <div class="grid grid-cols-2 gap-3">
+                    <div>
+                        <label class="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">Rentang Waktu</label>
+                        <input type="text" id="jadwalWaktu" required placeholder="03:30 - 04:30" class="w-full glass-input px-3.5 py-2.5 rounded-2xl text-xs focus:outline-none">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">Tempat / Lokasi</label>
+                        <input type="text" id="jadwalTempat" required placeholder="Kamar / Mushola" class="w-full glass-input px-3.5 py-2.5 rounded-2xl text-xs focus:outline-none">
+                    </div>
+                </div>
+                <div class="flex items-center gap-2 pt-1">
+                    <input type="checkbox" id="jadwalIsWajib" class="w-4 h-4 rounded text-pink-500 focus:ring-pink-400">
+                    <label for="jadwalIsWajib" class="text-xs font-semibold text-slate-600 dark:text-slate-300">Tandai sebagai kegiatan wajib berjamaah</label>
+                </div>
+                <div class="flex justify-end gap-2 pt-3">
+                    <button type="button" onclick="closeJadwalModal()" class="px-4 py-2 text-xs font-bold text-slate-600 dark:text-slate-300 glass-pill hover:bg-white/80 rounded-2xl">Batal</button>
+                    <button type="submit" class="btn-bounce px-4 py-2 text-xs font-bold text-white bg-gradient-to-r from-pink-500 to-purple-500 rounded-2xl shadow-md">Simpan Kegiatan</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- MODAL TAMBAH & KELOLA PROFIL TEMAN / ANGGOTA -->
+    <div id="modalAddChecklistUser" class="hidden fixed inset-0 bg-slate-900/40 backdrop-blur-md z-50 flex items-center justify-center p-4">
+        <div class="glass-card rounded-3xl max-w-md w-full p-6 shadow-2xl border border-white/80 dark:border-slate-700 max-h-[90vh] flex flex-col">
+            <div class="flex justify-between items-center mb-4 pb-2 border-b border-slate-200/60 dark:border-slate-700">
+                <h3 class="font-bold text-slate-800 dark:text-slate-100 text-base flex items-center gap-2">
+                    <i class="fa-solid fa-users-gear text-pink-500"></i> Kelola & Tambah Anggota / Teman
+                </h3>
+                <button onclick="closeAddChecklistUserModal()" class="text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 w-8 h-8 rounded-full flex items-center justify-center hover:bg-slate-100/50">
+                    <i class="fa-solid fa-xmark text-lg"></i>
+                </button>
+            </div>
+            
+            <!-- Form Tambah -->
+            <form id="formAddChecklistUser" onsubmit="saveNewChecklistUser(event)" class="space-y-3 mb-4">
+                <div>
+                    <label class="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">Nama Anggota / Teman Baru</label>
+                    <input type="text" id="newFriendName" required placeholder="Contoh: Fatimah / Maryam" class="w-full glass-input px-3.5 py-2.5 rounded-2xl text-xs focus:outline-none">
+                </div>
+                <div class="flex justify-end gap-2">
+                    <button type="button" onclick="closeAddChecklistUserModal()" class="px-4 py-2 text-xs font-bold text-slate-600 dark:text-slate-300 glass-pill hover:bg-white/80 rounded-2xl">Tutup</button>
+                    <button type="submit" class="btn-bounce px-4 py-2 text-xs font-bold text-white bg-gradient-to-r from-pink-500 to-purple-500 rounded-2xl shadow-md flex items-center gap-1.5">
+                        <i class="fa-solid fa-plus text-xs"></i> Tambah Anggota
+                    </button>
+                </div>
+            </form>
+
+            <!-- Daftar Anggota Saat Ini -->
+            <div class="border-t border-slate-200/60 dark:border-slate-700 pt-3 flex-1 overflow-y-auto">
+                <h4 class="text-xs font-bold text-slate-700 dark:text-slate-200 mb-2 flex items-center justify-between">
+                    <span>Daftar Anggota / Teman Checklist:</span>
+                    <span id="manageFriendsCount" class="text-[10px] text-pink-500 font-extrabold px-2 py-0.5 rounded-full bg-pink-50 dark:bg-pink-950/40 border border-pink-200 dark:border-pink-800"></span>
+                </h4>
+                <div id="manageFriendsList" class="space-y-2 max-h-48 overflow-y-auto pr-1">
+                    <!-- Populated dynamically -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL EDIT NAMA PROFIL ANGGOTA / TEMAN -->
+    <div id="modalEditChecklistUser" class="hidden fixed inset-0 bg-slate-900/40 backdrop-blur-md z-50 flex items-center justify-center p-4">
+        <div class="glass-card rounded-3xl max-w-sm w-full p-6 shadow-2xl border border-white/80 dark:border-slate-700 animate-in fade-in zoom-in-95 duration-200">
+            <div class="flex justify-between items-center mb-4 pb-2 border-b border-slate-200/60 dark:border-slate-700">
+                <h3 class="font-bold text-slate-800 dark:text-slate-100 text-base flex items-center gap-2">
+                    <i class="fa-solid fa-pen-to-square text-pink-500"></i> Edit Nama Profil
+                </h3>
+                <button onclick="closeEditChecklistUserModal()" class="text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 w-8 h-8 rounded-full flex items-center justify-center hover:bg-slate-100/50">
+                    <i class="fa-solid fa-xmark text-lg"></i>
+                </button>
+            </div>
+            
+            <form id="formEditChecklistUser" onsubmit="saveEditChecklistUser(event)" class="space-y-4">
+                <input type="hidden" id="editChecklistUserId" value="">
+                <div>
+                    <label class="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">Nama Anggota / Profil</label>
+                    <input type="text" id="editChecklistUserName" required placeholder="Contoh: Muthiah / Suci" class="w-full glass-input px-3.5 py-2.5 rounded-2xl text-xs focus:outline-none">
+                </div>
+                <p class="text-[11px] text-slate-500 dark:text-slate-400 leading-relaxed">
+                    Mengubah nama profil ini tidak akan menghapus atau mengubah checklist kegiatan yang sudah dicatat.
+                </p>
+                <div class="flex justify-end gap-2 pt-2 border-t border-slate-200/60 dark:border-slate-700">
+                    <button type="button" onclick="closeEditChecklistUserModal()" class="px-4 py-2 text-xs font-bold text-slate-600 dark:text-slate-300 glass-pill hover:bg-white/80 rounded-2xl">Batal</button>
+                    <button type="submit" class="btn-bounce px-4 py-2 text-xs font-bold text-white bg-gradient-to-r from-pink-500 to-purple-500 rounded-2xl shadow-md flex items-center gap-1.5">
+                        <i class="fa-solid fa-check text-xs"></i> Simpan Nama
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- MODAL TAMBAH & EDIT PENGINGAT -->
+    <div id="modalAddPengingat" class="hidden fixed inset-0 bg-slate-900/40 backdrop-blur-md z-50 flex items-center justify-center p-4">
+        <div class="glass-card rounded-3xl max-w-sm w-full p-6 shadow-2xl border border-white/80 dark:border-slate-700 animate-in fade-in zoom-in-95 duration-200">
+            <div class="flex justify-between items-center mb-4 pb-2 border-b border-slate-200/60 dark:border-slate-700">
+                <h3 class="font-bold text-slate-800 dark:text-slate-100 text-base flex items-center gap-2">
+                    <i class="fa-solid fa-bell text-pink-500"></i> <span id="modalPengingatTitle">Buat Pengingat Baru</span>
+                </h3>
+                <button onclick="closeAddPengingatModal()" class="text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 w-8 h-8 rounded-full flex items-center justify-center hover:bg-slate-100/50">
+                    <i class="fa-solid fa-xmark text-lg"></i>
+                </button>
+            </div>
+            
+            <form id="formAddPengingat" onsubmit="saveNewPengingat(event)" class="space-y-3.5">
+                <input type="hidden" id="pengingatEditId" value="">
+                <div>
+                    <label class="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">Judul Pengingat</label>
+                    <input type="text" id="pengingatJudul" required placeholder="Contoh: Waktu Setoran Hafalan" class="w-full glass-input px-3.5 py-2.5 rounded-2xl text-xs focus:outline-none">
+                </div>
+                
+                <div class="grid grid-cols-2 gap-2">
+                    <div>
+                        <label class="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">Jam / Waktu</label>
+                        <input type="time" id="pengingatWaktu" required class="w-full glass-input px-3 py-2 rounded-2xl text-xs focus:outline-none">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">Kategori</label>
+                        <select id="pengingatKategori" class="w-full glass-input px-3 py-2 rounded-2xl text-xs focus:outline-none">
+                            <option value="mushola">🕌 Mushola</option>
+                            <option value="piket">🧹 Piket</option>
+                            <option value="jadwal">📋 Checklist</option>
+                            <option value="umum">🌸 Umum</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div>
+                    <label class="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">Pesan / Keterangan</label>
+                    <textarea id="pengingatPesan" rows="2" placeholder="Contoh: Bersiap di mushola membawa mushaf Al-Qur'an..." class="w-full glass-input px-3.5 py-2.5 rounded-2xl text-xs focus:outline-none"></textarea>
+                </div>
+
+                <div class="flex items-center gap-2 pt-1">
+                    <input type="checkbox" id="pengingatSound" checked class="rounded text-pink-500 focus:ring-0 cursor-pointer">
+                    <label for="pengingatSound" class="text-xs font-bold text-slate-600 dark:text-slate-300 cursor-pointer flex items-center gap-1.5">
+                        <i class="fa-solid fa-volume-high text-pink-500 text-[11px]"></i> Bunyikan Alarm Saat Waktu Tiba
+                    </label>
+                </div>
+
+                <div class="flex justify-end gap-2 pt-2 border-t border-slate-200/60 dark:border-slate-700">
+                    <button type="button" onclick="closeAddPengingatModal()" class="px-4 py-2 text-xs font-bold text-slate-600 dark:text-slate-300 glass-pill hover:bg-white/80 rounded-2xl">Batal</button>
+                    <button type="submit" id="btnSavePengingat" class="btn-bounce px-4 py-2 text-xs font-bold text-white bg-gradient-to-r from-pink-500 to-purple-500 rounded-2xl shadow-md flex items-center gap-1.5">
+                        <i class="fa-solid fa-check text-xs"></i> <span id="btnSavePengingatText">Simpan Pengingat</span>
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
     <script>
         // --- HELPER STORAGE & TOAST SYSTEM ---
         function getStorage(key, defaultData) {
@@ -1193,6 +1664,385 @@
             localStorage.setItem('asramaku_theme', isDarkMode ? 'dark' : 'light');
             applyTheme();
             showToast(isDarkMode ? 'Mode Gelap Aktif 🌙' : 'Mode Terang Aktif ☀️', 'info');
+        }
+
+        // --- EMAIL & GOOGLE AUTHENTICATION SYSTEM ---
+        const defaultEmailAccounts = [
+            {
+                email: 'suci.ramadhani@gmail.com',
+                password: 'google_authenticated',
+                nama: 'Suci Ramadhani',
+                role: 'Santriwati (Ketua Kamar)',
+                user_id: 'user_suci',
+                isGoogle: true,
+                avatar: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&q=80&w=150'
+            },
+            {
+                email: 'aisyah.azzahra@gmail.com',
+                password: 'google_authenticated',
+                nama: 'Aisyah Az-Zahra',
+                role: 'Santriwati',
+                user_id: 'user_teman',
+                isGoogle: true,
+                avatar: 'https://images.unsplash.com/photo-1517841905240-472988babdf9?auto=format&fit=crop&q=80&w=150'
+            },
+            {
+                email: 'suci@asrama.id',
+                password: '123456',
+                nama: 'Suci Ramadhani',
+                role: 'Santriwati (Ketua Kamar)',
+                user_id: 'user_suci',
+                avatar: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&q=80&w=150'
+            },
+            {
+                email: 'aisyah@asrama.id',
+                password: '123456',
+                nama: 'Aisyah Az-Zahra',
+                role: 'Santriwati',
+                user_id: 'user_teman',
+                avatar: 'https://images.unsplash.com/photo-1517841905240-472988babdf9?auto=format&fit=crop&q=80&w=150'
+            },
+            {
+                email: 'ustadzah@asrama.id',
+                password: '123456',
+                nama: 'Ustadzah Dev',
+                role: 'Pengurus Utama Asrama',
+                user_id: 'user_ustadzah',
+                avatar: 'https://images.unsplash.com/photo-1544005313-94ddf0286df2?auto=format&fit=crop&q=80&w=150'
+            }
+        ];
+
+        let emailAccounts = getStorage('asramaku_email_accounts', defaultEmailAccounts);
+        let loggedInUser = getStorage('asramaku_logged_in_user', null);
+
+        // --- GOOGLE SIGN IN HANDLERS ---
+        function handleGoogleSignIn() {
+            openGoogleAuthModal();
+        }
+
+        function openGoogleAuthModal() {
+            const modal = document.getElementById('modalGoogleAuth');
+            if (modal) {
+                modal.classList.remove('hidden');
+                renderGoogleAccountsList();
+            }
+        }
+
+        function closeGoogleAuthModal() {
+            const modal = document.getElementById('modalGoogleAuth');
+            if (modal) modal.classList.add('hidden');
+            const customForm = document.getElementById('formGoogleCustom');
+            if (customForm) customForm.classList.add('hidden');
+        }
+
+        function renderGoogleAccountsList() {
+            const listEl = document.getElementById('googleAccountsList');
+            if (!listEl) return;
+            listEl.innerHTML = '';
+
+            // Ambil semua akun Google yang tersedia atau akun default
+            let gAccounts = emailAccounts.filter(acc => acc.isGoogle || (acc.email && acc.email.includes('@gmail.com')));
+            if (gAccounts.length === 0) {
+                gAccounts = defaultEmailAccounts.filter(acc => acc.isGoogle);
+            }
+
+            gAccounts.forEach(acc => {
+                const item = document.createElement('div');
+                item.className = "btn-bounce p-3 rounded-2xl glass-pill hover:bg-pink-50 dark:hover:bg-slate-800 border border-slate-200/80 dark:border-slate-700 flex items-center justify-between cursor-pointer transition";
+                item.onclick = () => loginWithGoogleAccount({
+                    email: acc.email,
+                    nama: acc.nama,
+                    avatar: acc.avatar
+                });
+                item.innerHTML = `
+                    <div class="flex items-center gap-3">
+                        <img src="${acc.avatar}" class="w-9 h-9 rounded-full object-cover border border-pink-200 dark:border-slate-700 shadow-sm" alt="${acc.nama}">
+                        <div class="text-left">
+                            <h5 class="text-xs font-bold text-slate-800 dark:text-slate-100 flex items-center gap-1.5">
+                                ${acc.nama}
+                                <span class="text-[9px] px-1.5 py-0.2 rounded-md bg-emerald-100 text-emerald-600 font-bold">Google</span>
+                            </h5>
+                            <p class="text-[11px] text-slate-500 dark:text-slate-400 font-mono">${acc.email}</p>
+                        </div>
+                    </div>
+                    <span class="text-xs text-pink-500 dark:text-pink-400 font-bold px-2.5 py-1 rounded-xl bg-pink-50 dark:bg-pink-950/40 border border-pink-200 dark:border-pink-900/50 flex items-center gap-1">
+                        Pilih <i class="fa-solid fa-chevron-right text-[10px]"></i>
+                    </span>
+                `;
+                listEl.appendChild(item);
+            });
+        }
+
+        function toggleGoogleCustomInput() {
+            const form = document.getElementById('formGoogleCustom');
+            if (!form) return;
+            form.classList.toggle('hidden');
+            if (!form.classList.contains('hidden')) {
+                const nameInp = document.getElementById('googleCustomName');
+                if (nameInp) nameInp.focus();
+            }
+        }
+
+        function handleGoogleCustomSubmit(e) {
+            e.preventDefault();
+            const nameEl = document.getElementById('googleCustomName');
+            const emailEl = document.getElementById('googleCustomEmail');
+            const nama = (nameEl ? nameEl.value : '').trim();
+            let email = (emailEl ? emailEl.value : '').trim().toLowerCase();
+
+            if (!nama || !email) {
+                showToast('Nama dan email wajib diisi!', 'warning');
+                return;
+            }
+
+            if (!email.includes('@')) {
+                email += '@gmail.com';
+            }
+
+            loginWithGoogleAccount({
+                email,
+                nama,
+                avatar: `https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&q=80&w=150`
+            });
+        }
+
+        function loginWithGoogleAccount(profile) {
+            const email = (profile.email || '').toLowerCase().trim();
+            const nama = profile.nama || email.split('@')[0];
+            const avatar = profile.avatar || `https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&q=80&w=150`;
+
+            if (!email) {
+                showToast('Email Google tidak valid!', 'warning');
+                return;
+            }
+
+            // Cek apakah akun email Google ini sudah pernah terdaftar
+            let account = emailAccounts.find(acc => acc.email.toLowerCase() === email);
+
+            if (!account) {
+                // Otomatis buat akun baru dari akun Google bagi yang belum terdaftar!
+                const newUid = 'user_g_' + Date.now().toString(36);
+                account = {
+                    user_id: newUid,
+                    email: email,
+                    password: 'google_authenticated',
+                    nama: nama,
+                    role: 'Santriwati',
+                    isGoogle: true,
+                    avatar: avatar
+                };
+                emailAccounts.push(account);
+                setStorage('asramaku_email_accounts', emailAccounts);
+
+                // Tambahkan ke checklist users jika belum ada
+                if (typeof checklistUsers !== 'undefined' && !checklistUsers.some(u => u.id === newUid)) {
+                    checklistUsers.push({ id: newUid, nama: nama });
+                    setStorage('asramaku_checklist_users', checklistUsers);
+                }
+                showToast(`Selamat datang di AsramaKu, ${nama}! Akun Google Anda berhasil dibuat & masuk ✨`);
+            } else {
+                if (nama && (!account.nama || account.nama === account.email.split('@')[0])) {
+                    account.nama = nama;
+                    setStorage('asramaku_email_accounts', emailAccounts);
+                }
+                showToast(`Assalamu’alaikum, ${account.nama}! Berhasil masuk dengan Akun Google 🌸`);
+            }
+
+            // Set loggedInUser & isolasi checklist per user
+            loggedInUser = account;
+            setStorage('asramaku_logged_in_user', loggedInUser);
+            activeChecklistUserId = account.user_id;
+            setStorage('asramaku_active_checklist_user_id', activeChecklistUserId);
+
+            // Tutup Google Modal & Auth Screen
+            closeGoogleAuthModal();
+            const authScreen = document.getElementById('authScreen');
+            if (authScreen) authScreen.classList.add('hidden');
+
+            renderAdminProfileUI();
+            if (typeof renderChecklistUserSelector === 'function') renderChecklistUserSelector();
+            if (typeof renderJadwal === 'function') renderJadwal();
+            if (typeof renderSantriTable === 'function') renderSantriTable();
+            if (typeof renderMusholaPresensi === 'function') renderMusholaPresensi();
+            if (typeof renderPiket === 'function') renderPiket();
+            if (typeof renderPengumuman === 'function') renderPengumuman();
+            if (typeof renderHukuman === 'function') renderHukuman();
+        }
+
+        function switchAuthTab(tab) {
+            const loginForm = document.getElementById('formEmailLogin');
+            const regForm = document.getElementById('formEmailRegister');
+            const tabLogin = document.getElementById('tabAuthLogin');
+            const tabReg = document.getElementById('tabAuthRegister');
+
+            if (!loginForm || !regForm) return;
+
+            if (tab === 'login') {
+                loginForm.classList.remove('hidden');
+                regForm.classList.add('hidden');
+                tabLogin.className = 'flex-1 py-2 rounded-xl text-xs font-bold transition-all bg-gradient-to-r from-pink-500 to-purple-500 text-white shadow-md';
+                tabReg.className = 'flex-1 py-2 rounded-xl text-xs font-bold text-slate-600 dark:text-slate-400 transition-all hover:text-pink-600';
+            } else {
+                loginForm.classList.add('hidden');
+                regForm.classList.remove('hidden');
+                tabReg.className = 'flex-1 py-2 rounded-xl text-xs font-bold transition-all bg-gradient-to-r from-pink-500 to-purple-500 text-white shadow-md';
+                tabLogin.className = 'flex-1 py-2 rounded-xl text-xs font-bold text-slate-600 dark:text-slate-400 transition-all hover:text-pink-600';
+            }
+        }
+
+        function togglePasswordVisibility(inputId, iconId) {
+            const input = document.getElementById(inputId);
+            const icon = document.getElementById(iconId);
+            if (!input || !icon) return;
+
+            if (input.type === 'password') {
+                input.type = 'text';
+                icon.className = 'fa-regular fa-eye-slash';
+            } else {
+                input.type = 'password';
+                icon.className = 'fa-regular fa-eye';
+            }
+        }
+
+        function quickFillDemo(email, pass) {
+            const emailInput = document.getElementById('loginEmail');
+            const passInput = document.getElementById('loginPassword');
+            if (emailInput && passInput) {
+                emailInput.value = email;
+                passInput.value = pass;
+                handleEmailLogin();
+            }
+        }
+
+        function handleEmailLogin(e) {
+            if (e) e.preventDefault();
+            const emailEl = document.getElementById('loginEmail');
+            const passEl = document.getElementById('loginPassword');
+            const email = (emailEl ? emailEl.value : '').trim().toLowerCase();
+            const password = passEl ? passEl.value : '';
+
+            if (!email || !password) {
+                showToast('Harap masukkan email dan kata sandi!', 'warning');
+                return;
+            }
+
+            const account = emailAccounts.find(acc => acc.email.toLowerCase() === email && acc.password === password);
+            if (!account) {
+                showToast('Email atau kata sandi tidak cocok. Silakan periksa kembali!', 'error');
+                return;
+            }
+
+            // Berhasil login
+            loggedInUser = account;
+            setStorage('asramaku_logged_in_user', loggedInUser);
+
+            // Sinkronkan activeChecklistUserId dengan user_id akun email
+            activeChecklistUserId = account.user_id;
+            setStorage('asramaku_active_checklist_user_id', activeChecklistUserId);
+
+            // Pastikan akun ini ada di selector checklist users
+            if (typeof checklistUsers !== 'undefined' && !checklistUsers.some(u => u.id === account.user_id)) {
+                checklistUsers.push({ id: account.user_id, nama: account.nama });
+                setStorage('asramaku_checklist_users', checklistUsers);
+            }
+
+            // Tutup auth screen
+            const authScreen = document.getElementById('authScreen');
+            if (authScreen) authScreen.classList.add('hidden');
+
+            renderAdminProfileUI();
+            if (typeof renderChecklistUserSelector === 'function') renderChecklistUserSelector();
+            if (typeof renderJadwal === 'function') renderJadwal();
+            if (typeof renderSantriTable === 'function') renderSantriTable();
+            if (typeof renderMusholaPresensi === 'function') renderMusholaPresensi();
+            if (typeof renderPiket === 'function') renderPiket();
+            if (typeof renderPengumuman === 'function') renderPengumuman();
+            if (typeof renderHukuman === 'function') renderHukuman();
+
+            showToast(`Assalamu’alaikum, ${account.nama}! Berhasil masuk 🌸`);
+        }
+
+        function handleEmailRegister(e) {
+            e.preventDefault();
+            const nama = (document.getElementById('regFullName')?.value || '').trim();
+            const email = (document.getElementById('regEmail')?.value || '').trim().toLowerCase();
+            const role = document.getElementById('regRole')?.value || 'Santriwati';
+            const password = document.getElementById('regPassword')?.value || '';
+
+            if (!nama || !email || !password) {
+                showToast('Semua kolom wajib diisi!', 'warning');
+                return;
+            }
+
+            if (password.length < 4) {
+                showToast('Kata sandi minimal 4 karakter!', 'warning');
+                return;
+            }
+
+            const existing = emailAccounts.find(acc => acc.email.toLowerCase() === email);
+            if (existing) {
+                showToast('Email sudah terdaftar! Silakan langsung login.', 'warning');
+                switchAuthTab('login');
+                const loginEmail = document.getElementById('loginEmail');
+                if (loginEmail) loginEmail.value = email;
+                return;
+            }
+
+            const newUid = 'user_' + Date.now().toString(36);
+            const newAccount = {
+                email,
+                password,
+                nama,
+                role,
+                user_id: newUid,
+                avatar: `https://images.unsplash.com/photo-${role.includes('Santri') ? '1517841905240-472988babdf9' : '1534528741775-53994a69daeb'}?auto=format&fit=crop&q=80&w=150`
+            };
+
+            emailAccounts.push(newAccount);
+            setStorage('asramaku_email_accounts', emailAccounts);
+
+            if (typeof checklistUsers !== 'undefined' && !checklistUsers.some(u => u.id === newUid)) {
+                checklistUsers.push({ id: newUid, nama });
+                setStorage('asramaku_checklist_users', checklistUsers);
+            }
+
+            // Langsung login
+            loggedInUser = newAccount;
+            setStorage('asramaku_logged_in_user', loggedInUser);
+            activeChecklistUserId = newUid;
+            setStorage('asramaku_active_checklist_user_id', newUid);
+
+            const authScreen = document.getElementById('authScreen');
+            if (authScreen) authScreen.classList.add('hidden');
+
+            renderAdminProfileUI();
+            if (typeof renderChecklistUserSelector === 'function') renderChecklistUserSelector();
+            if (typeof renderJadwal === 'function') renderJadwal();
+            if (typeof renderSantriTable === 'function') renderSantriTable();
+            if (typeof renderMusholaPresensi === 'function') renderMusholaPresensi();
+
+            showToast(`Selamat datang di AsramaKu, ${nama}! Akun berhasil dibuat ✨`);
+        }
+
+        function handleUserLogout() {
+            loggedInUser = null;
+            setStorage('asramaku_logged_in_user', null);
+            const authScreen = document.getElementById('authScreen');
+            if (authScreen) authScreen.classList.remove('hidden');
+            switchAuthTab('login');
+            showToast('Anda telah keluar dari akun.', 'info');
+        }
+
+        function checkAuthSession() {
+            const authScreen = document.getElementById('authScreen');
+            if (!authScreen) return;
+            if (loggedInUser) {
+                authScreen.classList.add('hidden');
+                activeChecklistUserId = loggedInUser.user_id;
+            } else {
+                authScreen.classList.remove('hidden');
+                switchAuthTab('login');
+            }
         }
 
         // --- APP STATE ---
@@ -1294,6 +2144,33 @@
             [`${selectedMusholaDate}_S4`]: { subuh: 'terlambat', maghrib: 'hadir', isya: 'hadir' }
         });
 
+        // --- HELPER SORT DATA SANTRIWATI (ABJAD & KELAS) ---
+        function sortSantriData(list, sortMode = 'abjad_kelas') {
+            const parseClassNum = (cls) => {
+                if (!cls) return 99;
+                const m = cls.match(/\d+/);
+                return m ? parseInt(m[0], 10) : 99;
+            };
+
+            return [...list].sort((a, b) => {
+                const nameComp = (a.nama || '').localeCompare(b.nama || '', 'id', { sensitivity: 'base' });
+                const classA = parseClassNum(a.kelas || a.kamar);
+                const classB = parseClassNum(b.kelas || b.kamar);
+
+                if (sortMode === 'kelas_abjad') {
+                    // 1. Urutkan berdasarkan tingkat kelas (Kelas 7 -> 12)
+                    if (classA !== classB) return classA - classB;
+                    // 2. Jika kelas sama, urutkan berdasarkan abjad nama (A - Z)
+                    return nameComp;
+                } else {
+                    // 1. Urutkan berdasarkan abjad nama (A - Z)
+                    if (nameComp !== 0) return nameComp;
+                    // 2. Jika nama sama, urutkan berdasarkan tingkat kelas
+                    return classA - classB;
+                }
+            });
+        }
+
         // --- RENDER FUNCTIONS ---
 
         function renderSantriTable() {
@@ -1301,23 +2178,41 @@
             if (!tbody) return;
             tbody.innerHTML = '';
 
-            if (santriList.length === 0) {
-                tbody.innerHTML = `<tr><td colspan="4" class="p-8 text-center text-slate-400 font-medium">Belum ada data santriwati. Klik "+ Tambah Santriwati Baru" untuk memasukkan data.</td></tr>`;
+            const searchVal = (document.getElementById('santriSearchInput')?.value || '').toLowerCase().trim();
+            const classVal = document.getElementById('santriClassFilter')?.value || 'ALL';
+            const sortMode = document.getElementById('santriSortBy')?.value || 'abjad_kelas';
+
+            let filtered = santriList.filter(s => {
+                const matchName = (s.nama || '').toLowerCase().includes(searchVal);
+                const sKelas = s.kelas || s.kamar || '';
+                const matchClass = (classVal === 'ALL') || (sKelas === classVal);
+                return matchName && matchClass;
+            });
+
+            // Urutkan data santriwati sesuai abjad dan kelas
+            const sortedList = sortSantriData(filtered, sortMode);
+
+            if (sortedList.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="4" class="p-8 text-center text-slate-400 font-medium">Tidak ada data santriwati yang sesuai dengan filter / pencarian.</td></tr>`;
                 return;
             }
 
-            santriList.forEach(santri => {
+            sortedList.forEach(santri => {
                 const tr = document.createElement('tr');
                 tr.className = "hover:bg-pink-50/30 dark:hover:bg-slate-700/30 transition border-b border-white/40 dark:border-slate-700/40";
                 tr.innerHTML = `
-                    <td class="p-4 font-bold text-xs text-pink-600 dark:text-pink-400">${santri.id}</td>
+                    <td class="p-4 font-bold text-xs text-pink-600 dark:text-pink-400 font-mono">${santri.id}</td>
                     <td class="p-4 font-bold text-xs text-slate-800 dark:text-slate-100 flex items-center gap-2">
                         <button onclick="toggleFavoriteSantri('${santri.id}')" class="text-amber-400 text-sm hover:scale-125 transition-transform">
                             <i class="${santri.favorite ? 'fa-solid' : 'fa-regular'} fa-star"></i>
                         </button>
                         <span>${santri.nama}</span>
                     </td>
-                    <td class="p-4 text-xs font-semibold text-slate-600 dark:text-slate-300">${santri.kelas || santri.kamar || '-'}</td>
+                    <td class="p-4 text-xs font-semibold text-slate-600 dark:text-slate-300">
+                        <span class="px-2.5 py-1 rounded-xl glass-pill text-[11px] font-bold text-purple-700 dark:text-purple-300 border border-purple-200 dark:border-purple-800">
+                            ${santri.kelas || santri.kamar || '-'}
+                        </span>
+                    </td>
                     <td class="p-4 text-right">
                         <button onclick="deleteSantri('${santri.id}')" class="btn-bounce px-2.5 py-1.5 rounded-xl text-xs font-bold text-rose-600 hover:bg-rose-50 dark:hover:bg-rose-950/40 transition">
                             <i class="fa-solid fa-trash-can mr-1"></i> Hapus
@@ -1367,14 +2262,251 @@
             showToast('Data santriwati dihapus.', 'warning');
         }
 
+        // --- MULTI-USER CHECKLIST (AKU & TEMAN) SYSTEM ---
+        const defaultChecklistUsers = [
+            { id: 'user_suci', nama: 'Aku (Suci)' },
+            { id: 'user_teman', nama: 'Temanku (Aisyah)' }
+        ];
+
+        let checklistUsers = getStorage('asramaku_checklist_users', defaultChecklistUsers);
+        let activeChecklistUserId = getStorage('asramaku_active_checklist_user_id', 'user_suci');
+
+        function getActiveUserJadwal() {
+            const key = `asramaku_jadwal_${activeChecklistUserId}`;
+            const stored = localStorage.getItem(key);
+            if (stored) {
+                try {
+                    return JSON.parse(stored);
+                } catch (e) {
+                    console.error('Error parsing stored jadwal:', e);
+                }
+            }
+            // Deep clone agar tiap profil pengguna memiliki data terisolasi & tidak berbagi referensi objek
+            const cloned = JSON.parse(JSON.stringify(initialJadwal));
+            setStorage(key, cloned);
+            return cloned;
+        }
+
+        function setActiveUserJadwal(data) {
+            const key = `asramaku_jadwal_${activeChecklistUserId}`;
+            setStorage(key, data);
+        }
+
+        function renderChecklistUserSelector() {
+            const container = document.getElementById('checklistUserList');
+            if (!container) return;
+            container.innerHTML = '';
+
+            const canDelete = checklistUsers.length > 1;
+
+            checklistUsers.forEach(u => {
+                const isActive = u.id === activeChecklistUserId;
+                const wrapper = document.createElement('div');
+                wrapper.className = `btn-bounce inline-flex items-center rounded-xl transition text-xs font-bold ${
+                    isActive 
+                        ? 'bg-gradient-to-r from-pink-500 to-purple-500 text-white shadow-md shadow-pink-500/20 ring-2 ring-white/80 dark:ring-slate-700' 
+                        : 'glass-pill text-slate-700 dark:text-slate-300 hover:bg-white/90 border border-slate-200 dark:border-slate-700'
+                }`;
+                
+                wrapper.innerHTML = `
+                    <button type="button" onclick="switchChecklistUser('${u.id}')" class="px-2.5 py-1.5 flex items-center gap-1.5 focus:outline-none">
+                        <i class="fa-solid ${isActive ? 'fa-circle-check text-[10px]' : 'fa-circle-user text-[10px] text-pink-400'}"></i>
+                        <span>${u.nama}</span>
+                    </button>
+                    <button type="button" onclick="openEditChecklistUserModal(event, '${u.id}')" title="Edit nama profil ${u.nama}" class="px-1 py-1.5 ${isActive ? 'text-white/80 hover:text-white hover:scale-110' : 'text-slate-400 hover:text-pink-600 hover:scale-110'} transition-all text-[10px] focus:outline-none" aria-label="Edit nama anggota">
+                        <i class="fa-solid fa-pen"></i>
+                    </button>
+                    ${canDelete ? `
+                    <button type="button" onclick="deleteChecklistUser(event, '${u.id}')" title="Hapus anggota ${u.nama}" class="pr-2 pl-0.5 py-1.5 ${isActive ? 'text-white/70 hover:text-white hover:scale-110' : 'text-slate-400 hover:text-rose-500 hover:scale-110'} transition-all text-[11px] focus:outline-none" aria-label="Hapus anggota">
+                        <i class="fa-solid fa-xmark"></i>
+                    </button>
+                    ` : '<span class="pr-1.5"></span>'}
+                `;
+                container.appendChild(wrapper);
+            });
+
+            const activeUser = checklistUsers.find(u => u.id === activeChecklistUserId) || checklistUsers[0];
+            const badgeUser = document.getElementById('badgeActiveChecklistUser');
+            if (badgeUser && activeUser) {
+                badgeUser.innerText = activeUser.nama;
+            }
+        }
+
+        function openEditChecklistUserModal(e, userId) {
+            if (e) e.stopPropagation();
+
+            const user = checklistUsers.find(u => u.id === userId);
+            if (!user) return;
+
+            document.getElementById('editChecklistUserId').value = userId;
+            document.getElementById('editChecklistUserName').value = user.nama;
+            document.getElementById('modalEditChecklistUser').classList.remove('hidden');
+            document.getElementById('editChecklistUserName').focus();
+        }
+
+        function closeEditChecklistUserModal() {
+            document.getElementById('modalEditChecklistUser').classList.add('hidden');
+            document.getElementById('formEditChecklistUser').reset();
+        }
+
+        function saveEditChecklistUser(e) {
+            e.preventDefault();
+            const userId = document.getElementById('editChecklistUserId').value;
+            const newName = document.getElementById('editChecklistUserName').value.trim();
+
+            if (!userId || !newName) {
+                showToast('Nama profil tidak boleh kosong!', 'warning');
+                return;
+            }
+
+            const user = checklistUsers.find(u => u.id === userId);
+            if (!user) return;
+
+            const oldName = user.nama;
+            user.nama = newName;
+            setStorage('asramaku_checklist_users', checklistUsers);
+
+            // Jika ini adalah akun login aktif atau akun email, sinkronkan juga namanya
+            if (loggedInUser && (loggedInUser.user_id === userId || loggedInUser.nama === oldName)) {
+                loggedInUser.nama = newName;
+                setStorage('asramaku_logged_in_user', loggedInUser);
+            }
+            const acc = emailAccounts.find(a => a.user_id === userId || a.nama === oldName);
+            if (acc) {
+                acc.nama = newName;
+                setStorage('asramaku_email_accounts', emailAccounts);
+            }
+
+            closeEditChecklistUserModal();
+            renderChecklistUserSelector();
+            renderAdminProfileUI();
+            if (typeof renderManageFriendsList === 'function') renderManageFriendsList();
+
+            showToast(`Nama profil "${oldName}" berhasil diubah menjadi "${newName}" ✨`);
+        }
+
+        function deleteChecklistUser(e, userId) {
+            if (e) e.stopPropagation();
+
+            if (checklistUsers.length <= 1) {
+                showToast('Minimal harus ada 1 profil checklist tersisa!', 'warning');
+                return;
+            }
+
+            const targetUser = checklistUsers.find(u => u.id === userId);
+            if (!targetUser) return;
+
+            const konfirmasi = confirm(`Hapus anggota/teman "${targetUser.nama}" dari checklist?\n\nCatatan: Data checklist harian milik "${targetUser.nama}" juga akan dihapus.`);
+            if (!konfirmasi) return;
+
+            // Hapus dari daftar checklistUsers
+            checklistUsers = checklistUsers.filter(u => u.id !== userId);
+            setStorage('asramaku_checklist_users', checklistUsers);
+
+            // Bersihkan data checklist harian pengguna
+            localStorage.removeItem(`asramaku_jadwal_${userId}`);
+
+            // Jika yang dihapus sedang aktif, beralih ke profil pertama
+            if (activeChecklistUserId === userId) {
+                activeChecklistUserId = checklistUsers[0].id;
+                setStorage('asramaku_active_checklist_user_id', activeChecklistUserId);
+            }
+
+            renderChecklistUserSelector();
+            renderJadwal();
+            if (typeof renderManageFriendsList === 'function') renderManageFriendsList();
+            showToast(`Anggota "${targetUser.nama}" berhasil dihapus.`, 'warning');
+        }
+
+        function switchChecklistUser(userId) {
+            activeChecklistUserId = userId;
+            setStorage('asramaku_active_checklist_user_id', userId);
+            renderChecklistUserSelector();
+            renderJadwal();
+            const activeUser = checklistUsers.find(u => u.id === userId);
+            showToast(`Beralih ke checklist: ${activeUser ? activeUser.nama : 'Pengguna'} ✨`, 'info');
+        }
+
+        function openAddChecklistUserModal() {
+            document.getElementById('modalAddChecklistUser').classList.remove('hidden');
+            renderManageFriendsList();
+            document.getElementById('newFriendName').focus();
+        }
+
+        function closeAddChecklistUserModal() {
+            document.getElementById('modalAddChecklistUser').classList.add('hidden');
+            document.getElementById('formAddChecklistUser').reset();
+        }
+
+        function renderManageFriendsList() {
+            const listContainer = document.getElementById('manageFriendsList');
+            const countBadge = document.getElementById('manageFriendsCount');
+            if (!listContainer) return;
+
+            if (countBadge) countBadge.innerText = `${checklistUsers.length} Anggota`;
+
+            listContainer.innerHTML = '';
+            const canDelete = checklistUsers.length > 1;
+
+            checklistUsers.forEach(u => {
+                const isActive = u.id === activeChecklistUserId;
+                const row = document.createElement('div');
+                row.className = "p-2.5 rounded-xl glass-pill flex items-center justify-between border border-slate-200/60 dark:border-slate-700/60";
+                row.innerHTML = `
+                    <div class="flex items-center gap-2">
+                        <span class="w-7 h-7 rounded-lg ${isActive ? 'bg-pink-500 text-white' : 'bg-pink-100 dark:bg-pink-950/60 text-pink-600 dark:text-pink-300'} flex items-center justify-center text-xs font-bold shrink-0">
+                            <i class="fa-solid fa-circle-user"></i>
+                        </span>
+                        <div>
+                            <span class="text-xs font-bold text-slate-800 dark:text-slate-100 block">${u.nama}</span>
+                            <span class="text-[10px] text-slate-400 font-medium">${isActive ? 'Sedang Aktif' : 'Profil Checklist'}</span>
+                        </div>
+                    </div>
+                    <div class="flex items-center gap-1.5">
+                        <button type="button" onclick="openEditChecklistUserModal(event, '${u.id}')" class="btn-bounce px-2.5 py-1 rounded-lg text-xs font-bold text-pink-600 hover:bg-pink-50 dark:hover:bg-pink-950/40 transition flex items-center gap-1 border border-pink-200 dark:border-pink-900/40">
+                            <i class="fa-solid fa-pen text-[10px]"></i> Edit
+                        </button>
+                        ${canDelete ? `
+                        <button type="button" onclick="deleteChecklistUser(event, '${u.id}')" class="btn-bounce px-2.5 py-1 rounded-lg text-xs font-bold text-rose-500 hover:bg-rose-50 dark:hover:bg-rose-950/40 transition flex items-center gap-1 border border-rose-200 dark:border-rose-900/40">
+                            <i class="fa-solid fa-trash-can text-[10px]"></i> Hapus
+                        </button>
+                        ` : '<span class="text-[10px] text-slate-400 italic">Utama</span>'}
+                    </div>
+                `;
+                listContainer.appendChild(row);
+            });
+        }
+
+        function saveNewChecklistUser(e) {
+            e.preventDefault();
+            const nama = document.getElementById('newFriendName').value.trim();
+            if (!nama) return;
+
+            const newId = 'user_' + Date.now().toString(36);
+            checklistUsers.push({ id: newId, nama });
+            setStorage('asramaku_checklist_users', checklistUsers);
+            closeAddChecklistUserModal();
+            switchChecklistUser(newId);
+            showToast(`Profil "${nama}" dibuat! Checklist terpisah siap digunakan 🌸`);
+        }
+
+        // --- RENDER JADWAL DENGAN FITUR EDIT & HAPUS ---
         function renderJadwal() {
             const container = document.getElementById('jadwalList');
             if (!container) return;
             container.innerHTML = '';
 
+            const activeJadwal = getActiveUserJadwal();
             let completedCount = 0;
 
-            jadwalList.forEach(item => {
+            if (activeJadwal.length === 0) {
+                container.innerHTML = `<div class="glass-pill p-8 text-center text-slate-400 font-medium rounded-2xl">Belum ada kegiatan rutinitas untuk profil ini. Klik tombol "+ Tambah Kegiatan" di atas.</div>`;
+                document.getElementById('dailyProgressBar').style.width = `0%`;
+                document.getElementById('dailyProgressText').innerText = `0%`;
+                return;
+            }
+
+            activeJadwal.forEach(item => {
                 if (item.checked) completedCount++;
 
                 const card = document.createElement('div');
@@ -1385,40 +2517,130 @@
                 }`;
 
                 card.innerHTML = `
-                    <div class="flex items-center gap-3">
-                        <button onclick="toggleJadwalCheck(${item.id})" class="btn-bounce w-6 h-6 rounded-xl flex items-center justify-center transition ${
+                    <div class="flex items-center gap-3 flex-1 min-w-0">
+                        <button onclick="toggleJadwalCheck(${item.id})" class="btn-bounce w-7 h-7 rounded-xl flex items-center justify-center shrink-0 transition ${
                             item.checked 
                                 ? 'bg-gradient-to-tr from-pink-500 to-purple-500 text-white shadow-md shadow-pink-500/30' 
                                 : 'border-2 border-slate-300 dark:border-slate-600 hover:border-pink-400 bg-white/50 dark:bg-slate-700/50'
                         }">
                             ${item.checked ? '<i class="fa-solid fa-check text-xs"></i>' : ''}
                         </button>
-                        <div>
-                            <span class="text-xs font-bold ${item.checked ? 'line-through text-slate-400 dark:text-slate-500' : 'text-slate-800 dark:text-slate-100'}">${item.nama}</span>
-                            <div class="flex items-center gap-2 mt-0.5">
+                        <div class="flex-1 min-w-0">
+                            <span class="text-xs font-bold block truncate ${item.checked ? 'line-through text-slate-400 dark:text-slate-500' : 'text-slate-800 dark:text-slate-100'}">${item.nama}</span>
+                            <div class="flex flex-wrap items-center gap-2 mt-0.5">
                                 <span class="text-[10px] font-semibold text-purple-600 dark:text-purple-300"><i class="fa-regular fa-clock mr-1"></i>${item.waktu}</span>
                                 <span class="text-[10px] text-slate-400">•</span>
                                 <span class="text-[10px] font-medium text-slate-500 dark:text-slate-400"><i class="fa-solid fa-location-dot mr-1"></i>${item.tempat}</span>
+                                ${(item.wajib || (item.nama && item.nama.includes('Shalat'))) ? '<span class="text-[9px] font-bold px-2 py-0.5 rounded-full bg-pink-100 text-pink-700 dark:bg-pink-900/40 dark:text-pink-300 border border-pink-200 dark:border-pink-800">Wajib Jamaah</span>' : ''}
                             </div>
                         </div>
                     </div>
-                    ${item.nama.includes('Shalat') ? '<span class="text-[10px] font-bold px-2.5 py-1 rounded-full bg-pink-100 text-pink-700 dark:bg-pink-900/40 dark:text-pink-300 border border-pink-200 dark:border-pink-800">Wajib Jamaah</span>' : ''}
+
+                    <!-- Tombol Edit & Hapus Kegiatan -->
+                    <div class="flex items-center gap-1.5 self-end sm:self-center shrink-0">
+                        <button onclick="openEditJadwalModal(${item.id})" class="btn-bounce px-2.5 py-1.5 rounded-xl text-xs font-bold text-purple-600 dark:text-purple-300 hover:bg-purple-100/60 dark:hover:bg-purple-950/40 border border-purple-200/60 dark:border-purple-800/40 transition flex items-center gap-1" title="Edit Kegiatan">
+                            <i class="fa-solid fa-pen-to-square"></i> <span class="hidden sm:inline">Edit</span>
+                        </button>
+                        <button onclick="deleteJadwal(${item.id})" class="btn-bounce px-2.5 py-1.5 rounded-xl text-xs font-bold text-rose-600 dark:text-rose-400 hover:bg-rose-100/60 dark:hover:bg-rose-950/40 border border-rose-200/60 dark:border-rose-800/40 transition flex items-center gap-1" title="Hapus Kegiatan">
+                            <i class="fa-solid fa-trash-can"></i> <span class="hidden sm:inline">Hapus</span>
+                        </button>
+                    </div>
                 `;
                 container.appendChild(card);
             });
 
-            const percent = jadwalList.length > 0 ? Math.round((completedCount / jadwalList.length) * 100) : 0;
+            const percent = activeJadwal.length > 0 ? Math.round((completedCount / activeJadwal.length) * 100) : 0;
             document.getElementById('dailyProgressBar').style.width = `${percent}%`;
             document.getElementById('dailyProgressText').innerText = `${percent}%`;
         }
 
         function toggleJadwalCheck(id) {
-            const item = jadwalList.find(j => j.id === id);
+            const list = getActiveUserJadwal();
+            const item = list.find(j => j.id === id);
             if (item) {
                 item.checked = !item.checked;
-                setStorage('asramaku_jadwal', jadwalList);
+                setActiveUserJadwal(list);
                 renderJadwal();
             }
+        }
+
+        function openAddJadwalModal() {
+            document.getElementById('jadwalEditId').value = '';
+            document.getElementById('modalJadwalTitle').innerHTML = '<i class="fa-regular fa-calendar-check text-pink-500"></i> Tambah Kegiatan Rutinitas';
+            document.getElementById('formJadwal').reset();
+            document.getElementById('modalJadwal').classList.remove('hidden');
+            document.getElementById('jadwalNama').focus();
+        }
+
+        function openEditJadwalModal(id) {
+            const list = getActiveUserJadwal();
+            const item = list.find(j => j.id === id);
+            if (!item) return;
+
+            document.getElementById('jadwalEditId').value = item.id;
+            document.getElementById('jadwalNama').value = item.nama;
+            document.getElementById('jadwalWaktu').value = item.waktu;
+            document.getElementById('jadwalTempat').value = item.tempat;
+            document.getElementById('jadwalIsWajib').checked = !!(item.wajib || (item.nama && item.nama.includes('Shalat')));
+            document.getElementById('modalJadwalTitle').innerHTML = '<i class="fa-solid fa-pen-to-square text-purple-500"></i> Edit Kegiatan Rutinitas';
+            document.getElementById('modalJadwal').classList.remove('hidden');
+            document.getElementById('jadwalNama').focus();
+        }
+
+        function closeJadwalModal() {
+            document.getElementById('modalJadwal').classList.add('hidden');
+            document.getElementById('formJadwal').reset();
+        }
+
+        function saveJadwal(e) {
+            e.preventDefault();
+            const editId = document.getElementById('jadwalEditId').value;
+            const nama = document.getElementById('jadwalNama').value.trim();
+            const waktu = document.getElementById('jadwalWaktu').value.trim();
+            const tempat = document.getElementById('jadwalTempat').value.trim();
+            const wajib = document.getElementById('jadwalIsWajib').checked;
+
+            if (!nama || !waktu || !tempat) return;
+
+            let list = getActiveUserJadwal();
+
+            if (editId) {
+                const idNum = parseInt(editId);
+                list = list.map(item => {
+                    if (item.id === idNum) {
+                        return { ...item, nama, waktu, tempat, wajib };
+                    }
+                    return item;
+                });
+                setActiveUserJadwal(list);
+                showToast('Kegiatan rutinitas berhasil diperbarui! ✨');
+            } else {
+                const newItem = {
+                    id: Date.now(),
+                    nama,
+                    waktu,
+                    tempat,
+                    checked: false,
+                    wajib
+                };
+                list.push(newItem);
+                setActiveUserJadwal(list);
+                showToast('Kegiatan baru berhasil ditambahkan! 🌸');
+            }
+
+            renderJadwal();
+            closeJadwalModal();
+        }
+
+        function deleteJadwal(id) {
+            let list = getActiveUserJadwal();
+            const target = list.find(j => j.id === id);
+            if (!target) return;
+
+            list = list.filter(j => j.id !== id);
+            setActiveUserJadwal(list);
+            renderJadwal();
+            showToast(`"${target.nama}" telah dihapus dari checklist.`, 'info');
         }
 
         function toggleFavFilter() {
@@ -1453,9 +2675,10 @@
                 return;
             }
 
+            const sortedSantri = sortSantriData(filteredSantri, 'abjad_kelas');
             const prayers = ['subuh', 'maghrib', 'isya'];
 
-            filteredSantri.forEach(santri => {
+            sortedSantri.forEach(santri => {
                 const key = `${selectedMusholaDate}_${santri.id}`;
                 if (!musholaPresensiRecords[key]) {
                     musholaPresensiRecords[key] = { subuh: 'belum', maghrib: 'belum', isya: 'belum' };
@@ -1769,45 +2992,374 @@
             }
         }
 
+        // --- REAL-TIME AUDIO & BROWSER NOTIFICATION SYSTEM ---
+        let audioCtxInstance = null;
+
+        function playChimeSound() {
+            try {
+                const AudioCtx = window.AudioContext || window.webkitAudioContext;
+                if (!AudioCtx) return;
+                if (!audioCtxInstance) {
+                    audioCtxInstance = new AudioCtx();
+                }
+                if (audioCtxInstance.state === 'suspended') {
+                    audioCtxInstance.resume();
+                }
+
+                const now = audioCtxInstance.currentTime;
+                const playTone = (freq, start, duration) => {
+                    const osc = audioCtxInstance.createOscillator();
+                    const gain = audioCtxInstance.createGain();
+
+                    osc.type = 'sine';
+                    osc.frequency.setValueAtTime(freq, start);
+
+                    gain.gain.setValueAtTime(0, start);
+                    gain.gain.linearRampToValueAtTime(0.2, start + 0.04);
+                    gain.gain.exponentialRampToValueAtTime(0.0001, start + duration);
+
+                    osc.connect(gain);
+                    gain.connect(audioCtxInstance.destination);
+
+                    osc.start(start);
+                    osc.stop(start + duration);
+                };
+
+                // Harmonious two-tone gentle bell chime: E5 (659.25Hz) -> A5 (880Hz)
+                playTone(659.25, now, 0.5);
+                playTone(880.00, now + 0.16, 0.8);
+            } catch (e) {
+                console.warn('Audio chime warning:', e);
+            }
+        }
+
+        function triggerBrowserNotification(title, body) {
+            if ('Notification' in window) {
+                if (Notification.permission === 'granted') {
+                    try {
+                        new Notification(title, {
+                            body: body,
+                            icon: 'data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><circle cx="50" cy="50" r="45" fill="%23ec4899"/><text x="50" y="65" font-size="50" text-anchor="middle" fill="white">🔔</text></svg>'
+                        });
+                    } catch (e) {
+                        console.warn('Native notification failed:', e);
+                    }
+                } else if (Notification.permission !== 'denied') {
+                    Notification.requestPermission();
+                }
+            }
+        }
+
+        function testNotificationChime() {
+            playChimeSound();
+            triggerBrowserNotification('Pengingat AsramaKu 🔔', 'Suara alarm dan notifikasi pengingat aktif dengan baik!');
+            showToast('🔔 Suara alarm berbunyi! Sistem pengingat & notifikasi telah aktif.');
+            if ('Notification' in window && Notification.permission !== 'granted') {
+                Notification.requestPermission();
+            }
+        }
+
+        function toggleSoundNotificationState(isEnabled) {
+            setStorage('asramaku_notif_sound_enabled', isEnabled);
+            if (isEnabled) {
+                playChimeSound();
+                showToast('Suara alarm pengingat diaktifkan 🔔', 'info');
+                if ('Notification' in window && Notification.permission !== 'granted') {
+                    Notification.requestPermission();
+                }
+            } else {
+                showToast('Suara alarm pengingat dinonaktifkan (mode hening).', 'info');
+            }
+        }
+
         function renderNotifikasi() {
             const container = document.getElementById('notificationList');
             if (!container) return;
             container.innerHTML = '';
 
+            const soundToggle = document.getElementById('toggleSoundNotif');
+            if (soundToggle) {
+                soundToggle.checked = getStorage('asramaku_notif_sound_enabled', true);
+            }
+
+            const dot = document.getElementById('notifDot');
+            if (dot) {
+                if (notifikasiList.length > 0) {
+                    dot.classList.remove('hidden');
+                } else {
+                    dot.classList.add('hidden');
+                }
+            }
+
+            if (notifikasiList.length === 0) {
+                container.innerHTML = `
+                    <div class="p-6 text-center text-slate-400 font-medium text-xs">
+                        <i class="fa-regular fa-bell-slash text-2xl mb-2 text-slate-300 block"></i>
+                        Tidak ada pengingat aktif saat ini.<br>
+                        Klik <strong>+ Buat Pengingat</strong> untuk memasang alarm baru! ✨
+                    </div>
+                `;
+                return;
+            }
+
             notifikasiList.forEach(notif => {
                 const item = document.createElement('div');
-                item.className = "p-3 rounded-2xl glass-pill hover:bg-white/90 dark:hover:bg-slate-700 transition border border-white/80 dark:border-slate-700 shadow-sm flex items-start gap-3";
+                item.className = "p-3 rounded-2xl glass-pill hover:bg-white/95 dark:hover:bg-slate-700/80 transition-all border border-white/80 dark:border-slate-700 shadow-sm flex items-start gap-3 cursor-pointer group hover:scale-[1.01]";
+                item.onclick = () => handleNotificationClick(notif.id);
+
+                let iconClass = 'fa-solid fa-bell text-pink-500';
+                let iconBg = 'bg-pink-100 dark:bg-pink-900/40';
+                if (notif.kategori === 'mushola' || (notif.judul && (notif.judul.toLowerCase().includes('shalat') || notif.judul.toLowerCase().includes('mushola')))) {
+                    iconClass = 'fa-solid fa-mosque text-purple-500';
+                    iconBg = 'bg-purple-100 dark:bg-purple-900/40';
+                } else if (notif.kategori === 'piket' || (notif.judul && notif.judul.toLowerCase().includes('piket'))) {
+                    iconClass = 'fa-solid fa-broom text-amber-500';
+                    iconBg = 'bg-amber-100 dark:bg-amber-900/40';
+                } else if (notif.kategori === 'jadwal' || (notif.judul && notif.judul.toLowerCase().includes('checklist'))) {
+                    iconClass = 'fa-regular fa-calendar-check text-emerald-500';
+                    iconBg = 'bg-emerald-100 dark:bg-emerald-900/40';
+                }
+
                 item.innerHTML = `
-                    <div class="w-8 h-8 rounded-xl bg-pink-100 dark:bg-pink-900/40 text-pink-500 flex items-center justify-center shrink-0 mt-0.5">
-                        <i class="fa-solid fa-bell text-xs"></i>
+                    <div class="w-8 h-8 rounded-xl ${iconBg} flex items-center justify-center shrink-0 mt-0.5 shadow-xs">
+                        <i class="${iconClass} text-xs"></i>
                     </div>
-                    <div>
-                        <div class="flex justify-between items-center">
-                            <h4 class="text-xs font-bold text-slate-800 dark:text-slate-100">${notif.judul}</h4>
-                            <span class="text-[9px] text-slate-400 font-medium">${notif.waktu}</span>
+                    <div class="flex-1 min-w-0">
+                        <div class="flex justify-between items-start gap-1">
+                            <h4 class="text-xs font-bold text-slate-800 dark:text-slate-100 group-hover:text-pink-600 dark:group-hover:text-pink-400 transition-colors truncate">${notif.judul}</h4>
+                            <span class="text-[9px] text-slate-400 font-medium shrink-0 bg-slate-100 dark:bg-slate-800 px-1.5 py-0.5 rounded-md">${notif.waktu || 'WIB'}</span>
                         </div>
-                        <p class="text-[11px] text-slate-600 dark:text-slate-300 mt-0.5 leading-snug">${notif.pesan}</p>
+                        <p class="text-[11px] text-slate-600 dark:text-slate-300 mt-0.5 leading-snug line-clamp-2">${notif.pesan}</p>
+                        <div class="flex items-center justify-between mt-2 pt-1.5 border-t border-slate-100 dark:border-slate-800">
+                            <span class="text-[9px] font-bold text-pink-500 dark:text-pink-400 flex items-center gap-1 group-hover:underline">
+                                Buka Modul <i class="fa-solid fa-arrow-right text-[8px]"></i>
+                            </span>
+                            <div class="flex items-center gap-1">
+                                <button type="button" onclick="openEditPengingatModal(event, ${notif.id})" title="Edit pengingat" class="btn-bounce text-slate-400 hover:text-pink-600 dark:hover:text-pink-400 text-[10px] px-2 py-0.5 rounded-lg hover:bg-pink-50 dark:hover:bg-pink-950/40 transition flex items-center gap-1 font-bold border border-transparent hover:border-pink-200">
+                                    <i class="fa-solid fa-pen-to-square text-[9px]"></i> Edit
+                                </button>
+                                <button type="button" onclick="deleteNotification(event, ${notif.id})" title="Hapus notifikasi" class="btn-bounce text-slate-400 hover:text-rose-500 text-[10px] p-1 rounded-lg hover:bg-rose-50 dark:hover:bg-rose-950/40 transition">
+                                    <i class="fa-solid fa-xmark"></i>
+                                </button>
+                            </div>
+                        </div>
                     </div>
                 `;
                 container.appendChild(item);
             });
         }
 
+        function handleNotificationClick(notifId) {
+            const notif = notifikasiList.find(n => n.id === notifId);
+            if (!notif) return;
+
+            toggleNotificationPanel();
+
+            if (notif.kategori === 'piket' || (notif.judul && notif.judul.toLowerCase().includes('piket'))) {
+                switchTab('piket');
+                showToast(`Membuka modul Piket Harian ✨`);
+            } else if (notif.kategori === 'mushola' || (notif.judul && (notif.judul.toLowerCase().includes('shalat') || notif.judul.toLowerCase().includes('mushola')))) {
+                switchTab('mushola');
+                showToast(`Membuka modul Presensi Mushola 🕌`);
+            } else {
+                switchTab('jadwal');
+                showToast(`Membuka Checklist Harian 📋`);
+            }
+        }
+
+        function deleteNotification(e, notifId) {
+            if (e) e.stopPropagation();
+            notifikasiList = notifikasiList.filter(n => n.id !== notifId);
+            setStorage('asramaku_notifikasi', notifikasiList);
+            renderNotifikasi();
+            showToast('Notifikasi dihapus.', 'info');
+        }
+
+        function clearAllNotifications() {
+            if (notifikasiList.length === 0) return;
+            notifikasiList = [];
+            setStorage('asramaku_notifikasi', notifikasiList);
+            renderNotifikasi();
+            showToast('Semua notifikasi dibersihkan ✨', 'info');
+        }
+
         function toggleNotificationPanel() {
             const panel = document.getElementById('notificationPanel');
             if (panel) {
                 panel.classList.toggle('hidden');
+                if (!panel.classList.contains('hidden')) {
+                    renderNotifikasi();
+                }
             }
+        }
+
+        function openAddPengingatModal() {
+            const editIdInp = document.getElementById('pengingatEditId');
+            if (editIdInp) editIdInp.value = '';
+
+            const titleEl = document.getElementById('modalPengingatTitle');
+            if (titleEl) titleEl.innerText = 'Buat Pengingat Baru';
+
+            const btnText = document.getElementById('btnSavePengingatText');
+            if (btnText) btnText.innerText = 'Simpan Pengingat';
+
+            const form = document.getElementById('formAddPengingat');
+            if (form) form.reset();
+
+            const now = new Date();
+            const h = String(now.getHours()).padStart(2, '0');
+            const m = String(now.getMinutes()).padStart(2, '0');
+            const timeInp = document.getElementById('pengingatWaktu');
+            if (timeInp) timeInp.value = `${h}:${m}`;
+
+            document.getElementById('modalAddPengingat').classList.remove('hidden');
+            document.getElementById('pengingatJudul').focus();
+        }
+
+        function openEditPengingatModal(e, notifId) {
+            if (e) e.stopPropagation();
+
+            const notif = notifikasiList.find(n => n.id === notifId);
+            if (!notif) return;
+
+            const editIdInp = document.getElementById('pengingatEditId');
+            if (editIdInp) editIdInp.value = notifId;
+
+            const titleEl = document.getElementById('modalPengingatTitle');
+            if (titleEl) titleEl.innerText = 'Edit Pengingat';
+
+            const btnText = document.getElementById('btnSavePengingatText');
+            if (btnText) btnText.innerText = 'Simpan Perubahan ✨';
+
+            document.getElementById('pengingatJudul').value = notif.judul || '';
+
+            // Ekstrak jam HH:mm
+            let waktuVal = notif.targetTime || '';
+            if (!waktuVal && notif.waktu) {
+                const match = notif.waktu.match(/(\d{1,2})[:.](\d{2})/);
+                if (match) {
+                    waktuVal = `${match[1].padStart(2, '0')}:${match[2]}`;
+                }
+            }
+            if (!waktuVal) {
+                const now = new Date();
+                waktuVal = `${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}`;
+            }
+            document.getElementById('pengingatWaktu').value = waktuVal;
+
+            document.getElementById('pengingatKategori').value = notif.kategori || 'umum';
+            document.getElementById('pengingatPesan').value = notif.pesan || '';
+            document.getElementById('pengingatSound').checked = notif.sound !== false;
+
+            document.getElementById('modalAddPengingat').classList.remove('hidden');
+            document.getElementById('pengingatJudul').focus();
+        }
+
+        function closeAddPengingatModal() {
+            document.getElementById('modalAddPengingat').classList.add('hidden');
+            document.getElementById('formAddPengingat').reset();
+            const editIdInp = document.getElementById('pengingatEditId');
+            if (editIdInp) editIdInp.value = '';
+        }
+
+        function saveNewPengingat(e) {
+            e.preventDefault();
+            const editId = document.getElementById('pengingatEditId').value;
+            const judul = document.getElementById('pengingatJudul').value.trim();
+            const waktu = document.getElementById('pengingatWaktu').value;
+            const kategori = document.getElementById('pengingatKategori').value;
+            const pesan = document.getElementById('pengingatPesan').value.trim() || `Pengingat jadwal ${judul} tiba pukul ${waktu} WIB.`;
+            const sound = document.getElementById('pengingatSound').checked;
+
+            if (!judul || !waktu) {
+                showToast('Judul dan jam wajib diisi!', 'warning');
+                return;
+            }
+
+            if (editId) {
+                // Mode Edit: Perbarui pengingat yang ada
+                const targetIdx = notifikasiList.findIndex(n => String(n.id) === String(editId));
+                if (targetIdx !== -1) {
+                    notifikasiList[targetIdx] = {
+                        ...notifikasiList[targetIdx],
+                        judul,
+                        pesan,
+                        waktu: `Jam ${waktu} WIB`,
+                        targetTime: waktu,
+                        kategori,
+                        sound
+                    };
+                    setStorage('asramaku_notifikasi', notifikasiList);
+                    closeAddPengingatModal();
+                    renderNotifikasi();
+                    showToast(`Pengingat "${judul}" berhasil diperbarui! ✨`);
+                    if (sound) playChimeSound();
+                    return;
+                }
+            }
+
+            // Mode Tambah Baru
+            const newNotif = {
+                id: Date.now(),
+                judul,
+                pesan,
+                waktu: `Jam ${waktu} WIB`,
+                targetTime: waktu,
+                kategori,
+                sound
+            };
+
+            notifikasiList.unshift(newNotif);
+            setStorage('asramaku_notifikasi', notifikasiList);
+
+            closeAddPengingatModal();
+            renderNotifikasi();
+            showToast(`Pengingat "${judul}" jam ${waktu} WIB berhasil diaktifkan! 🔔✨`);
+
+            if (sound) {
+                playChimeSound();
+            }
+        }
+
+        function startNotificationScheduler() {
+            // Periksa jadwal pengingat setiap 20 detik
+            setInterval(() => {
+                checkScheduledReminders();
+            }, 20000);
+        }
+
+        function checkScheduledReminders() {
+            const now = new Date();
+            const h = String(now.getHours()).padStart(2, '0');
+            const m = String(now.getMinutes()).padStart(2, '0');
+            const currentTimeStr = `${h}:${m}`;
+            const todayStr = now.toISOString().split('T')[0];
+            const isSoundEnabled = getStorage('asramaku_notif_sound_enabled', true);
+
+            notifikasiList.forEach(notif => {
+                if (notif.targetTime === currentTimeStr && notif.lastTriggeredDate !== todayStr) {
+                    notif.lastTriggeredDate = todayStr;
+                    setStorage('asramaku_notifikasi', notifikasiList);
+
+                    if (isSoundEnabled && notif.sound !== false) {
+                        playChimeSound();
+                    }
+                    triggerBrowserNotification(notif.judul, notif.pesan);
+                    showToast(`🔔 PENGINGAT: ${notif.judul} (${notif.pesan})`);
+                    renderNotifikasi();
+                }
+            });
         }
 
         // --- PROFILE EDITING ---
         let pendingAvatarData = null; // Holds compressed base64 until Save
 
         function openProfileModal() {
-            document.getElementById('profName').value = adminProfile.nama;
-            document.getElementById('profRole').value = adminProfile.jabatan;
-            document.getElementById('profPhone').value = adminProfile.kontak;
-            document.getElementById('modalAvatarPreview').src = adminProfile.avatar;
+            const currentUser = loggedInUser || adminProfile;
+            document.getElementById('profName').value = currentUser.nama || adminProfile.nama || '';
+            document.getElementById('profRole').value = currentUser.role || currentUser.jabatan || adminProfile.jabatan || 'Santriwati';
+            document.getElementById('profPhone').value = currentUser.kontak || adminProfile.kontak || '+62 812-3456-7890';
+            document.getElementById('modalAvatarPreview').src = currentUser.avatar || adminProfile.avatar;
             pendingAvatarData = null;
             // Reset upload UI
             document.getElementById('dropZoneContent').classList.remove('hidden');
@@ -1927,24 +3479,109 @@
 
         function saveProfile(e) {
             e.preventDefault();
-            adminProfile.nama = document.getElementById('profName').value.trim();
-            adminProfile.jabatan = document.getElementById('profRole').value.trim();
-            if (pendingAvatarData) {
-                adminProfile.avatar = pendingAvatarData;
-            }
-            adminProfile.kontak = document.getElementById('profPhone').value.trim();
+            const newName = document.getElementById('profName').value.trim();
+            const newRole = document.getElementById('profRole').value.trim();
+            const newPhone = document.getElementById('profPhone').value.trim();
+            const newAvatar = pendingAvatarData || document.getElementById('modalAvatarPreview').src || adminProfile.avatar;
 
+            adminProfile.nama = newName;
+            adminProfile.jabatan = newRole;
+            adminProfile.kontak = newPhone;
+            if (newAvatar) {
+                adminProfile.avatar = newAvatar;
+            }
             setStorage('asramaku_profile', adminProfile);
+
+            // Sinkronkan ke loggedInUser dan akun terkait
+            if (loggedInUser) {
+                loggedInUser.nama = newName;
+                loggedInUser.role = newRole;
+                loggedInUser.jabatan = newRole;
+                loggedInUser.kontak = newPhone;
+                if (newAvatar) {
+                    loggedInUser.avatar = newAvatar;
+                }
+                setStorage('asramaku_logged_in_user', loggedInUser);
+
+                if (Array.isArray(emailAccounts)) {
+                    const acc = emailAccounts.find(a => a.user_id === loggedInUser.user_id || a.email === loggedInUser.email);
+                    if (acc) {
+                        acc.nama = newName;
+                        acc.role = newRole;
+                        acc.jabatan = newRole;
+                        acc.kontak = newPhone;
+                        if (newAvatar) acc.avatar = newAvatar;
+                        setStorage('asramaku_email_accounts', emailAccounts);
+                    }
+                }
+
+                if (Array.isArray(checklistUsers)) {
+                    const myCUser = checklistUsers.find(u => u.id === loggedInUser.user_id || (u.isMe && loggedInUser.user_id === 'user_suci'));
+                    if (myCUser) {
+                        myCUser.name = `Aku (${newName})`;
+                        setStorage('asramaku_checklist_users', checklistUsers);
+                        if (typeof renderChecklistUserSelector === 'function') renderChecklistUserSelector();
+                    }
+                }
+            }
+
             renderAdminProfileUI();
             closeProfileModal();
-            showToast('Profil pengurus berhasil diperbarui! ✨');
+            showToast('Profil berhasil diperbarui dan disinkronkan! ✨');
+        }
+
+        function syncUserAndAdminProfile() {
+            if (!loggedInUser || !adminProfile) return;
+            let changed = false;
+            // Jika adminProfile punya avatar khusus yang tersimpan tapi loggedInUser masih pakai avatar default
+            if (adminProfile.avatar && adminProfile.avatar !== loggedInUser.avatar) {
+                if (adminProfile.avatar.startsWith('data:') || adminProfile.avatar.includes('blob:') || !loggedInUser.avatar || !loggedInUser.avatar.startsWith('data:')) {
+                    loggedInUser.avatar = adminProfile.avatar;
+                    changed = true;
+                }
+            }
+            // Jika adminProfile punya jabatan/amanah khusus (misal: 'pengabdian')
+            if (adminProfile.jabatan && adminProfile.jabatan !== loggedInUser.role) {
+                loggedInUser.role = adminProfile.jabatan;
+                loggedInUser.jabatan = adminProfile.jabatan;
+                changed = true;
+            }
+            if (adminProfile.nama && adminProfile.nama !== loggedInUser.nama) {
+                loggedInUser.nama = adminProfile.nama;
+                changed = true;
+            }
+            if (changed) {
+                setStorage('asramaku_logged_in_user', loggedInUser);
+                if (Array.isArray(emailAccounts)) {
+                    const acc = emailAccounts.find(a => a.user_id === loggedInUser.user_id || a.email === loggedInUser.email);
+                    if (acc) {
+                        acc.nama = loggedInUser.nama;
+                        acc.role = loggedInUser.role;
+                        acc.avatar = loggedInUser.avatar;
+                        setStorage('asramaku_email_accounts', emailAccounts);
+                    }
+                }
+            }
         }
 
         function renderAdminProfileUI() {
-            document.getElementById('headerProfileName').innerText = adminProfile.nama;
-            document.getElementById('headerProfileRole').innerText = adminProfile.jabatan;
-            document.getElementById('headerProfileAvatar').src = adminProfile.avatar;
-            document.getElementById('bannerGreetingName').innerText = adminProfile.nama;
+            syncUserAndAdminProfile();
+            const currentUser = loggedInUser || adminProfile;
+            if (!currentUser) return;
+
+            const nameEl = document.getElementById('headerProfileName');
+            const roleEl = document.getElementById('headerProfileRole');
+            const avatarEl = document.getElementById('headerProfileAvatar');
+            const greetEl = document.getElementById('bannerGreetingName');
+            const badgeUidEl = document.getElementById('badgeCurrentUserId');
+            const roleBadgeEl = document.getElementById('roleBadge');
+
+            if (nameEl) nameEl.innerText = currentUser.nama;
+            if (roleEl) roleEl.innerText = currentUser.role || currentUser.jabatan || 'Santriwati';
+            if (avatarEl && currentUser.avatar) avatarEl.src = currentUser.avatar;
+            if (greetEl) greetEl.innerText = currentUser.nama;
+            if (badgeUidEl) badgeUidEl.innerText = currentUser.email || currentUser.user_id;
+            if (roleBadgeEl) roleBadgeEl.innerHTML = `✨ Mode ${currentUser.role || currentUser.jabatan || 'Santri'} Soft Glass`;
         }
 
         function updateRekapStats() {
@@ -2164,7 +3801,9 @@
                 picker.value = selectedMusholaDate;
             }
 
+            checkAuthSession();
             renderAdminProfileUI();
+            renderChecklistUserSelector();
             renderSantriTable();
             renderJadwal();
             renderMusholaPresensi();
@@ -2172,6 +3811,7 @@
             renderPengumuman();
             renderHukuman();
             renderNotifikasi();
+            startNotificationScheduler();
         };
     </script>
 </body>
