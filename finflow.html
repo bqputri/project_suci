@@ -1,0 +1,2452 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <title>FinFlow — Aplikasi Manajemen Keuangan Multi-Mode</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google Fonts: Nunito -->
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <style>
+        html, body {
+            overflow-x: clip;
+            -webkit-tap-highlight-color: transparent;
+        }
+        body {
+            font-family: 'Nunito', sans-serif;
+            background-color: #FFFBF7;
+            color: #334155;
+        }
+        button, select, input {
+            touch-action: manipulation;
+        }
+        .safe-bottom {
+            padding-bottom: env(safe-area-inset-bottom, 0px);
+        }
+        ::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #FDF4F7;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #F4C2D7;
+            border-radius: 9999px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #E89BBF;
+        }
+        .fade-in {
+            animation: fadeIn 0.18s ease-out forwards;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(4px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+    </style>
+</head>
+<body class="antialiased selection:bg-pink-100 selection:text-pink-800">
+
+    <!-- Toast Notification Container -->
+    <div id="toast-container" class="fixed top-3 left-3 right-3 sm:left-auto sm:top-4 sm:right-4 sm:max-w-sm z-50 flex flex-col gap-2 pointer-events-none"></div>
+
+    <!-- Custom Modal Container -->
+    <div id="custom-modal" class="fixed inset-0 z-50 hidden items-center justify-center bg-purple-950/30 p-3 sm:p-4">
+        <div id="custom-modal-content" class="bg-[#FFFDFB] rounded-2xl sm:rounded-3xl shadow-lg max-w-[95vw] sm:max-w-md lg:max-w-lg w-full p-5 sm:p-6 fade-in border-2 border-pink-100 max-h-[90vh] overflow-y-auto"></div>
+    </div>
+
+    <!-- ===================================================================== -->
+    <!-- A. HALAMAN AUTENTIKASI                                                -->
+    <!-- ===================================================================== -->
+    <div id="auth-wrapper" class="min-h-screen flex flex-col justify-center items-center p-3 sm:p-6 lg:p-8 bg-gradient-to-br from-[#FFF8F6] via-[#FDF2F8] to-[#F3E8FF]">
+        
+        <!-- 1. Welcome Screen -->
+        <section id="auth-welcome" class="auth-view w-full max-w-4xl 2xl:max-w-5xl bg-white rounded-3xl sm:rounded-[2rem] shadow-md border-2 border-pink-100 overflow-hidden grid grid-cols-1 md:grid-cols-2 fade-in">
+            <div class="p-6 sm:p-8 lg:p-11 2xl:p-12 flex flex-col justify-between bg-gradient-to-br from-pink-200 via-purple-200 to-sky-200 text-slate-800">
+                <div>
+                    <div class="inline-flex items-center gap-2 bg-white/75 px-3.5 py-1.5 rounded-full text-xs sm:text-sm font-bold text-pink-600 mb-5 sm:mb-6 shadow-sm">
+                        <i data-lucide="wallet" class="w-4 h-4"></i> FinFlow Pastel
+                    </div>
+                    <h1 class="text-2xl sm:text-3xl lg:text-4xl font-extrabold leading-tight mb-3 sm:mb-4 text-slate-800">
+                        Satu Akun untuk Semua Tujuan Finansialmu ✨
+                    </h1>
+                    <p class="text-slate-700 text-sm sm:text-base leading-relaxed font-medium">
+                        Kelola keuangan pribadi, pembukuan usaha dagang, hingga portofolio investasi dalam satu ruang nyaman tanpa perlu berganti akun.
+                    </p>
+                </div>
+                <div class="mt-6 sm:mt-8 pt-5 sm:pt-6 border-t border-white/60 grid grid-cols-3 gap-2 sm:gap-3 text-center">
+                    <div class="bg-white/60 rounded-2xl p-2 sm:p-2.5">
+                        <p class="text-base sm:text-lg font-extrabold text-purple-700">3 Mode</p>
+                        <p class="text-[11px] sm:text-xs text-slate-600 font-semibold">Terintegrasi</p>
+                    </div>
+                    <div class="bg-white/60 rounded-2xl p-2 sm:p-2.5">
+                        <p class="text-base sm:text-lg font-extrabold text-pink-600">Ringan</p>
+                        <p class="text-[11px] sm:text-xs text-slate-600 font-semibold">Cepat & Rapi</p>
+                    </div>
+                    <div class="bg-white/60 rounded-2xl p-2 sm:p-2.5">
+                        <p class="text-base sm:text-lg font-extrabold text-emerald-700">100%</p>
+                        <p class="text-[11px] sm:text-xs text-slate-600 font-semibold">Aman & Privat</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="p-6 sm:p-8 lg:p-11 2xl:p-12 flex flex-col justify-center bg-[#FFFDFB]">
+                <h2 class="text-xl sm:text-2xl font-extrabold text-slate-800 mb-2">Selamat Datang! 🌸</h2>
+                <p class="text-slate-500 text-xs sm:text-sm mb-6 sm:mb-7 font-medium">Mulai perjalanan finansialmu dengan memilih opsi di bawah ini.</p>
+                
+                <div class="space-y-3.5">
+                    <button onclick="switchAuthView('login')" class="w-full py-3.5 px-5 bg-pink-500 hover:bg-pink-600 text-white font-bold rounded-2xl shadow-xs transition flex items-center justify-center gap-2">
+                        <i data-lucide="log-in" class="w-4 h-4"></i> Masuk ke Akun
+                    </button>
+                    <button onclick="switchAuthView('register')" class="w-full py-3.5 px-5 bg-purple-50 hover:bg-purple-100 text-purple-700 border border-purple-200 font-bold rounded-2xl transition flex items-center justify-center gap-2">
+                        <i data-lucide="user-plus" class="w-4 h-4"></i> Daftar Akun Baru
+                    </button>
+                    <div class="relative py-2">
+                        <div class="absolute inset-0 flex items-center"><div class="w-full border-t border-pink-100"></div></div>
+                        <div class="relative flex justify-center text-xs uppercase"><span class="bg-[#FFFDFB] px-3 text-slate-400 font-bold">Akses Cepat</span></div>
+                    </div>
+                    <button onclick="demoQuickLogin()" class="w-full py-3 px-5 bg-emerald-100/80 hover:bg-emerald-200/80 text-emerald-800 font-bold rounded-2xl transition flex items-center justify-center gap-2 text-sm">
+                        <i data-lucide="sparkles" class="w-4 h-4"></i> Masuk Cepat (Akun Demo)
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <!-- 2. Login Screen -->
+        <section id="auth-login" class="auth-view hidden w-full max-w-md bg-[#FFFDFB] rounded-[2rem] shadow-md border-2 border-pink-100 p-8 fade-in">
+            <button onclick="switchAuthView('welcome')" class="inline-flex items-center gap-1.5 text-sm font-semibold text-slate-500 hover:text-pink-600 mb-6 transition">
+                <i data-lucide="arrow-left" class="w-4 h-4"></i> Kembali
+            </button>
+            <h2 class="text-2xl font-extrabold text-slate-800 mb-1">Masuk ke FinFlow</h2>
+            <p class="text-sm text-slate-500 mb-6">Masukkan email dan kata sandi Anda untuk melanjutkan.</p>
+
+            <form onsubmit="handleLogin(event)" class="space-y-4">
+                <div>
+                    <label class="block text-xs font-bold text-slate-600 uppercase tracking-wider mb-1.5">Alamat Email</label>
+                    <input type="email" id="login-email" required value="budi.santoso@finflow.id" class="w-full px-4 py-3 rounded-2xl bg-white border border-pink-200 focus:outline-none focus:ring-2 focus:ring-pink-300 text-sm">
+                </div>
+                <div>
+                    <div class="flex justify-between items-center mb-1.5">
+                        <label class="block text-xs font-bold text-slate-600 uppercase tracking-wider">Kata Sandi</label>
+                        <button type="button" onclick="switchAuthView('forgot')" class="text-xs font-bold text-pink-600 hover:underline">Lupa password?</button>
+                    </div>
+                    <input type="password" id="login-password" required value="••••••••" class="w-full px-4 py-3 rounded-2xl bg-white border border-pink-200 focus:outline-none focus:ring-2 focus:ring-pink-300 text-sm">
+                </div>
+                <button type="submit" class="w-full py-3.5 bg-pink-500 hover:bg-pink-600 text-white font-bold rounded-2xl shadow-xs transition mt-2">
+                    Masuk Sekarang
+                </button>
+            </form>
+            <p class="text-center text-sm text-slate-500 mt-6">
+                Belum punya akun? <button onclick="switchAuthView('register')" class="text-purple-600 font-bold hover:underline">Daftar sekarang</button>
+            </p>
+        </section>
+
+        <!-- 3. Register Screen -->
+        <section id="auth-register" class="auth-view hidden w-full max-w-md bg-[#FFFDFB] rounded-[2rem] shadow-md border-2 border-purple-100 p-8 fade-in">
+            <button onclick="switchAuthView('welcome')" class="inline-flex items-center gap-1.5 text-sm font-semibold text-slate-500 hover:text-purple-600 mb-6 transition">
+                <i data-lucide="arrow-left" class="w-4 h-4"></i> Kembali
+            </button>
+            <h2 class="text-2xl font-extrabold text-slate-800 mb-1">Buat Akun Baru</h2>
+            <p class="text-sm text-slate-500 mb-6">Lengkapi data diri Anda untuk mulai mengelola keuangan.</p>
+
+            <form onsubmit="handleRegister(event)" class="space-y-4">
+                <div>
+                    <label class="block text-xs font-bold text-slate-600 uppercase tracking-wider mb-1.5">Nama Lengkap</label>
+                    <input type="text" id="reg-name" required placeholder="Contoh: Budi Santoso" class="w-full px-4 py-3 rounded-2xl bg-white border border-purple-200 focus:outline-none focus:ring-2 focus:ring-purple-300 text-sm">
+                </div>
+                <div>
+                    <label class="block text-xs font-bold text-slate-600 uppercase tracking-wider mb-1.5">Email Aktif</label>
+                    <input type="email" id="reg-email" required placeholder="nama@email.com" class="w-full px-4 py-3 rounded-2xl bg-white border border-purple-200 focus:outline-none focus:ring-2 focus:ring-purple-300 text-sm">
+                </div>
+                <div>
+                    <label class="block text-xs font-bold text-slate-600 uppercase tracking-wider mb-1.5">Nomor Telepon</label>
+                    <input type="tel" id="reg-phone" required placeholder="0812-3456-7890" class="w-full px-4 py-3 rounded-2xl bg-white border border-purple-200 focus:outline-none focus:ring-2 focus:ring-purple-300 text-sm">
+                </div>
+                <div>
+                    <label class="block text-xs font-bold text-slate-600 uppercase tracking-wider mb-1.5">Kata Sandi</label>
+                    <input type="password" required placeholder="Minimal 8 karakter" class="w-full px-4 py-3 rounded-2xl bg-white border border-purple-200 focus:outline-none focus:ring-2 focus:ring-purple-300 text-sm">
+                </div>
+                <button type="submit" class="w-full py-3.5 bg-purple-500 hover:bg-purple-600 text-white font-bold rounded-2xl shadow-xs transition mt-2">
+                    Daftar & Lanjut Verifikasi
+                </button>
+            </form>
+            <p class="text-center text-sm text-slate-500 mt-6">
+                Sudah punya akun? <button onclick="switchAuthView('login')" class="text-pink-600 font-bold hover:underline">Masuk</button>
+            </p>
+        </section>
+
+        <!-- 4. Lupa Password Screen -->
+        <section id="auth-forgot" class="auth-view hidden w-full max-w-md bg-[#FFFDFB] rounded-[2rem] shadow-md border-2 border-amber-100 p-8 fade-in">
+            <button onclick="switchAuthView('login')" class="inline-flex items-center gap-1.5 text-sm font-semibold text-slate-500 hover:text-amber-600 mb-6 transition">
+                <i data-lucide="arrow-left" class="w-4 h-4"></i> Kembali ke Login
+            </button>
+            <div class="w-12 h-12 rounded-2xl bg-amber-100 text-amber-600 flex items-center justify-center mb-4">
+                <i data-lucide="key-round" class="w-6 h-6"></i>
+            </div>
+            <h2 class="text-2xl font-extrabold text-slate-800 mb-1">Lupa Kata Sandi?</h2>
+            <p class="text-sm text-slate-500 mb-6">Masukkan email terdaftar Anda. Kami akan mengirimkan kode OTP untuk mengatur ulang kata sandi.</p>
+
+            <form onsubmit="handleForgotPassword(event)" class="space-y-4">
+                <div>
+                    <label class="block text-xs font-bold text-slate-600 uppercase tracking-wider mb-1.5">Alamat Email</label>
+                    <input type="email" id="forgot-email" required placeholder="budi.santoso@finflow.id" class="w-full px-4 py-3 rounded-2xl bg-white border border-amber-200 focus:outline-none focus:ring-2 focus:ring-amber-300 text-sm">
+                </div>
+                <button type="submit" class="w-full py-3.5 bg-amber-400 hover:bg-amber-500 text-slate-900 font-bold rounded-2xl shadow-xs transition">
+                    Kirim Kode Pemulihan
+                </button>
+            </form>
+        </section>
+
+        <!-- 5. Verifikasi Akun (OTP) Screen -->
+        <section id="auth-verify" class="auth-view hidden w-full max-w-md bg-[#FFFDFB] rounded-[2rem] shadow-md border-2 border-sky-100 p-8 text-center fade-in">
+            <div class="w-14 h-14 rounded-2xl bg-sky-100 text-sky-600 flex items-center justify-center mx-auto mb-4">
+                <i data-lucide="shield-check" class="w-7 h-7"></i>
+            </div>
+            <h2 class="text-2xl font-extrabold text-slate-800 mb-1">Verifikasi Akun Anda</h2>
+            <p class="text-sm text-slate-500 mb-6">Kami telah mengirimkan 4 digit kode verifikasi ke <span id="verify-email-display" class="font-bold text-slate-800">email Anda</span>.</p>
+
+            <form onsubmit="handleVerifyOTP(event)" class="space-y-6">
+                <div class="flex justify-center gap-2 sm:gap-3">
+                    <input type="text" maxlength="1" value="4" required class="otp-input w-12 h-12 sm:w-14 sm:h-14 text-center text-lg sm:text-xl font-extrabold rounded-2xl bg-white border-2 border-sky-200 focus:outline-none focus:ring-2 focus:ring-sky-300">
+                    <input type="text" maxlength="1" value="8" required class="otp-input w-12 h-12 sm:w-14 sm:h-14 text-center text-lg sm:text-xl font-extrabold rounded-2xl bg-white border-2 border-sky-200 focus:outline-none focus:ring-2 focus:ring-sky-300">
+                    <input type="text" maxlength="1" value="2" required class="otp-input w-12 h-12 sm:w-14 sm:h-14 text-center text-lg sm:text-xl font-extrabold rounded-2xl bg-white border-2 border-sky-200 focus:outline-none focus:ring-2 focus:ring-sky-300">
+                    <input type="text" maxlength="1" value="9" required class="otp-input w-12 h-12 sm:w-14 sm:h-14 text-center text-lg sm:text-xl font-extrabold rounded-2xl bg-white border-2 border-sky-200 focus:outline-none focus:ring-2 focus:ring-sky-300">
+                </div>
+                <button type="submit" class="w-full py-3.5 bg-sky-500 hover:bg-sky-600 text-white font-bold rounded-2xl shadow-xs transition">
+                    Verifikasi & Masuk
+                </button>
+            </form>
+            <p class="text-xs text-slate-400 mt-5">
+                Tidak menerima kode? <button type="button" onclick="showToast('Kode verifikasi baru telah dikirim!', 'info')" class="text-pink-600 font-bold hover:underline">Kirim Ulang</button>
+            </p>
+        </section>
+    </div>
+
+    <!-- ===================================================================== -->
+    <!-- B. HALAMAN PEMILIHAN MODE                                             -->
+    <!-- ===================================================================== -->
+    <div id="mode-selector-wrapper" class="hidden min-h-screen flex flex-col justify-center items-center p-4 sm:p-6 lg:p-10 bg-[#FFFBF7]">
+        <div class="max-w-5xl 2xl:max-w-6xl w-full fade-in">
+            <div class="text-center mb-7 sm:mb-10">
+                <span class="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-purple-100 text-purple-700 text-xs font-extrabold uppercase tracking-wider mb-3">
+                    <i data-lucide="layers" class="w-3.5 h-3.5"></i> Multi-Mode Workspace
+                </span>
+                <h1 class="text-2xl sm:text-3xl lg:text-4xl font-extrabold text-slate-800 mb-2.5 sm:mb-3">Pilih Mode Keuanganmu 🌷</h1>
+                <p class="text-slate-500 max-w-xl mx-auto text-xs sm:text-sm lg:text-base font-medium">
+                    Halo, <span id="mode-user-name" class="font-bold text-slate-800">Budi Santoso</span>! Pilih ruang kerja yang sesuai kebutuhanmu. Kamu dapat berpindah mode kapan saja dari dalam dashboard tanpa keluar akun.
+                </p>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4 sm:gap-6 2xl:gap-8">
+                <!-- Mode 1: Keuangan Mandiri -->
+                <div onclick="selectMode('mandiri')" class="group cursor-pointer bg-white rounded-3xl p-5 sm:p-7 2xl:p-8 border-2 border-pink-100 hover:border-pink-400 shadow-sm hover:shadow-md transition-all duration-150 flex flex-col justify-between">
+                    <div>
+                        <div class="w-14 h-14 rounded-2xl bg-pink-100 text-pink-600 group-hover:bg-pink-500 group-hover:text-white flex items-center justify-center mb-6 transition-colors">
+                            <i data-lucide="wallet" class="w-7 h-7"></i>
+                        </div>
+                        <span class="text-xs font-extrabold text-pink-600 uppercase tracking-wider">Mode 01</span>
+                        <h3 class="text-xl font-extrabold text-slate-800 mt-1 mb-2">Keuangan Mandiri</h3>
+                        <p class="text-sm text-slate-500 leading-relaxed mb-6">
+                            Kelola arus kas harian, anggaran bulanan, target tabungan, dan catatan pemasukan serta pengeluaran pribadi.
+                        </p>
+                    </div>
+                    <div class="pt-4 border-t border-pink-50 flex items-center justify-between text-sm font-bold text-pink-600">
+                        <span>Buka Dashboard</span>
+                        <i data-lucide="arrow-right" class="w-4 h-4 group-hover:translate-x-1 transition-transform"></i>
+                    </div>
+                </div>
+
+                <!-- Mode 2: Keuangan Perdagangan -->
+                <div onclick="selectMode('perdagangan')" class="group cursor-pointer bg-white rounded-3xl p-5 sm:p-7 2xl:p-8 border-2 border-emerald-100 hover:border-emerald-400 shadow-sm hover:shadow-md transition-all duration-150 flex flex-col justify-between">
+                    <div>
+                        <div class="w-14 h-14 rounded-2xl bg-emerald-100 text-emerald-600 group-hover:bg-emerald-500 group-hover:text-white flex items-center justify-center mb-6 transition-colors">
+                            <i data-lucide="store" class="w-7 h-7"></i>
+                        </div>
+                        <span class="text-xs font-extrabold text-emerald-600 uppercase tracking-wider">Mode 02</span>
+                        <h3 class="text-xl font-extrabold text-slate-800 mt-1 mb-2">Keuangan Perdagangan</h3>
+                        <p class="text-sm text-slate-500 leading-relaxed mb-6">
+                            Pantau omzet penjualan, modal usaha, biaya operasional, kalkulasi laba bersih, serta manajemen stok barang.
+                        </p>
+                    </div>
+                    <div class="pt-4 border-t border-emerald-50 flex items-center justify-between text-sm font-bold text-emerald-600">
+                        <span>Buka Dashboard</span>
+                        <i data-lucide="arrow-right" class="w-4 h-4 group-hover:translate-x-1 transition-transform"></i>
+                    </div>
+                </div>
+
+                <!-- Mode 3: Investasi -->
+                <div onclick="selectMode('investasi')" class="group cursor-pointer bg-white rounded-3xl p-5 sm:p-7 2xl:p-8 border-2 border-amber-100 hover:border-amber-400 shadow-sm hover:shadow-md transition-all duration-150 flex flex-col justify-between">
+                    <div>
+                        <div class="w-14 h-14 rounded-2xl bg-amber-100 text-amber-600 group-hover:bg-amber-400 group-hover:text-slate-900 flex items-center justify-center mb-6 transition-colors">
+                            <i data-lucide="trending-up" class="w-7 h-7"></i>
+                        </div>
+                        <span class="text-xs font-extrabold text-amber-600 uppercase tracking-wider">Mode 03</span>
+                        <h3 class="text-xl font-extrabold text-slate-800 mt-1 mb-2">Investasi</h3>
+                        <p class="text-sm text-slate-500 leading-relaxed mb-6">
+                            Monitor total modal disetor, valuasi aset terkini, imbal hasil (profit/loss), alokasi portofolio, dan riwayat transaksi.
+                        </p>
+                    </div>
+                    <div class="pt-4 border-t border-amber-50 flex items-center justify-between text-sm font-bold text-amber-600">
+                        <span>Buka Dashboard</span>
+                        <i data-lucide="arrow-right" class="w-4 h-4 group-hover:translate-x-1 transition-transform"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ===================================================================== -->
+    <!-- C & D. APLIKASI UTAMA (DASHBOARD & HALAMAN PENDUKUNG)                 -->
+    <!-- ===================================================================== -->
+    <div id="main-app-wrapper" class="hidden min-h-screen flex flex-col lg:flex-row bg-[#FFFBF7]">
+        
+        <!-- Sidebar Desktop & Laptop -->
+        <aside class="hidden lg:flex lg:flex-col lg:w-64 xl:w-72 2xl:w-80 bg-[#FFFDFB] border-r border-pink-100 fixed inset-y-0 left-0 z-30">
+            <div class="p-6 border-b border-pink-100/70 flex items-center justify-between">
+                <div class="flex items-center gap-2.5">
+                    <div id="sidebar-brand-icon" class="w-10 h-10 rounded-2xl bg-pink-500 text-white flex items-center justify-center shadow-2xs">
+                        <i data-lucide="wallet" class="w-5 h-5"></i>
+                    </div>
+                    <span class="font-extrabold text-xl tracking-tight text-slate-800">FinFlow</span>
+                </div>
+                <span class="text-[11px] font-extrabold px-2.5 py-0.5 rounded-full bg-purple-100 text-purple-700">PASTEL</span>
+            </div>
+
+            <!-- Switcher Mode Cepat tanpa ganti akun -->
+            <div class="p-4 border-b border-pink-100/70">
+                <label class="block text-[11px] font-extrabold text-slate-400 uppercase tracking-wider mb-2 px-1">Mode Aktif</label>
+                <div class="relative">
+                    <select id="desktop-mode-switcher" onchange="selectMode(this.value)" class="w-full appearance-none bg-pink-50/70 border border-pink-200 text-slate-800 font-bold text-sm rounded-2xl px-3.5 py-2.5 pr-9 focus:outline-none focus:ring-2 focus:ring-pink-300 cursor-pointer">
+                        <option value="mandiri">1. Keuangan Mandiri</option>
+                        <option value="perdagangan">2. Keuangan Perdagangan</option>
+                        <option value="investasi">3. Investasi</option>
+                    </select>
+                    <i data-lucide="chevrons-up-down" class="w-4 h-4 text-pink-500 absolute right-3 top-3 pointer-events-none"></i>
+                </div>
+            </div>
+
+            <!-- Menu Navigasi -->
+            <nav class="flex-1 overflow-y-auto p-4 space-y-1">
+                <p class="text-[11px] font-extrabold text-slate-400 uppercase tracking-wider px-3 mb-2">Menu Utama</p>
+                <button onclick="switchPage('dashboard')" data-nav="dashboard" class="nav-item w-full flex items-center gap-3 px-3.5 py-2.5 rounded-2xl text-sm font-bold transition">
+                    <i data-lucide="layout-dashboard" class="w-4 h-4"></i> Dashboard Utama
+                </button>
+                <button onclick="switchPage('dompet')" data-nav="dompet" class="nav-item w-full flex items-center gap-3 px-3.5 py-2.5 rounded-2xl text-sm font-bold transition">
+                    <i data-lucide="wallet" class="w-4 h-4"></i> Dompet & Saldo
+                </button>
+                <button onclick="switchPage('statistik')" data-nav="statistik" class="nav-item w-full flex items-center gap-3 px-3.5 py-2.5 rounded-2xl text-sm font-bold transition">
+                    <i data-lucide="bar-chart-3" class="w-4 h-4"></i> Statistik & Grafik
+                </button>
+                <button onclick="switchPage('kalender')" data-nav="kalender" class="nav-item w-full flex items-center gap-3 px-3.5 py-2.5 rounded-2xl text-sm font-bold transition">
+                    <i data-lucide="calendar-days" class="w-4 h-4"></i> Kalender Keuangan
+                </button>
+                <button onclick="switchPage('laporan')" data-nav="laporan" class="nav-item w-full flex items-center gap-3 px-3.5 py-2.5 rounded-2xl text-sm font-bold transition">
+                    <i data-lucide="file-spreadsheet" class="w-4 h-4"></i> Laporan
+                </button>
+
+                <p class="text-[11px] font-extrabold text-slate-400 uppercase tracking-wider px-3 pt-5 mb-2">Akun & Sistem</p>
+                <button onclick="switchPage('notifikasi')" data-nav="notifikasi" class="nav-item w-full flex items-center justify-between px-3.5 py-2.5 rounded-2xl text-sm font-bold transition">
+                    <span class="flex items-center gap-3"><i data-lucide="bell" class="w-4 h-4"></i> Notifikasi</span>
+                    <span id="sidebar-notif-badge" class="bg-pink-500 text-white text-[11px] font-extrabold px-2 py-0.5 rounded-full">3</span>
+                </button>
+                <button onclick="switchPage('pengaturan')" data-nav="pengaturan" class="nav-item w-full flex items-center gap-3 px-3.5 py-2.5 rounded-2xl text-sm font-bold transition">
+                    <i data-lucide="settings" class="w-4 h-4"></i> Pengaturan
+                </button>
+                <button onclick="switchPage('profil')" data-nav="profil" class="nav-item w-full flex items-center gap-3 px-3.5 py-2.5 rounded-2xl text-sm font-bold transition">
+                    <i data-lucide="user-circle" class="w-4 h-4"></i> Profil Pengguna
+                </button>
+            </nav>
+
+            <!-- Footer Sidebar -->
+            <div class="p-4 border-t border-pink-100/70">
+                <button onclick="logoutApp()" class="w-full flex items-center justify-center gap-2 px-4 py-2.5 rounded-2xl text-sm font-bold text-rose-600 bg-rose-50/70 hover:bg-rose-100 transition">
+                    <i data-lucide="log-out" class="w-4 h-4"></i> Keluar Akun
+                </button>
+            </div>
+        </aside>
+
+        <!-- Main Content Area -->
+        <div class="flex-1 lg:pl-64 xl:pl-72 2xl:pl-80 flex flex-col min-h-screen pb-24 lg:pb-0 min-w-0">
+            
+            <!-- Top Header -->
+            <header class="sticky top-0 z-20 bg-[#FFFDFB]/95 backdrop-blur-xs border-b border-pink-100 px-3 sm:px-6 lg:px-8 2xl:px-10 h-14 sm:h-16 flex items-center justify-between gap-2">
+                <div class="flex items-center gap-2 sm:gap-3 min-w-0">
+                    <button onclick="showModeSelector()" title="Lihat Semua Mode" class="p-2 sm:p-2.5 rounded-2xl bg-purple-100/70 hover:bg-purple-200/70 text-purple-700 transition shrink-0">
+                        <i data-lucide="grid" class="w-4 h-4"></i>
+                    </button>
+                    <div class="min-w-0">
+                        <h2 id="header-page-title" class="font-extrabold text-slate-800 text-sm sm:text-lg leading-tight truncate">Dashboard Utama</h2>
+                        <p id="header-mode-subtitle" class="text-xs font-semibold text-pink-500 hidden sm:block truncate">Mode Keuangan Mandiri</p>
+                    </div>
+                </div>
+
+                <!-- Mobile Mode Switcher & Quick Actions -->
+                <div class="flex items-center gap-1.5 sm:gap-3 shrink-0">
+                    <button onclick="openQuickSearchModal()" title="Pencarian Cepat (Ctrl+K)" class="flex items-center gap-2 px-2.5 sm:px-3.5 py-2 rounded-2xl bg-sky-50 hover:bg-sky-100/80 border border-sky-200/70 text-sky-800 text-xs font-bold transition">
+                        <i data-lucide="search" class="w-4 h-4 text-sky-600"></i>
+                        <span class="hidden md:inline text-sky-700">Cari catatan...</span>
+                        <kbd class="hidden xl:inline-block px-1.5 py-0.5 text-[10px] font-bold bg-white text-sky-500 rounded-lg border border-sky-200">Ctrl K</kbd>
+                    </button>
+
+                    <select id="mobile-mode-switcher" onchange="selectMode(this.value)" class="lg:hidden bg-pink-50 border border-pink-200 text-slate-800 font-bold text-[11px] sm:text-xs rounded-2xl px-2 sm:px-2.5 py-1.5 sm:py-2 focus:outline-none max-w-[105px] sm:max-w-none">
+                        <option value="mandiri">Mandiri</option>
+                        <option value="perdagangan">Perdagangan</option>
+                        <option value="investasi">Investasi</option>
+                    </select>
+
+                    <button onclick="switchPage('notifikasi')" class="relative p-2 sm:p-2.5 rounded-2xl hover:bg-pink-50 text-slate-600 transition">
+                        <i data-lucide="bell" class="w-4 h-4 sm:w-5 sm:h-5"></i>
+                        <span class="absolute top-1.5 right-1.5 sm:top-2 sm:right-2 w-2 h-2 rounded-full bg-pink-500"></span>
+                    </button>
+
+                    <button onclick="switchPage('profil')" class="flex items-center gap-2 sm:gap-2.5 p-1 md:pl-1 md:pr-3 md:py-1 rounded-full bg-purple-50/70 hover:bg-purple-100/70 transition border border-purple-100">
+                        <div class="w-7 h-7 sm:w-8 sm:h-8 rounded-full bg-purple-500 text-white font-extrabold text-[11px] sm:text-xs flex items-center justify-center" id="header-avatar">BS</div>
+                        <span class="text-sm font-bold text-slate-700 hidden md:block" id="header-username">Budi Santoso</span>
+                    </button>
+                </div>
+            </header>
+
+            <!-- Dynamic Content Container -->
+            <main id="page-content" class="flex-1 p-3.5 sm:p-6 lg:p-8 2xl:p-10 max-w-7xl 2xl:max-w-[1520px] w-full mx-auto fade-in">
+                <!-- Konten dirender dinamis via JavaScript -->
+            </main>
+        </div>
+
+        <!-- Mobile Bottom Navigation (Home, Dompet, Tambah, Grafik, Profil) -->
+        <nav class="lg:hidden fixed bottom-0 inset-x-0 bg-[#FFFDFB]/95 backdrop-blur-xs border-t border-pink-100 flex justify-around items-center min-h-[4rem] z-30 px-1.5 safe-bottom">
+            <button onclick="switchPage('dashboard')" data-nav="dashboard" class="mobile-nav-item flex flex-col items-center justify-center flex-1 py-1.5 text-pink-600 font-extrabold transition">
+                <i data-lucide="home" class="w-5 h-5 text-pink-600"></i>
+                <span class="text-[11px] mt-1">Home</span>
+            </button>
+            <button onclick="switchPage('dompet')" data-nav="dompet" class="mobile-nav-item flex flex-col items-center justify-center flex-1 py-1.5 text-slate-600 transition">
+                <i data-lucide="wallet" class="w-5 h-5 text-pink-400"></i>
+                <span class="text-[11px] font-semibold mt-1">Dompet</span>
+            </button>
+            <button onclick="handleQuickAddAction()" class="flex flex-col items-center justify-center flex-1 py-1.5 text-slate-600 active:scale-95 transition">
+                <i data-lucide="plus-circle" class="w-6 h-6 text-pink-500"></i>
+                <span class="text-[11px] font-semibold mt-1">Tambah</span>
+            </button>
+            <button onclick="switchPage('statistik')" data-nav="statistik" class="mobile-nav-item flex flex-col items-center justify-center flex-1 py-1.5 text-slate-600 transition">
+                <i data-lucide="bar-chart-2" class="w-5 h-5 text-pink-400"></i>
+                <span class="text-[11px] font-semibold mt-1">Grafik</span>
+            </button>
+            <button onclick="switchPage('profil')" data-nav="profil" class="mobile-nav-item flex flex-col items-center justify-center flex-1 py-1.5 text-slate-600 transition">
+                <i data-lucide="user" class="w-5 h-5 text-pink-400"></i>
+                <span class="text-[11px] font-semibold mt-1">Profil</span>
+            </button>
+        </nav>
+    </div>
+
+    <script>
+        // =====================================================================
+        // STATE & MOCK DATA APLIKASI
+        // =====================================================================
+        const state = {
+            currentMode: 'mandiri', // 'mandiri' | 'perdagangan' | 'investasi'
+            currentPage: 'dashboard',
+            user: {
+                name: 'Budi Santoso',
+                email: 'budi.santoso@finflow.id',
+                phone: '0812-3456-7890',
+                job: 'Pengusaha & Investor Ritel',
+                verified: true,
+                currency: 'IDR (Rp)'
+            },
+            // Data Mode 1: Keuangan Mandiri
+            mandiri: {
+                saldo: 18450000,
+                pemasukan: 14500000,
+                pengeluaran: 6250000,
+                anggaranTotal: 8000000,
+                anggaranTerpakai: 6250000,
+                tabunganTarget: 50000000,
+                tabunganTerkumpul: 32500000,
+                transaksi: [
+                    { id: 1, tanggal: '2026-11-26', keterangan: 'Gaji Bulanan & Tunjangan', kategori: 'Gaji', tipe: 'masuk', nominal: 12500000 },
+                    { id: 2, tanggal: '2026-11-25', keterangan: 'Belanja Kebutuhan Dapur', kategori: 'Konsumsi', tipe: 'keluar', nominal: 850000 },
+                    { id: 3, tanggal: '2026-11-24', keterangan: 'Tagihan Listrik & Internet', kategori: 'Utilitas', tipe: 'keluar', nominal: 1150000 },
+                    { id: 4, tanggal: '2026-11-22', keterangan: 'Proyek Desain Freelance', kategori: 'Sampingan', tipe: 'masuk', nominal: 2000000 },
+                    { id: 5, tanggal: '2026-11-20', keterangan: 'Cicilan Kendaraan', kategori: 'Transportasi', tipe: 'keluar', nominal: 2450000 }
+                ]
+            },
+            // Data Mode 2: Keuangan Perdagangan
+            perdagangan: {
+                omzet: 68500000,
+                modalUsaha: 35000000,
+                biayaOperasional: 9400000,
+                stokBarang: [
+                    { id: 'BRG-01', nama: 'Kopi Arabika Gayo 500g', stok: 45, hargaJual: 125000, status: 'Aman' },
+                    { id: 'BRG-02', nama: 'Biji Kopi Robusta Lampung 1kg', stok: 8, hargaJual: 140000, status: 'Menipis' },
+                    { id: 'BRG-03', nama: 'Drip Bag Coffee Box (10 pcs)', stok: 62, hargaJual: 85000, status: 'Aman' },
+                    { id: 'BRG-04', nama: 'Sirup Hazelnut Premium 750ml', stok: 3, hargaJual: 110000, status: 'Kritis' }
+                ],
+                riwayatPenjualan: [
+                    { id: 'INV-2091', tanggal: '2026-11-26', pelanggan: 'Kedai Kopi Senja', item: '20x Arabika Gayo 500g', total: 2500000, status: 'Lunas' },
+                    { id: 'INV-2090', tanggal: '2026-11-25', pelanggan: 'Pelanggan Ritel (Tokopedia)', item: '5x Drip Bag Coffee Box', total: 425000, status: 'Lunas' },
+                    { id: 'INV-2089', tanggal: '2026-11-24', pelanggan: 'Roastery Nusantara', item: '15x Robusta Lampung 1kg', total: 2100000, status: 'Lunas' },
+                    { id: 'INV-2088', tanggal: '2026-11-23', pelanggan: 'Cafe Sudut Kota', item: '10x Sirup Hazelnut', total: 1100000, status: 'Tempo' }
+                ]
+            },
+            // Data Mode 3: Investasi
+            investasi: {
+                modalInvestasi: 120000000,
+                nilaiSaatIni: 142850000,
+                portofolio: [
+                    { id: 'POR-1', aset: 'BBCA (Bank Central Asia)', jenis: 'Saham', modal: 50000000, nilaiSekarang: 61500000, porsi: 43 },
+                    { id: 'POR-2', aset: 'Reksadana Pasar Uang Stabil', jenis: 'Reksadana', modal: 30000000, nilaiSekarang: 33150000, porsi: 23 },
+                    { id: 'POR-3', aset: 'Obligasi Negara FR0096', jenis: 'Obligasi', modal: 25000000, nilaiSekarang: 27400000, porsi: 19 },
+                    { id: 'POR-4', aset: 'Emas Antam Digital', jenis: 'Komoditas', modal: 15000000, nilaiSekarang: 20800000, porsi: 15 }
+                ],
+                riwayatTransaksi: [
+                    { id: 'TRX-881', tanggal: '2026-11-24', aset: 'BBCA', aksi: 'Beli', unit: '5 Lot', nominal: 5150000 },
+                    { id: 'TRX-880', tanggal: '2026-11-18', aset: 'Emas Antam Digital', aksi: 'Beli', unit: '2 Gram', nominal: 2840000 },
+                    { id: 'TRX-879', tanggal: '2026-11-10', aset: 'Obligasi Negara FR0096', aksi: 'Dividen/Kupon', unit: '-', nominal: 437500 },
+                    { id: 'TRX-878', tanggal: '2026-11-02', aset: 'TLKM', aksi: 'Jual', unit: '10 Lot', nominal: 3420000 }
+                ]
+            },
+            notifikasi: [
+                { id: 1, judul: 'Stok Sirup Hazelnut Kritis', pesan: 'Sisa stok hanya 3 unit pada Mode Perdagangan. Segera lakukan restock.', waktu: '15 menit lalu', dibaca: false, tipe: 'warning' },
+                { id: 2, judul: 'Kupon Obligasi Diterima', pesan: 'Imbal hasil Rp 437.500 telah masuk ke akun Investasi Anda.', waktu: '2 jam lalu', dibaca: false, tipe: 'success' },
+                { id: 3, judul: 'Anggaran Bulanan 78% Terpakai', pesan: 'Pengeluaran Mode Mandiri mendekati batas anggaran Rp 8.000.000.', waktu: '1 hari lalu', dibaca: false, tipe: 'info' }
+            ]
+        };
+
+        // =====================================================================
+        // HELPER FORMATTING & UI
+        // =====================================================================
+        function showToast(message, type = 'info') {
+            const container = document.getElementById('toast-container');
+            if (!container) return;
+            const styles = {
+                success: 'bg-emerald-50 border-emerald-200 text-emerald-800',
+                warning: 'bg-amber-50 border-amber-200 text-amber-800',
+                error: 'bg-rose-50 border-rose-200 text-rose-800',
+                info: 'bg-purple-50 border-purple-200 text-purple-800'
+            };
+            const icons = {
+                success: 'check-circle-2',
+                warning: 'alert-triangle',
+                error: 'x-circle',
+                info: 'info'
+            };
+            const toast = document.createElement('div');
+            toast.className = `pointer-events-auto flex items-center gap-2.5 px-4 py-3 rounded-2xl border shadow-md text-xs sm:text-sm font-bold fade-in ${styles[type] || styles.info}`;
+            toast.innerHTML = `<i data-lucide="${icons[type] || icons.info}" class="w-4 h-4 shrink-0"></i><span>${message}</span>`;
+            container.appendChild(toast);
+            lucide.createIcons();
+            setTimeout(() => {
+                toast.style.opacity = '0';
+                toast.style.transition = 'opacity 0.25s ease';
+                setTimeout(() => toast.remove(), 250);
+            }, 3000);
+        }
+
+        function formatRupiah(angka) {
+            return new Intl.NumberFormat('id-ID', {
+                style: 'currency',
+                currency: 'IDR',
+                minimumFractionDigits: 0,
+                maximumFractionDigits: 0
+            }).format(angka);
+        }
+
+        function formatRibuanInput(angka) {
+            if (angka === null || angka === undefined || angka === '') return '';
+            const cleanDigits = String(angka).replace(/\D/g, '');
+            if (!cleanDigits) return '';
+            return new Intl.NumberFormat('id-ID').format(parseInt(cleanDigits, 10));
+        }
+
+        function handleRupiahInput(el) {
+            const rawDigits = el.value.replace(/\D/g, '');
+            el.value = rawDigits ? new Intl.NumberFormat('id-ID').format(parseInt(rawDigits, 10)) : '';
+        }
+
+        function parseRupiahInput(val) {
+            const cleanDigits = String(val || '').replace(/\D/g, '');
+            return cleanDigits ? parseInt(cleanDigits, 10) : 0;
+        }
+
+        function openModal(htmlContent) {
+            const modal = document.getElementById('custom-modal');
+            const content = document.getElementById('custom-modal-content');
+            content.innerHTML = htmlContent;
+            modal.classList.remove('hidden');
+            modal.classList.add('flex');
+            lucide.createIcons();
+        }
+
+        function closeModal() {
+            const modal = document.getElementById('custom-modal');
+            modal.classList.add('hidden');
+            modal.classList.remove('flex');
+        }
+
+        function openConfirmDeleteModal(title, description, onConfirmCallback) {
+            openModal(`
+                <div class="text-center">
+                    <div class="w-12 h-12 rounded-2xl bg-rose-100 text-rose-600 flex items-center justify-center mx-auto mb-4">
+                        <i data-lucide="trash-2" class="w-6 h-6"></i>
+                    </div>
+                    <h3 class="font-extrabold text-lg text-slate-800 mb-1">${title}</h3>
+                    <p class="text-sm text-slate-500 mb-6">${description}</p>
+                    <div class="flex gap-3">
+                        <button type="button" onclick="closeModal()" class="flex-1 py-2.5 rounded-2xl bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-sm transition">
+                            Batal
+                        </button>
+                        <button type="button" id="confirm-delete-btn" class="flex-1 py-2.5 rounded-2xl bg-rose-500 hover:bg-rose-600 text-white font-bold text-sm transition">
+                            Ya, Hapus
+                        </button>
+                    </div>
+                </div>
+            `);
+            document.getElementById('confirm-delete-btn').onclick = () => {
+                onConfirmCallback();
+                closeModal();
+            };
+        }
+
+        // =====================================================================
+        // A. LOGIKA AUTENTIKASI
+        // =====================================================================
+        function switchAuthView(viewName) {
+            document.querySelectorAll('.auth-view').forEach(el => el.classList.add('hidden'));
+            document.getElementById(`auth-${viewName}`).classList.remove('hidden');
+            lucide.createIcons();
+        }
+
+        function handleLogin(e) {
+            e.preventDefault();
+            const email = document.getElementById('login-email').value;
+            state.user.email = email;
+            showToast('Login berhasil! Silakan pilih mode keuangan.', 'success');
+            showModeSelector();
+        }
+
+        function handleRegister(e) {
+            e.preventDefault();
+            const name = document.getElementById('reg-name').value;
+            const email = document.getElementById('reg-email').value;
+            const phone = document.getElementById('reg-phone').value;
+            state.user.name = name || 'Pengguna Baru';
+            state.user.email = email;
+            state.user.phone = phone;
+            document.getElementById('verify-email-display').textContent = email;
+            switchAuthView('verify');
+            showToast('Pendaftaran berhasil! Kode verifikasi dikirim.', 'info');
+        }
+
+        function handleForgotPassword(e) {
+            e.preventDefault();
+            const email = document.getElementById('forgot-email').value;
+            document.getElementById('verify-email-display').textContent = email;
+            switchAuthView('verify');
+            showToast('Kode pemulihan terkirim ke email Anda.', 'info');
+        }
+
+        function handleVerifyOTP(e) {
+            e.preventDefault();
+            state.user.verified = true;
+            showToast('Akun berhasil diverifikasi!', 'success');
+            showModeSelector();
+        }
+
+        function demoQuickLogin() {
+            showToast('Masuk menggunakan akun demo Budi Santoso.', 'success');
+            showModeSelector();
+        }
+
+        function logoutApp() {
+            document.getElementById('main-app-wrapper').classList.add('hidden');
+            document.getElementById('mode-selector-wrapper').classList.add('hidden');
+            document.getElementById('auth-wrapper').classList.remove('hidden');
+            switchAuthView('welcome');
+            showToast('Anda telah keluar dari akun.', 'info');
+        }
+
+        // =====================================================================
+        // B. PEMILIHAN & PERPINDAHAN MODE
+        // =====================================================================
+        function showModeSelector() {
+            document.getElementById('auth-wrapper').classList.add('hidden');
+            document.getElementById('main-app-wrapper').classList.add('hidden');
+            document.getElementById('mode-selector-wrapper').classList.remove('hidden');
+            document.getElementById('mode-user-name').textContent = state.user.name;
+            lucide.createIcons();
+        }
+
+        function selectMode(mode) {
+            state.currentMode = mode;
+            document.getElementById('auth-wrapper').classList.add('hidden');
+            document.getElementById('mode-selector-wrapper').classList.add('hidden');
+            document.getElementById('main-app-wrapper').classList.remove('hidden');
+
+            document.getElementById('desktop-mode-switcher').value = mode;
+            document.getElementById('mobile-mode-switcher').value = mode;
+            document.getElementById('header-username').textContent = state.user.name;
+            document.getElementById('header-avatar').textContent = state.user.name.split(' ').map(n => n[0]).join('').substring(0, 2).toUpperCase();
+
+            const modeMeta = {
+                mandiri: { label: 'Mode Keuangan Mandiri', color: 'bg-pink-500' },
+                perdagangan: { label: 'Mode Keuangan Perdagangan', color: 'bg-emerald-500' },
+                investasi: { label: 'Mode Investasi', color: 'bg-amber-400 text-slate-900' }
+            };
+
+            document.getElementById('header-mode-subtitle').textContent = modeMeta[mode].label;
+            const brandIcon = document.getElementById('sidebar-brand-icon');
+            brandIcon.className = `w-10 h-10 rounded-2xl ${modeMeta[mode].color} text-white flex items-center justify-center shadow-2xs transition-colors`;
+
+            switchPage(state.currentPage);
+        }
+
+        function switchPage(page) {
+            state.currentPage = page;
+
+            document.querySelectorAll('.nav-item').forEach(btn => {
+                if (btn.dataset.nav === page) {
+                    btn.classList.add('bg-pink-100/80', 'text-pink-700');
+                    btn.classList.remove('text-slate-600', 'hover:bg-pink-50/60');
+                } else {
+                    btn.classList.remove('bg-pink-100/80', 'text-pink-700');
+                    btn.classList.add('text-slate-600', 'hover:bg-pink-50/60');
+                }
+            });
+
+            document.querySelectorAll('.mobile-nav-item').forEach(btn => {
+                const icon = btn.querySelector('svg, i');
+                if (btn.dataset.nav === page) {
+                    btn.classList.add('text-pink-600', 'font-extrabold');
+                    btn.classList.remove('text-slate-600');
+                    if (icon) {
+                        icon.classList.remove('text-pink-400');
+                        icon.classList.add('text-pink-600');
+                    }
+                } else {
+                    btn.classList.remove('text-pink-600', 'font-extrabold');
+                    btn.classList.add('text-slate-600');
+                    if (icon) {
+                        icon.classList.remove('text-pink-600');
+                        icon.classList.add('text-pink-400');
+                    }
+                }
+            });
+
+            const titles = {
+                dashboard: 'Home',
+                dompet: 'Dompet & Saldo',
+                statistik: 'Statistik & Grafik',
+                kalender: 'Kalender Keuangan',
+                laporan: 'Laporan Keuangan',
+                notifikasi: 'Pusat Notifikasi',
+                pengaturan: 'Pengaturan Sistem',
+                profil: 'Profil Pengguna'
+            };
+            document.getElementById('header-page-title').textContent = titles[page] || 'Home';
+
+            renderPageContent();
+        }
+
+        function handleQuickAddAction() {
+            if (state.currentMode === 'mandiri') {
+                openAddMandiriModal();
+            } else if (state.currentMode === 'perdagangan') {
+                openModal(`
+                    <div class="flex justify-between items-center mb-4">
+                        <h3 class="font-extrabold text-lg text-slate-800">Catat Cepat (Mode Dagang)</h3>
+                        <button onclick="closeModal()" class="p-1.5 rounded-xl hover:bg-pink-50"><i data-lucide="x" class="w-5 h-5"></i></button>
+                    </div>
+                    <div class="space-y-3">
+                        <button onclick="closeModal(); openAddSaleModal()" class="w-full flex items-center gap-3 p-3.5 rounded-2xl bg-emerald-100/80 text-emerald-800 font-bold text-sm hover:bg-emerald-200/80 transition">
+                            <i data-lucide="receipt" class="w-5 h-5"></i> Catat Penjualan Baru
+                        </button>
+                        <button onclick="closeModal(); openAddStockModal()" class="w-full flex items-center gap-3 p-3.5 rounded-2xl bg-sky-100/80 text-sky-800 font-bold text-sm hover:bg-sky-200/80 transition">
+                            <i data-lucide="package-plus" class="w-5 h-5"></i> Tambah Stok Barang
+                        </button>
+                    </div>
+                `);
+            } else if (state.currentMode === 'investasi') {
+                openModal(`
+                    <div class="flex justify-between items-center mb-4">
+                        <h3 class="font-extrabold text-lg text-slate-800">Catat Cepat (Mode Investasi)</h3>
+                        <button onclick="closeModal()" class="p-1.5 rounded-xl hover:bg-pink-50"><i data-lucide="x" class="w-5 h-5"></i></button>
+                    </div>
+                    <div class="space-y-3">
+                        <button onclick="closeModal(); openAddInvestModal()" class="w-full flex items-center gap-3 p-3.5 rounded-2xl bg-amber-100/80 text-amber-800 font-bold text-sm hover:bg-amber-200/80 transition">
+                            <i data-lucide="trending-up" class="w-5 h-5"></i> Catat Transaksi Investasi
+                        </button>
+                        <button onclick="closeModal(); openAddPortfolioModal()" class="w-full flex items-center gap-3 p-3.5 rounded-2xl bg-purple-100/80 text-purple-800 font-bold text-sm hover:bg-purple-200/80 transition">
+                            <i data-lucide="briefcase" class="w-5 h-5"></i> Tambah Aset Portofolio
+                        </button>
+                    </div>
+                `);
+            }
+        }
+
+        function renderPageContent() {
+            const container = document.getElementById('page-content');
+            container.innerHTML = '';
+
+            if (state.currentPage === 'dashboard') {
+                if (state.currentMode === 'mandiri') renderDashboardMandiri(container);
+                else if (state.currentMode === 'perdagangan') renderDashboardPerdagangan(container);
+                else if (state.currentMode === 'investasi') renderDashboardInvestasi(container);
+            } else if (state.currentPage === 'dompet') {
+                renderDompetPage(container);
+            } else if (state.currentPage === 'statistik') {
+                renderStatistikPage(container);
+            } else if (state.currentPage === 'kalender') {
+                renderKalenderPage(container);
+            } else if (state.currentPage === 'laporan') {
+                renderLaporanPage(container);
+            } else if (state.currentPage === 'notifikasi') {
+                renderNotifikasiPage(container);
+            } else if (state.currentPage === 'pengaturan') {
+                renderPengaturanPage(container);
+            } else if (state.currentPage === 'profil') {
+                renderProfilPage(container);
+            }
+
+            lucide.createIcons();
+        }
+
+        // =====================================================================
+        // C1. DASHBOARD MODE 1 — KEUANGAN MANDIRI (DENGAN EDIT & HAPUS)
+        // =====================================================================
+        function renderDashboardMandiri(container) {
+            const d = state.mandiri;
+            const persenAnggaran = Math.min(100, Math.round((d.anggaranTerpakai / d.anggaranTotal) * 100));
+            const persenTabungan = Math.min(100, Math.round((d.tabunganTerkumpul / d.tabunganTarget) * 100));
+
+            container.innerHTML = `
+                <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
+                    <div>
+                        <span class="text-xs font-extrabold text-pink-600 uppercase tracking-wider">Mode 1 • Keuangan Mandiri</span>
+                        <h3 class="text-xl sm:text-2xl font-extrabold text-slate-800">Ringkasan Finansial Pribadi</h3>
+                    </div>
+                    <button onclick="openAddMandiriModal()" class="inline-flex items-center justify-center gap-2 bg-pink-500 hover:bg-pink-600 text-white text-sm font-bold px-4 py-2.5 rounded-2xl shadow-2xs transition">
+                        <i data-lucide="plus" class="w-4 h-4"></i> Catat Transaksi
+                    </button>
+                </div>
+
+                <!-- 3 Kartu Utama Pastel -->
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3.5 sm:gap-4 2xl:gap-6 mb-6">
+                    <div class="bg-purple-50/90 p-4 sm:p-5 2xl:p-6 rounded-3xl border border-purple-200/70">
+                        <div class="flex items-center justify-between mb-3">
+                            <span class="text-xs font-extrabold text-purple-700 uppercase">Saldo Saat Ini</span>
+                            <div class="w-9 h-9 rounded-2xl bg-purple-200/70 text-purple-700 flex items-center justify-center shrink-0"><i data-lucide="wallet" class="w-4 h-4"></i></div>
+                        </div>
+                        <p class="text-xl sm:text-2xl 2xl:text-[1.75rem] font-extrabold text-slate-800 break-words">${formatRupiah(d.saldo)}</p>
+                        <p class="text-xs text-emerald-700 font-bold mt-1 flex items-center gap-1"><i data-lucide="arrow-up-right" class="w-3.5 h-3.5"></i> +12.4% dari bulan lalu</p>
+                    </div>
+
+                    <div class="bg-emerald-50/90 p-4 sm:p-5 2xl:p-6 rounded-3xl border border-emerald-200/70">
+                        <div class="flex items-center justify-between mb-3">
+                            <span class="text-xs font-extrabold text-emerald-700 uppercase">Total Pemasukan</span>
+                            <div class="w-9 h-9 rounded-2xl bg-emerald-200/70 text-emerald-700 flex items-center justify-center shrink-0"><i data-lucide="arrow-down-left" class="w-4 h-4"></i></div>
+                        </div>
+                        <p class="text-xl sm:text-2xl 2xl:text-[1.75rem] font-extrabold text-emerald-700 break-words">${formatRupiah(d.pemasukan)}</p>
+                        <p class="text-xs text-slate-500 font-semibold mt-1">Periode November 2026</p>
+                    </div>
+
+                    <div class="bg-pink-50/90 p-4 sm:p-5 2xl:p-6 rounded-3xl border border-pink-200/70 sm:col-span-2 lg:col-span-1">
+                        <div class="flex items-center justify-between mb-3">
+                            <span class="text-xs font-extrabold text-pink-700 uppercase">Total Pengeluaran</span>
+                            <div class="w-9 h-9 rounded-2xl bg-pink-200/70 text-pink-700 flex items-center justify-center shrink-0"><i data-lucide="arrow-up-right" class="w-4 h-4"></i></div>
+                        </div>
+                        <p class="text-xl sm:text-2xl 2xl:text-[1.75rem] font-extrabold text-pink-600 break-words">${formatRupiah(d.pengeluaran)}</p>
+                        <p class="text-xs text-slate-500 font-semibold mt-1">Periode November 2026</p>
+                    </div>
+                </div>
+
+                <!-- Anggaran & Tabungan -->
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+                    <div class="bg-white p-5 rounded-3xl border border-sky-200/70">
+                        <div class="flex items-center justify-between mb-2">
+                            <div class="flex items-center gap-2">
+                                <i data-lucide="pie-chart" class="w-4 h-4 text-sky-600"></i>
+                                <h4 class="font-extrabold text-slate-800 text-sm">Anggaran Bulanan</h4>
+                            </div>
+                            <span class="text-xs font-extrabold px-2.5 py-0.5 rounded-full bg-sky-100 text-sky-700">${persenAnggaran}% Terpakai</span>
+                        </div>
+                        <div class="flex justify-between text-xs text-slate-500 mb-2">
+                            <span>Terpakai: <strong class="text-slate-800">${formatRupiah(d.anggaranTerpakai)}</strong></span>
+                            <span>Batas: <strong class="text-slate-800">${formatRupiah(d.anggaranTotal)}</strong></span>
+                        </div>
+                        <div class="w-full h-3 bg-sky-100 rounded-full overflow-hidden">
+                            <div class="h-full bg-sky-400 rounded-full transition-all" style="width: ${persenAnggaran}%"></div>
+                        </div>
+                    </div>
+
+                    <div class="bg-white p-5 rounded-3xl border border-amber-200/70">
+                        <div class="flex items-center justify-between mb-2">
+                            <div class="flex items-center gap-2">
+                                <i data-lucide="piggy-bank" class="w-4 h-4 text-amber-600"></i>
+                                <h4 class="font-extrabold text-slate-800 text-sm">Target Tabungan (Dana Darurat)</h4>
+                            </div>
+                            <span class="text-xs font-extrabold px-2.5 py-0.5 rounded-full bg-amber-100 text-amber-800">${persenTabungan}% Tercapai</span>
+                        </div>
+                        <div class="flex justify-between text-xs text-slate-500 mb-2">
+                            <span>Terkumpul: <strong class="text-slate-800">${formatRupiah(d.tabunganTerkumpul)}</strong></span>
+                            <span>Target: <strong class="text-slate-800">${formatRupiah(d.tabunganTarget)}</strong></span>
+                        </div>
+                        <div class="w-full h-3 bg-amber-100 rounded-full overflow-hidden">
+                            <div class="h-full bg-amber-400 rounded-full transition-all" style="width: ${persenTabungan}%"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Riwayat Transaksi dengan Edit & Hapus -->
+                <div class="bg-white rounded-3xl border border-pink-100 overflow-hidden">
+                    <div class="p-5 border-b border-pink-50 flex items-center justify-between bg-pink-50/30">
+                        <h4 class="font-extrabold text-slate-800">Riwayat Transaksi Terakhir</h4>
+                        <span class="text-xs font-bold text-pink-600 bg-pink-100/70 px-2.5 py-1 rounded-full">${d.transaksi.length} catatan</span>
+                    </div>
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-left border-collapse">
+                            <thead>
+                                <tr class="bg-[#FFF9F6] text-slate-500 text-xs uppercase tracking-wider border-b border-pink-100/70">
+                                    <th class="py-3.5 px-5 font-extrabold">Tanggal</th>
+                                    <th class="py-3.5 px-5 font-extrabold">Keterangan</th>
+                                    <th class="py-3.5 px-5 font-extrabold">Kategori</th>
+                                    <th class="py-3.5 px-5 font-extrabold text-right">Nominal</th>
+                                    <th class="py-3.5 px-5 font-extrabold text-center">Aksi</th>
+                                </tr>
+                            </thead>
+                            <tbody class="divide-y divide-pink-50 text-sm">
+                                ${d.transaksi.length === 0 ? `
+                                    <tr><td colspan="5" class="py-8 text-center text-slate-400">Belum ada riwayat transaksi.</td></tr>
+                                ` : d.transaksi.map(trx => `
+                                    <tr class="hover:bg-pink-50/40 transition">
+                                        <td class="py-3.5 px-5 text-slate-500 whitespace-nowrap">${trx.tanggal}</td>
+                                        <td class="py-3.5 px-5 font-bold text-slate-800">${trx.keterangan}</td>
+                                        <td class="py-3.5 px-5"><span class="px-2.5 py-1 rounded-xl bg-purple-100/70 text-purple-700 text-xs font-bold">${trx.kategori}</span></td>
+                                        <td class="py-3.5 px-5 text-right font-extrabold whitespace-nowrap ${trx.tipe === 'masuk' ? 'text-emerald-600' : 'text-pink-600'}">
+                                            ${trx.tipe === 'masuk' ? '+' : '-'} ${formatRupiah(trx.nominal)}
+                                        </td>
+                                        <td class="py-3.5 px-5 text-center whitespace-nowrap">
+                                            <div class="inline-flex items-center gap-1.5">
+                                                <button onclick="openEditMandiriModal(${trx.id})" title="Edit Transaksi" class="p-1.5 rounded-xl text-purple-600 hover:bg-purple-100/70 transition">
+                                                    <i data-lucide="pencil" class="w-4 h-4"></i>
+                                                </button>
+                                                <button onclick="deleteMandiriTransaction(${trx.id})" title="Hapus Transaksi" class="p-1.5 rounded-xl text-rose-500 hover:bg-rose-100/70 transition">
+                                                    <i data-lucide="trash-2" class="w-4 h-4"></i>
+                                                </button>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                `).join('')}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            `;
+        }
+
+        function openAddMandiriModal() {
+            openModal(`
+                <div class="flex justify-between items-center mb-4">
+                    <h3 class="font-extrabold text-lg text-slate-800">Tambah Transaksi Mandiri</h3>
+                    <button onclick="closeModal()" class="p-1.5 rounded-xl hover:bg-pink-50"><i data-lucide="x" class="w-5 h-5"></i></button>
+                </div>
+                <form onsubmit="submitMandiriTransaction(event)" class="space-y-4">
+                    <div>
+                        <label class="block text-xs font-bold text-slate-600 uppercase mb-1">Jenis Transaksi</label>
+                        <select id="trx-tipe" class="w-full px-3.5 py-2.5 rounded-2xl bg-white border border-pink-200 text-sm">
+                            <option value="keluar">Pengeluaran (-)</option>
+                            <option value="masuk">Pemasukan (+)</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold text-slate-600 uppercase mb-1">Keterangan</label>
+                        <input type="text" id="trx-ket" required placeholder="Contoh: Makan Siang / Bonus Proyek" class="w-full px-3.5 py-2.5 rounded-2xl bg-white border border-pink-200 text-sm">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold text-slate-600 uppercase mb-1">Kategori</label>
+                        <input type="text" id="trx-kat" required placeholder="Contoh: Konsumsi, Gaji, Transportasi" class="w-full px-3.5 py-2.5 rounded-2xl bg-white border border-pink-200 text-sm">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold text-slate-600 uppercase mb-1">Nominal (Rp)</label>
+                        <input type="text" inputmode="numeric" id="trx-nom" required oninput="handleRupiahInput(this)" placeholder="150.000" class="w-full px-3.5 py-2.5 rounded-2xl bg-white border border-pink-200 text-sm">
+                    </div>
+                    <button type="submit" class="w-full py-3 bg-pink-500 hover:bg-pink-600 text-white font-bold rounded-2xl text-sm">Simpan Transaksi</button>
+                </form>
+            `);
+        }
+
+        function submitMandiriTransaction(e) {
+            e.preventDefault();
+            const tipe = document.getElementById('trx-tipe').value;
+            const keterangan = document.getElementById('trx-ket').value;
+            const kategori = document.getElementById('trx-kat').value;
+            const nominal = parseRupiahInput(document.getElementById('trx-nom').value);
+            if (nominal <= 0) return;
+
+            state.mandiri.transaksi.unshift({
+                id: Date.now(),
+                tanggal: '2026-11-26',
+                keterangan,
+                kategori,
+                tipe,
+                nominal
+            });
+
+            if (tipe === 'masuk') {
+                state.mandiri.pemasukan += nominal;
+                state.mandiri.saldo += nominal;
+            } else {
+                state.mandiri.pengeluaran += nominal;
+                state.mandiri.anggaranTerpakai += nominal;
+                state.mandiri.saldo -= nominal;
+            }
+
+            closeModal();
+            renderPageContent();
+            showToast('Transaksi berhasil dicatat!', 'success');
+        }
+
+        function openEditMandiriModal(id) {
+            const trx = state.mandiri.transaksi.find(t => t.id === id);
+            if (!trx) return;
+            openModal(`
+                <div class="flex justify-between items-center mb-4">
+                    <h3 class="font-extrabold text-lg text-slate-800">Edit Transaksi Mandiri</h3>
+                    <button onclick="closeModal()" class="p-1.5 rounded-xl hover:bg-pink-50"><i data-lucide="x" class="w-5 h-5"></i></button>
+                </div>
+                <form onsubmit="updateMandiriTransaction(event, ${id})" class="space-y-4">
+                    <div>
+                        <label class="block text-xs font-bold text-slate-600 uppercase mb-1">Tanggal</label>
+                        <input type="date" id="edit-trx-tgl" required value="${trx.tanggal}" class="w-full px-3.5 py-2.5 rounded-2xl bg-white border border-pink-200 text-sm">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold text-slate-600 uppercase mb-1">Jenis Transaksi</label>
+                        <select id="edit-trx-tipe" class="w-full px-3.5 py-2.5 rounded-2xl bg-white border border-pink-200 text-sm">
+                            <option value="keluar" ${trx.tipe === 'keluar' ? 'selected' : ''}>Pengeluaran (-)</option>
+                            <option value="masuk" ${trx.tipe === 'masuk' ? 'selected' : ''}>Pemasukan (+)</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold text-slate-600 uppercase mb-1">Keterangan</label>
+                        <input type="text" id="edit-trx-ket" required value="${trx.keterangan}" class="w-full px-3.5 py-2.5 rounded-2xl bg-white border border-pink-200 text-sm">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold text-slate-600 uppercase mb-1">Kategori</label>
+                        <input type="text" id="edit-trx-kat" required value="${trx.kategori}" class="w-full px-3.5 py-2.5 rounded-2xl bg-white border border-pink-200 text-sm">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold text-slate-600 uppercase mb-1">Nominal (Rp)</label>
+                        <input type="text" inputmode="numeric" id="edit-trx-nom" required oninput="handleRupiahInput(this)" value="${formatRibuanInput(trx.nominal)}" class="w-full px-3.5 py-2.5 rounded-2xl bg-white border border-pink-200 text-sm">
+                    </div>
+                    <button type="submit" class="w-full py-3 bg-pink-500 hover:bg-pink-600 text-white font-bold rounded-2xl text-sm">Simpan Perubahan</button>
+                </form>
+            `);
+        }
+
+        function updateMandiriTransaction(e, id) {
+            e.preventDefault();
+            const index = state.mandiri.transaksi.findIndex(t => t.id === id);
+            if (index === -1) return;
+
+            const oldTrx = state.mandiri.transaksi[index];
+            if (oldTrx.tipe === 'masuk') {
+                state.mandiri.pemasukan -= oldTrx.nominal;
+                state.mandiri.saldo -= oldTrx.nominal;
+            } else {
+                state.mandiri.pengeluaran -= oldTrx.nominal;
+                state.mandiri.anggaranTerpakai -= oldTrx.nominal;
+                state.mandiri.saldo += oldTrx.nominal;
+            }
+
+            const tanggal = document.getElementById('edit-trx-tgl').value;
+            const tipe = document.getElementById('edit-trx-tipe').value;
+            const keterangan = document.getElementById('edit-trx-ket').value;
+            const kategori = document.getElementById('edit-trx-kat').value;
+            const nominal = parseRupiahInput(document.getElementById('edit-trx-nom').value);
+
+            state.mandiri.transaksi[index] = { id, tanggal, keterangan, kategori, tipe, nominal };
+
+            if (tipe === 'masuk') {
+                state.mandiri.pemasukan += nominal;
+                state.mandiri.saldo += nominal;
+            } else {
+                state.mandiri.pengeluaran += nominal;
+                state.mandiri.anggaranTerpakai += nominal;
+                state.mandiri.saldo -= nominal;
+            }
+
+            closeModal();
+            renderPageContent();
+            showToast('Transaksi berhasil diperbarui!', 'success');
+        }
+
+        function deleteMandiriTransaction(id) {
+            const index = state.mandiri.transaksi.findIndex(t => t.id === id);
+            if (index === -1) return;
+            const trx = state.mandiri.transaksi[index];
+
+            openConfirmDeleteModal(
+                'Hapus Transaksi?',
+                `Catatan "${trx.keterangan}" (${formatRupiah(trx.nominal)}) akan dihapus permanen dan saldo akan disesuaikan.`,
+                () => {
+                    if (trx.tipe === 'masuk') {
+                        state.mandiri.pemasukan -= trx.nominal;
+                        state.mandiri.saldo -= trx.nominal;
+                    } else {
+                        state.mandiri.pengeluaran -= trx.nominal;
+                        state.mandiri.anggaranTerpakai -= trx.nominal;
+                        state.mandiri.saldo += trx.nominal;
+                    }
+                    state.mandiri.transaksi.splice(index, 1);
+                    renderPageContent();
+                    showToast('Transaksi berhasil dihapus!', 'info');
+                }
+            );
+        }
+
+        // =====================================================================
+        // C2. DASHBOARD MODE 2 — KEUANGAN PERDAGANGAN (DENGAN EDIT & HAPUS)
+        // =====================================================================
+        function renderDashboardPerdagangan(container) {
+            const d = state.perdagangan;
+            const keuntunganBersih = d.omzet - d.modalUsaha - d.biayaOperasional;
+
+            container.innerHTML = `
+                <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
+                    <div>
+                        <span class="text-xs font-extrabold text-emerald-600 uppercase tracking-wider">Mode 2 • Keuangan Perdagangan</span>
+                        <h3 class="text-xl sm:text-2xl font-extrabold text-slate-800">Performa Usaha & Inventaris</h3>
+                    </div>
+                    <div class="flex flex-wrap gap-2">
+                        <button onclick="openAddStockModal()" class="inline-flex items-center justify-center gap-2 bg-sky-100/80 hover:bg-sky-200/80 text-sky-800 text-sm font-bold px-4 py-2.5 rounded-2xl transition">
+                            <i data-lucide="package-plus" class="w-4 h-4 text-sky-600"></i> Tambah Stok
+                        </button>
+                        <button onclick="openAddSaleModal()" class="inline-flex items-center justify-center gap-2 bg-emerald-500 hover:bg-emerald-600 text-white text-sm font-bold px-4 py-2.5 rounded-2xl shadow-2xs transition">
+                            <i data-lucide="plus" class="w-4 h-4"></i> Catat Penjualan
+                        </button>
+                    </div>
+                </div>
+
+                <!-- 4 Kartu Metrik Usaha Pastel -->
+                <div class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-3.5 sm:gap-4 2xl:gap-6 mb-6">
+                    <div class="bg-sky-50/90 p-4 sm:p-5 2xl:p-6 rounded-3xl border border-sky-200/70">
+                        <span class="text-xs font-extrabold text-sky-700 uppercase">Total Omzet</span>
+                        <p class="text-xl sm:text-2xl 2xl:text-[1.75rem] font-extrabold text-slate-800 mt-2 break-words">${formatRupiah(d.omzet)}</p>
+                        <span class="inline-block text-xs text-emerald-700 font-bold mt-1">+18.2% bulan ini</span>
+                    </div>
+
+                    <div class="bg-purple-50/90 p-4 sm:p-5 2xl:p-6 rounded-3xl border border-purple-200/70">
+                        <span class="text-xs font-extrabold text-purple-700 uppercase">Modal Usaha</span>
+                        <p class="text-xl sm:text-2xl 2xl:text-[1.75rem] font-extrabold text-slate-800 mt-2 break-words">${formatRupiah(d.modalUsaha)}</p>
+                        <span class="inline-block text-xs text-slate-500 font-semibold mt-1">HPP & Belanja Bahan</span>
+                    </div>
+
+                    <div class="bg-pink-50/90 p-4 sm:p-5 2xl:p-6 rounded-3xl border border-pink-200/70">
+                        <span class="text-xs font-extrabold text-pink-700 uppercase">Biaya Operasional</span>
+                        <p class="text-xl sm:text-2xl 2xl:text-[1.75rem] font-extrabold text-pink-600 mt-2 break-words">${formatRupiah(d.biayaOperasional)}</p>
+                        <span class="inline-block text-xs text-slate-500 font-semibold mt-1">Gaji, Kemasan & Listrik</span>
+                    </div>
+
+                    <div class="bg-emerald-100/90 text-emerald-950 p-4 sm:p-5 2xl:p-6 rounded-3xl border border-emerald-300/70">
+                        <span class="text-xs font-extrabold text-emerald-800 uppercase">Keuntungan Bersih</span>
+                        <p class="text-xl sm:text-2xl 2xl:text-[1.75rem] font-extrabold mt-2 text-emerald-900 break-words">${formatRupiah(keuntunganBersih)}</p>
+                        <span class="inline-block text-xs text-emerald-700 font-bold mt-1">Margin Laba: ${d.omzet > 0 ? Math.round((keuntunganBersih / d.omzet) * 100) : 0}%</span>
+                    </div>
+                </div>
+
+                <!-- Stok Barang & Riwayat Penjualan -->
+                <div class="grid grid-cols-1 xl:grid-cols-2 gap-5 sm:gap-6">
+                    <!-- Stok Barang dengan Edit & Hapus -->
+                    <div class="bg-white rounded-3xl border border-emerald-100 overflow-hidden">
+                        <div class="p-5 border-b border-emerald-50 flex items-center justify-between bg-emerald-50/40">
+                            <h4 class="font-extrabold text-slate-800 flex items-center gap-2"><i data-lucide="package" class="w-4 h-4 text-emerald-600"></i> Stok Barang</h4>
+                            <span class="text-xs font-bold text-emerald-700 bg-emerald-100/80 px-2.5 py-1 rounded-full">${d.stokBarang.length} SKU</span>
+                        </div>
+                        <div class="overflow-x-auto">
+                            <table class="w-full text-left border-collapse">
+                                <thead>
+                                    <tr class="bg-[#F7FCF9] text-slate-500 text-xs uppercase border-b border-emerald-100/70">
+                                        <th class="py-3 px-4 font-extrabold">Produk</th>
+                                        <th class="py-3 px-4 font-extrabold text-center">Stok</th>
+                                        <th class="py-3 px-4 font-extrabold text-right">Harga</th>
+                                        <th class="py-3 px-4 font-extrabold text-center">Status</th>
+                                        <th class="py-3 px-4 font-extrabold text-center">Aksi</th>
+                                    </tr>
+                                </thead>
+                                <tbody class="divide-y divide-emerald-50 text-sm">
+                                    ${d.stokBarang.length === 0 ? `
+                                        <tr><td colspan="5" class="py-6 text-center text-slate-400">Belum ada data stok barang.</td></tr>
+                                    ` : d.stokBarang.map(item => {
+                                        const badgeColor = item.status === 'Aman' ? 'bg-emerald-100 text-emerald-800' : item.status === 'Menipis' ? 'bg-amber-100 text-amber-800' : 'bg-rose-100 text-rose-800';
+                                        return `
+                                            <tr class="hover:bg-emerald-50/40">
+                                                <td class="py-3 px-4 font-bold text-slate-800">${item.nama}</td>
+                                                <td class="py-3 px-4 text-center font-extrabold">${item.stok}</td>
+                                                <td class="py-3 px-4 text-right text-slate-600 whitespace-nowrap">${formatRupiah(item.hargaJual)}</td>
+                                                <td class="py-3 px-4 text-center"><span class="px-2.5 py-0.5 rounded-full text-xs font-bold ${badgeColor}">${item.status}</span></td>
+                                                <td class="py-3 px-4 text-center whitespace-nowrap">
+                                                    <div class="inline-flex items-center gap-1">
+                                                        <button onclick="openEditStockModal('${item.id}')" title="Edit Stok" class="p-1.5 rounded-xl text-emerald-600 hover:bg-emerald-100/70 transition">
+                                                            <i data-lucide="pencil" class="w-3.5 h-3.5"></i>
+                                                        </button>
+                                                        <button onclick="deleteStockItem('${item.id}')" title="Hapus Barang" class="p-1.5 rounded-xl text-rose-500 hover:bg-rose-100/70 transition">
+                                                            <i data-lucide="trash-2" class="w-3.5 h-3.5"></i>
+                                                        </button>
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                        `;
+                                    }).join('')}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <!-- Riwayat Penjualan dengan Edit & Hapus -->
+                    <div class="bg-white rounded-3xl border border-sky-100 overflow-hidden">
+                        <div class="p-5 border-b border-sky-50 flex items-center justify-between bg-sky-50/40">
+                            <h4 class="font-extrabold text-slate-800 flex items-center gap-2"><i data-lucide="receipt" class="w-4 h-4 text-sky-600"></i> Riwayat Penjualan</h4>
+                            <span class="text-xs font-bold text-sky-700 bg-sky-100/80 px-2.5 py-1 rounded-full">${d.riwayatPenjualan.length} transaksi</span>
+                        </div>
+                        <div class="divide-y divide-sky-50">
+                            ${d.riwayatPenjualan.length === 0 ? `
+                                <p class="py-8 text-center text-sm text-slate-400">Belum ada riwayat penjualan.</p>
+                            ` : d.riwayatPenjualan.map(sale => `
+                                <div class="p-4 flex items-center justify-between gap-3 hover:bg-sky-50/40 transition">
+                                    <div class="min-w-0 flex-1">
+                                        <p class="font-bold text-slate-800 text-sm truncate">${sale.pelanggan} <span class="text-xs font-normal text-slate-400">(${sale.id})</span></p>
+                                        <p class="text-xs text-slate-500 mt-0.5 truncate">${sale.item} • ${sale.tanggal}</p>
+                                    </div>
+                                    <div class="text-right shrink-0">
+                                        <p class="font-extrabold text-emerald-600 text-sm">${formatRupiah(sale.total)}</p>
+                                        <span class="text-[11px] font-bold px-2 py-0.5 rounded-lg ${sale.status === 'Lunas' ? 'bg-emerald-100 text-emerald-800' : 'bg-amber-100 text-amber-800'}">${sale.status}</span>
+                                    </div>
+                                    <div class="flex items-center gap-1 shrink-0 border-l border-sky-100 pl-2">
+                                        <button onclick="openEditSaleModal('${sale.id}')" title="Edit Penjualan" class="p-1.5 rounded-xl text-sky-600 hover:bg-sky-100/70 transition">
+                                            <i data-lucide="pencil" class="w-4 h-4"></i>
+                                        </button>
+                                        <button onclick="deleteSaleItem('${sale.id}')" title="Hapus Penjualan" class="p-1.5 rounded-xl text-rose-500 hover:bg-rose-100/70 transition">
+                                            <i data-lucide="trash-2" class="w-4 h-4"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                            `).join('')}
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        function getStockStatus(stok) {
+            if (stok <= 4) return 'Kritis';
+            if (stok <= 12) return 'Menipis';
+            return 'Aman';
+        }
+
+        function openAddStockModal() {
+            openModal(`
+                <div class="flex justify-between items-center mb-4">
+                    <h3 class="font-extrabold text-lg text-slate-800">Tambah Stok Barang</h3>
+                    <button onclick="closeModal()" class="p-1.5 rounded-xl hover:bg-pink-50"><i data-lucide="x" class="w-5 h-5"></i></button>
+                </div>
+                <form onsubmit="submitStockItem(event)" class="space-y-4">
+                    <div>
+                        <label class="block text-xs font-bold text-slate-600 uppercase mb-1">Nama Produk</label>
+                        <input type="text" id="stk-nama" required placeholder="Contoh: Matcha Powder Uji 250g" class="w-full px-3.5 py-2.5 rounded-2xl bg-white border border-emerald-200 text-sm">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold text-slate-600 uppercase mb-1">Jumlah Stok</label>
+                        <input type="number" id="stk-jumlah" required min="0" placeholder="25" class="w-full px-3.5 py-2.5 rounded-2xl bg-white border border-emerald-200 text-sm">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold text-slate-600 uppercase mb-1">Harga Jual (Rp)</label>
+                        <input type="text" inputmode="numeric" id="stk-harga" required oninput="handleRupiahInput(this)" placeholder="135.000" class="w-full px-3.5 py-2.5 rounded-2xl bg-white border border-emerald-200 text-sm">
+                    </div>
+                    <button type="submit" class="w-full py-3 bg-emerald-500 hover:bg-emerald-600 text-white font-bold rounded-2xl text-sm">Simpan Barang</button>
+                </form>
+            `);
+        }
+
+        function submitStockItem(e) {
+            e.preventDefault();
+            const nama = document.getElementById('stk-nama').value;
+            const stok = parseInt(document.getElementById('stk-jumlah').value, 10);
+            const hargaJual = parseRupiahInput(document.getElementById('stk-harga').value);
+            const status = getStockStatus(stok);
+
+            state.perdagangan.stokBarang.unshift({
+                id: 'BRG-' + Math.floor(10 + Math.random() * 89),
+                nama,
+                stok,
+                hargaJual,
+                status
+            });
+            closeModal();
+            renderPageContent();
+            showToast('Stok barang berhasil ditambahkan!', 'success');
+        }
+
+        function openEditStockModal(id) {
+            const item = state.perdagangan.stokBarang.find(s => s.id === id);
+            if (!item) return;
+            openModal(`
+                <div class="flex justify-between items-center mb-4">
+                    <h3 class="font-extrabold text-lg text-slate-800">Edit Stok Barang</h3>
+                    <button onclick="closeModal()" class="p-1.5 rounded-xl hover:bg-pink-50"><i data-lucide="x" class="w-5 h-5"></i></button>
+                </div>
+                <form onsubmit="updateStockItem(event, '${id}')" class="space-y-4">
+                    <div>
+                        <label class="block text-xs font-bold text-slate-600 uppercase mb-1">Nama Produk</label>
+                        <input type="text" id="edit-stk-nama" required value="${item.nama}" class="w-full px-3.5 py-2.5 rounded-2xl bg-white border border-emerald-200 text-sm">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold text-slate-600 uppercase mb-1">Jumlah Stok</label>
+                        <input type="number" id="edit-stk-jumlah" required min="0" value="${item.stok}" class="w-full px-3.5 py-2.5 rounded-2xl bg-white border border-emerald-200 text-sm">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold text-slate-600 uppercase mb-1">Harga Jual (Rp)</label>
+                        <input type="text" inputmode="numeric" id="edit-stk-harga" required oninput="handleRupiahInput(this)" value="${formatRibuanInput(item.hargaJual)}" class="w-full px-3.5 py-2.5 rounded-2xl bg-white border border-emerald-200 text-sm">
+                    </div>
+                    <button type="submit" class="w-full py-3 bg-emerald-500 hover:bg-emerald-600 text-white font-bold rounded-2xl text-sm">Simpan Perubahan</button>
+                </form>
+            `);
+        }
+
+        function updateStockItem(e, id) {
+            e.preventDefault();
+            const index = state.perdagangan.stokBarang.findIndex(s => s.id === id);
+            if (index === -1) return;
+
+            const nama = document.getElementById('edit-stk-nama').value;
+            const stok = parseInt(document.getElementById('edit-stk-jumlah').value, 10);
+            const hargaJual = parseRupiahInput(document.getElementById('edit-stk-harga').value);
+            const status = getStockStatus(stok);
+
+            state.perdagangan.stokBarang[index] = { id, nama, stok, hargaJual, status };
+            closeModal();
+            renderPageContent();
+            showToast('Data stok barang diperbarui!', 'success');
+        }
+
+        function deleteStockItem(id) {
+            const index = state.perdagangan.stokBarang.findIndex(s => s.id === id);
+            if (index === -1) return;
+            const item = state.perdagangan.stokBarang[index];
+
+            openConfirmDeleteModal(
+                'Hapus Produk dari Stok?',
+                `Produk "${item.nama}" akan dihapus dari daftar inventaris.`,
+                () => {
+                    state.perdagangan.stokBarang.splice(index, 1);
+                    renderPageContent();
+                    showToast('Produk berhasil dihapus!', 'info');
+                }
+            );
+        }
+
+        function openAddSaleModal() {
+            openModal(`
+                <div class="flex justify-between items-center mb-4">
+                    <h3 class="font-extrabold text-lg text-slate-800">Catat Penjualan Baru</h3>
+                    <button onclick="closeModal()" class="p-1.5 rounded-xl hover:bg-pink-50"><i data-lucide="x" class="w-5 h-5"></i></button>
+                </div>
+                <form onsubmit="submitSaleTransaction(event)" class="space-y-4">
+                    <div>
+                        <label class="block text-xs font-bold text-slate-600 uppercase mb-1">Nama Pelanggan</label>
+                        <input type="text" id="sale-cust" required placeholder="Contoh: Kopi Kenangan Senja" class="w-full px-3.5 py-2.5 rounded-2xl bg-white border border-emerald-200 text-sm">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold text-slate-600 uppercase mb-1">Detail Barang</label>
+                        <input type="text" id="sale-item" required placeholder="Contoh: 10x Arabika Gayo 500g" class="w-full px-3.5 py-2.5 rounded-2xl bg-white border border-emerald-200 text-sm">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold text-slate-600 uppercase mb-1">Total Penjualan (Rp)</label>
+                        <input type="text" inputmode="numeric" id="sale-total" required oninput="handleRupiahInput(this)" placeholder="1.250.000" class="w-full px-3.5 py-2.5 rounded-2xl bg-white border border-emerald-200 text-sm">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold text-slate-600 uppercase mb-1">Status Pembayaran</label>
+                        <select id="sale-status" class="w-full px-3.5 py-2.5 rounded-2xl bg-white border border-emerald-200 text-sm">
+                            <option value="Lunas">Lunas</option>
+                            <option value="Tempo">Tempo</option>
+                        </select>
+                    </div>
+                    <button type="submit" class="w-full py-3 bg-emerald-500 hover:bg-emerald-600 text-white font-bold rounded-2xl text-sm">Simpan Penjualan</button>
+                </form>
+            `);
+        }
+
+        function submitSaleTransaction(e) {
+            e.preventDefault();
+            const pelanggan = document.getElementById('sale-cust').value;
+            const item = document.getElementById('sale-item').value;
+            const total = parseRupiahInput(document.getElementById('sale-total').value);
+            const status = document.getElementById('sale-status').value;
+            if (total <= 0) return;
+
+            state.perdagangan.riwayatPenjualan.unshift({
+                id: 'INV-' + Math.floor(2092 + Math.random() * 900),
+                tanggal: '2026-11-26',
+                pelanggan,
+                item,
+                total,
+                status
+            });
+            state.perdagangan.omzet += total;
+
+            closeModal();
+            renderPageContent();
+            showToast('Penjualan berhasil dicatat & omzet diperbarui!', 'success');
+        }
+
+        function openEditSaleModal(id) {
+            const sale = state.perdagangan.riwayatPenjualan.find(s => s.id === id);
+            if (!sale) return;
+            openModal(`
+                <div class="flex justify-between items-center mb-4">
+                    <h3 class="font-extrabold text-lg text-slate-800">Edit Riwayat Penjualan</h3>
+                    <button onclick="closeModal()" class="p-1.5 rounded-xl hover:bg-pink-50"><i data-lucide="x" class="w-5 h-5"></i></button>
+                </div>
+                <form onsubmit="updateSaleTransaction(event, '${id}')" class="space-y-4">
+                    <div>
+                        <label class="block text-xs font-bold text-slate-600 uppercase mb-1">Tanggal</label>
+                        <input type="date" id="edit-sale-tgl" required value="${sale.tanggal}" class="w-full px-3.5 py-2.5 rounded-2xl bg-white border border-emerald-200 text-sm">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold text-slate-600 uppercase mb-1">Nama Pelanggan</label>
+                        <input type="text" id="edit-sale-cust" required value="${sale.pelanggan}" class="w-full px-3.5 py-2.5 rounded-2xl bg-white border border-emerald-200 text-sm">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold text-slate-600 uppercase mb-1">Detail Barang</label>
+                        <input type="text" id="edit-sale-item" required value="${sale.item}" class="w-full px-3.5 py-2.5 rounded-2xl bg-white border border-emerald-200 text-sm">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold text-slate-600 uppercase mb-1">Total Penjualan (Rp)</label>
+                        <input type="text" inputmode="numeric" id="edit-sale-total" required oninput="handleRupiahInput(this)" value="${formatRibuanInput(sale.total)}" class="w-full px-3.5 py-2.5 rounded-2xl bg-white border border-emerald-200 text-sm">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold text-slate-600 uppercase mb-1">Status Pembayaran</label>
+                        <select id="edit-sale-status" class="w-full px-3.5 py-2.5 rounded-2xl bg-white border border-emerald-200 text-sm">
+                            <option value="Lunas" ${sale.status === 'Lunas' ? 'selected' : ''}>Lunas</option>
+                            <option value="Tempo" ${sale.status === 'Tempo' ? 'selected' : ''}>Tempo</option>
+                        </select>
+                    </div>
+                    <button type="submit" class="w-full py-3 bg-emerald-500 hover:bg-emerald-600 text-white font-bold rounded-2xl text-sm">Simpan Perubahan</button>
+                </form>
+            `);
+        }
+
+        function updateSaleTransaction(e, id) {
+            e.preventDefault();
+            const index = state.perdagangan.riwayatPenjualan.findIndex(s => s.id === id);
+            if (index === -1) return;
+
+            const oldSale = state.perdagangan.riwayatPenjualan[index];
+            state.perdagangan.omzet -= oldSale.total;
+
+            const tanggal = document.getElementById('edit-sale-tgl').value;
+            const pelanggan = document.getElementById('edit-sale-cust').value;
+            const item = document.getElementById('edit-sale-item').value;
+            const total = parseRupiahInput(document.getElementById('edit-sale-total').value);
+            const status = document.getElementById('edit-sale-status').value;
+
+            state.perdagangan.riwayatPenjualan[index] = { id, tanggal, pelanggan, item, total, status };
+            state.perdagangan.omzet += total;
+
+            closeModal();
+            renderPageContent();
+            showToast('Catatan penjualan berhasil diperbarui!', 'success');
+        }
+
+        function deleteSaleItem(id) {
+            const index = state.perdagangan.riwayatPenjualan.findIndex(s => s.id === id);
+            if (index === -1) return;
+            const sale = state.perdagangan.riwayatPenjualan[index];
+
+            openConfirmDeleteModal(
+                'Hapus Catatan Penjualan?',
+                `Invoice ${sale.id} (${sale.pelanggan} - ${formatRupiah(sale.total)}) akan dihapus dan total omzet disesuaikan.`,
+                () => {
+                    state.perdagangan.omzet -= sale.total;
+                    state.perdagangan.riwayatPenjualan.splice(index, 1);
+                    renderPageContent();
+                    showToast('Catatan penjualan berhasil dihapus!', 'info');
+                }
+            );
+        }
+
+        // =====================================================================
+        // C3. DASHBOARD MODE 3 — INVESTASI (DENGAN EDIT & HAPUS)
+        // =====================================================================
+        function recalculatePortfolioShares() {
+            const totalNilai = state.investasi.portofolio.reduce((acc, item) => acc + item.nilaiSekarang, 0);
+            state.investasi.portofolio.forEach(item => {
+                item.porsi = totalNilai > 0 ? Math.round((item.nilaiSekarang / totalNilai) * 100) : 0;
+            });
+        }
+
+        function renderDashboardInvestasi(container) {
+            const d = state.investasi;
+            const profitLoss = d.nilaiSaatIni - d.modalInvestasi;
+            const returnPct = d.modalInvestasi > 0 ? ((profitLoss / d.modalInvestasi) * 100).toFixed(2) : '0.00';
+            const isProfit = profitLoss >= 0;
+
+            container.innerHTML = `
+                <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
+                    <div>
+                        <span class="text-xs font-extrabold text-amber-600 uppercase tracking-wider">Mode 3 • Investasi</span>
+                        <h3 class="text-xl sm:text-2xl font-extrabold text-slate-800">Portofolio & Imbal Hasil Aset</h3>
+                    </div>
+                    <div class="flex flex-wrap gap-2">
+                        <button onclick="openAddPortfolioModal()" class="inline-flex items-center justify-center gap-2 bg-purple-100/80 hover:bg-purple-200/80 text-purple-800 text-sm font-bold px-4 py-2.5 rounded-2xl transition">
+                            <i data-lucide="briefcase" class="w-4 h-4 text-purple-600"></i> Tambah Aset
+                        </button>
+                        <button onclick="openAddInvestModal()" class="inline-flex items-center justify-center gap-2 bg-amber-400 hover:bg-amber-500 text-slate-900 text-sm font-bold px-4 py-2.5 rounded-2xl shadow-2xs transition">
+                            <i data-lucide="plus" class="w-4 h-4"></i> Catat Transaksi
+                        </button>
+                    </div>
+                </div>
+
+                <!-- 3 Kartu Utama Investasi Pastel -->
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3.5 sm:gap-4 2xl:gap-6 mb-6">
+                    <div class="bg-amber-50/90 p-4 sm:p-5 2xl:p-6 rounded-3xl border border-amber-200/70">
+                        <span class="text-xs font-extrabold text-amber-700 uppercase">Total Modal Investasi</span>
+                        <p class="text-xl sm:text-2xl 2xl:text-[1.75rem] font-extrabold text-slate-800 mt-2 break-words">${formatRupiah(d.modalInvestasi)}</p>
+                        <p class="text-xs text-slate-500 font-semibold mt-1">Akumulasi dana disetor</p>
+                    </div>
+
+                    <div class="bg-sky-50/90 p-4 sm:p-5 2xl:p-6 rounded-3xl border border-sky-200/70">
+                        <span class="text-xs font-extrabold text-sky-700 uppercase">Nilai Aset Saat Ini</span>
+                        <p class="text-xl sm:text-2xl 2xl:text-[1.75rem] font-extrabold text-sky-700 mt-2 break-words">${formatRupiah(d.nilaiSaatIni)}</p>
+                        <p class="text-xs text-slate-500 font-semibold mt-1">Valuasi pasar terkini</p>
+                    </div>
+
+                    <div class="bg-emerald-50/90 p-4 sm:p-5 2xl:p-6 rounded-3xl border border-emerald-200/70 sm:col-span-2 lg:col-span-1">
+                        <span class="text-xs font-extrabold text-emerald-700 uppercase">Keuntungan / Kerugian</span>
+                        <p class="text-xl sm:text-2xl 2xl:text-[1.75rem] font-extrabold mt-2 break-words ${isProfit ? 'text-emerald-700' : 'text-rose-600'}">
+                            ${isProfit ? '+' : ''}${formatRupiah(profitLoss)}
+                        </p>
+                        <span class="inline-flex items-center gap-1 text-xs font-extrabold px-2.5 py-0.5 rounded-full mt-1 ${isProfit ? 'bg-emerald-200/70 text-emerald-800' : 'bg-rose-100 text-rose-700'}">
+                            ${isProfit ? '▲' : '▼'} ${returnPct}% All-Time
+                        </span>
+                    </div>
+                </div>
+
+                <!-- Daftar Portofolio & Riwayat Transaksi Investasi -->
+                <div class="grid grid-cols-1 xl:grid-cols-2 gap-5 sm:gap-6">
+                    <!-- Daftar Portofolio dengan Edit & Hapus -->
+                    <div class="bg-white rounded-3xl border border-amber-100 overflow-hidden">
+                        <div class="p-5 border-b border-amber-50 flex items-center justify-between bg-amber-50/40">
+                            <h4 class="font-extrabold text-slate-800">Daftar Portofolio Aset</h4>
+                            <span class="text-xs font-bold text-amber-800 bg-amber-100/80 px-2.5 py-1 rounded-full">${d.portofolio.length} aset</span>
+                        </div>
+                        <div class="divide-y divide-amber-50">
+                            ${d.portofolio.length === 0 ? `
+                                <p class="py-8 text-center text-sm text-slate-400">Belum ada aset di portofolio.</p>
+                            ` : d.portofolio.map(item => {
+                                const gain = item.nilaiSekarang - item.modal;
+                                const gainPct = item.modal > 0 ? ((gain / item.modal) * 100).toFixed(1) : '0.0';
+                                return `
+                                    <div class="p-4 hover:bg-amber-50/30 transition">
+                                        <div class="flex justify-between items-start gap-2 mb-1.5">
+                                            <div>
+                                                <p class="font-extrabold text-slate-800 text-sm">${item.aset}</p>
+                                                <span class="text-xs text-slate-500 font-semibold">${item.jenis} • Porsi ${item.porsi}%</span>
+                                            </div>
+                                            <div class="flex items-center gap-3">
+                                                <div class="text-right">
+                                                    <p class="font-extrabold text-slate-800 text-sm">${formatRupiah(item.nilaiSekarang)}</p>
+                                                    <p class="text-xs font-bold ${gain >= 0 ? 'text-emerald-600' : 'text-rose-500'}">${gain >= 0 ? '+' : ''}${formatRupiah(gain)} (${gainPct}%)</p>
+                                                </div>
+                                                <div class="flex items-center gap-1 border-l border-amber-100 pl-2">
+                                                    <button onclick="openEditPortfolioModal('${item.id}')" title="Edit Aset" class="p-1.5 rounded-xl text-amber-600 hover:bg-amber-100/70 transition">
+                                                        <i data-lucide="pencil" class="w-4 h-4"></i>
+                                                    </button>
+                                                    <button onclick="deletePortfolioItem('${item.id}')" title="Hapus Aset" class="p-1.5 rounded-xl text-rose-500 hover:bg-rose-100/70 transition">
+                                                        <i data-lucide="trash-2" class="w-4 h-4"></i>
+                                                    </button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="w-full h-2 bg-amber-100 rounded-full overflow-hidden mt-2">
+                                            <div class="h-full bg-amber-400 rounded-full" style="width: ${item.porsi}%"></div>
+                                        </div>
+                                    </div>
+                                `;
+                            }).join('')}
+                        </div>
+                    </div>
+
+                    <!-- Riwayat Transaksi Investasi dengan Edit & Hapus -->
+                    <div class="bg-white rounded-3xl border border-purple-100 overflow-hidden">
+                        <div class="p-5 border-b border-purple-50 flex items-center justify-between bg-purple-50/40">
+                            <h4 class="font-extrabold text-slate-800">Riwayat Transaksi Investasi</h4>
+                            <span class="text-xs font-bold text-purple-700 bg-purple-100/80 px-2.5 py-1 rounded-full">${d.riwayatTransaksi.length} transaksi</span>
+                        </div>
+                        <div class="overflow-x-auto">
+                            <table class="w-full text-left border-collapse">
+                                <thead>
+                                    <tr class="bg-[#FAF7FD] text-slate-500 text-xs uppercase border-b border-purple-100/70">
+                                        <th class="py-3 px-4 font-extrabold">Tanggal</th>
+                                        <th class="py-3 px-4 font-extrabold">Aset</th>
+                                        <th class="py-3 px-4 font-extrabold">Aksi</th>
+                                        <th class="py-3 px-4 font-extrabold text-right">Nominal</th>
+                                        <th class="py-3 px-4 font-extrabold text-center">Opsi</th>
+                                    </tr>
+                                </thead>
+                                <tbody class="divide-y divide-purple-50 text-sm">
+                                    ${d.riwayatTransaksi.length === 0 ? `
+                                        <tr><td colspan="5" class="py-8 text-center text-slate-400">Belum ada riwayat transaksi investasi.</td></tr>
+                                    ` : d.riwayatTransaksi.map(trx => {
+                                        const badge = trx.aksi === 'Beli' ? 'bg-sky-100 text-sky-800' : trx.aksi === 'Jual' ? 'bg-amber-100 text-amber-800' : 'bg-emerald-100 text-emerald-800';
+                                        return `
+                                            <tr class="hover:bg-purple-50/40">
+                                                <td class="py-3 px-4 text-slate-500 whitespace-nowrap">${trx.tanggal}</td>
+                                                <td class="py-3 px-4 font-bold text-slate-800">${trx.aset} <span class="block text-xs font-normal text-slate-400">${trx.unit}</span></td>
+                                                <td class="py-3 px-4"><span class="px-2.5 py-0.5 rounded-xl text-xs font-bold ${badge}">${trx.aksi}</span></td>
+                                                <td class="py-3 px-4 text-right font-extrabold text-slate-800 whitespace-nowrap">${formatRupiah(trx.nominal)}</td>
+                                                <td class="py-3 px-4 text-center whitespace-nowrap">
+                                                    <div class="inline-flex items-center gap-1">
+                                                        <button onclick="openEditInvestModal('${trx.id}')" title="Edit Transaksi" class="p-1.5 rounded-xl text-purple-600 hover:bg-purple-100/70 transition">
+                                                            <i data-lucide="pencil" class="w-3.5 h-3.5"></i>
+                                                        </button>
+                                                        <button onclick="deleteInvestTransaction('${trx.id}')" title="Hapus Transaksi" class="p-1.5 rounded-xl text-rose-500 hover:bg-rose-100/70 transition">
+                                                            <i data-lucide="trash-2" class="w-3.5 h-3.5"></i>
+                                                        </button>
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                        `;
+                                    }).join('')}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        function openAddPortfolioModal() {
+            openModal(`
+                <div class="flex justify-between items-center mb-4">
+                    <h3 class="font-extrabold text-lg text-slate-800">Tambah Aset Portofolio</h3>
+                    <button onclick="closeModal()" class="p-1.5 rounded-xl hover:bg-pink-50"><i data-lucide="x" class="w-5 h-5"></i></button>
+                </div>
+                <form onsubmit="submitPortfolioItem(event)" class="space-y-4">
+                    <div>
+                        <label class="block text-xs font-bold text-slate-600 uppercase mb-1">Nama Aset / Ticker</label>
+                        <input type="text" id="por-aset" required placeholder="Contoh: BBRI (Bank Rakyat Indonesia)" class="w-full px-3.5 py-2.5 rounded-2xl bg-white border border-amber-200 text-sm">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold text-slate-600 uppercase mb-1">Jenis Instrumen</label>
+                        <select id="por-jenis" class="w-full px-3.5 py-2.5 rounded-2xl bg-white border border-amber-200 text-sm">
+                            <option value="Saham">Saham</option>
+                            <option value="Reksadana">Reksadana</option>
+                            <option value="Obligasi">Obligasi</option>
+                            <option value="Komoditas">Komoditas / Emas</option>
+                            <option value="Kripto">Aset Kripto</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold text-slate-600 uppercase mb-1">Total Modal Beli (Rp)</label>
+                        <input type="text" inputmode="numeric" id="por-modal" required oninput="handleRupiahInput(this)" placeholder="10.000.000" class="w-full px-3.5 py-2.5 rounded-2xl bg-white border border-amber-200 text-sm">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold text-slate-600 uppercase mb-1">Nilai Pasar Saat Ini (Rp)</label>
+                        <input type="text" inputmode="numeric" id="por-nilai" required oninput="handleRupiahInput(this)" placeholder="11.200.000" class="w-full px-3.5 py-2.5 rounded-2xl bg-white border border-amber-200 text-sm">
+                    </div>
+                    <button type="submit" class="w-full py-3 bg-amber-400 hover:bg-amber-500 text-slate-900 font-bold rounded-2xl text-sm">Simpan ke Portofolio</button>
+                </form>
+            `);
+        }
+
+        function submitPortfolioItem(e) {
+            e.preventDefault();
+            const aset = document.getElementById('por-aset').value;
+            const jenis = document.getElementById('por-jenis').value;
+            const modal = parseRupiahInput(document.getElementById('por-modal').value);
+            const nilaiSekarang = parseRupiahInput(document.getElementById('por-nilai').value);
+
+            state.investasi.portofolio.unshift({
+                id: 'POR-' + Math.floor(10 + Math.random() * 89),
+                aset,
+                jenis,
+                modal,
+                nilaiSekarang,
+                porsi: 0
+            });
+            state.investasi.modalInvestasi += modal;
+            state.investasi.nilaiSaatIni += nilaiSekarang;
+            recalculatePortfolioShares();
+
+            closeModal();
+            renderPageContent();
+            showToast('Aset portofolio berhasil ditambahkan!', 'success');
+        }
+
+        function openEditPortfolioModal(id) {
+            const item = state.investasi.portofolio.find(p => p.id === id);
+            if (!item) return;
+            openModal(`
+                <div class="flex justify-between items-center mb-4">
+                    <h3 class="font-extrabold text-lg text-slate-800">Edit Aset Portofolio</h3>
+                    <button onclick="closeModal()" class="p-1.5 rounded-xl hover:bg-pink-50"><i data-lucide="x" class="w-5 h-5"></i></button>
+                </div>
+                <form onsubmit="updatePortfolioItem(event, '${id}')" class="space-y-4">
+                    <div>
+                        <label class="block text-xs font-bold text-slate-600 uppercase mb-1">Nama Aset / Ticker</label>
+                        <input type="text" id="edit-por-aset" required value="${item.aset}" class="w-full px-3.5 py-2.5 rounded-2xl bg-white border border-amber-200 text-sm">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold text-slate-600 uppercase mb-1">Jenis Instrumen</label>
+                        <select id="edit-por-jenis" class="w-full px-3.5 py-2.5 rounded-2xl bg-white border border-amber-200 text-sm">
+                            <option value="Saham" ${item.jenis === 'Saham' ? 'selected' : ''}>Saham</option>
+                            <option value="Reksadana" ${item.jenis === 'Reksadana' ? 'selected' : ''}>Reksadana</option>
+                            <option value="Obligasi" ${item.jenis === 'Obligasi' ? 'selected' : ''}>Obligasi</option>
+                            <option value="Komoditas" ${item.jenis === 'Komoditas' ? 'selected' : ''}>Komoditas / Emas</option>
+                            <option value="Kripto" ${item.jenis === 'Kripto' ? 'selected' : ''}>Aset Kripto</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold text-slate-600 uppercase mb-1">Total Modal Beli (Rp)</label>
+                        <input type="text" inputmode="numeric" id="edit-por-modal" required oninput="handleRupiahInput(this)" value="${formatRibuanInput(item.modal)}" class="w-full px-3.5 py-2.5 rounded-2xl bg-white border border-amber-200 text-sm">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold text-slate-600 uppercase mb-1">Nilai Pasar Saat Ini (Rp)</label>
+                        <input type="text" inputmode="numeric" id="edit-por-nilai" required oninput="handleRupiahInput(this)" value="${formatRibuanInput(item.nilaiSekarang)}" class="w-full px-3.5 py-2.5 rounded-2xl bg-white border border-amber-200 text-sm">
+                    </div>
+                    <button type="submit" class="w-full py-3 bg-amber-400 hover:bg-amber-500 text-slate-900 font-bold rounded-2xl text-sm">Simpan Perubahan</button>
+                </form>
+            `);
+        }
+
+        function updatePortfolioItem(e, id) {
+            e.preventDefault();
+            const index = state.investasi.portofolio.findIndex(p => p.id === id);
+            if (index === -1) return;
+
+            const oldItem = state.investasi.portofolio[index];
+            state.investasi.modalInvestasi -= oldItem.modal;
+            state.investasi.nilaiSaatIni -= oldItem.nilaiSekarang;
+
+            const aset = document.getElementById('edit-por-aset').value;
+            const jenis = document.getElementById('edit-por-jenis').value;
+            const modal = parseRupiahInput(document.getElementById('edit-por-modal').value);
+            const nilaiSekarang = parseRupiahInput(document.getElementById('edit-por-nilai').value);
+
+            state.investasi.portofolio[index] = { id, aset, jenis, modal, nilaiSekarang, porsi: 0 };
+            state.investasi.modalInvestasi += modal;
+            state.investasi.nilaiSaatIni += nilaiSekarang;
+            recalculatePortfolioShares();
+
+            closeModal();
+            renderPageContent();
+            showToast('Aset portofolio berhasil diperbarui!', 'success');
+        }
+
+        function deletePortfolioItem(id) {
+            const index = state.investasi.portofolio.findIndex(p => p.id === id);
+            if (index === -1) return;
+            const item = state.investasi.portofolio[index];
+
+            openConfirmDeleteModal(
+                'Hapus Aset Portofolio?',
+                `Aset "${item.aset}" (${formatRupiah(item.nilaiSekarang)}) akan dihapus dari portofolio Anda.`,
+                () => {
+                    state.investasi.modalInvestasi -= item.modal;
+                    state.investasi.nilaiSaatIni -= item.nilaiSekarang;
+                    state.investasi.portofolio.splice(index, 1);
+                    recalculatePortfolioShares();
+                    renderPageContent();
+                    showToast('Aset portofolio berhasil dihapus!', 'info');
+                }
+            );
+        }
+
+        function openAddInvestModal() {
+            openModal(`
+                <div class="flex justify-between items-center mb-4">
+                    <h3 class="font-extrabold text-lg text-slate-800">Catat Transaksi Investasi</h3>
+                    <button onclick="closeModal()" class="p-1.5 rounded-xl hover:bg-pink-50"><i data-lucide="x" class="w-5 h-5"></i></button>
+                </div>
+                <form onsubmit="submitInvestTransaction(event)" class="space-y-4">
+                    <div>
+                        <label class="block text-xs font-bold text-slate-600 uppercase mb-1">Aksi Transaksi</label>
+                        <select id="inv-aksi" class="w-full px-3.5 py-2.5 rounded-2xl bg-white border border-amber-200 text-sm">
+                            <option value="Beli">Beli Aset (Top Up Modal)</option>
+                            <option value="Jual">Jual Aset (Realisasi)</option>
+                            <option value="Dividen/Kupon">Dividen / Kupon</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold text-slate-600 uppercase mb-1">Nama Aset / Ticker</label>
+                        <input type="text" id="inv-aset" required placeholder="Contoh: BBCA / Reksadana Pasar Uang" class="w-full px-3.5 py-2.5 rounded-2xl bg-white border border-amber-200 text-sm">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold text-slate-600 uppercase mb-1">Jumlah Unit / Lot</label>
+                        <input type="text" id="inv-unit" required placeholder="Contoh: 5 Lot / 100 Unit" class="w-full px-3.5 py-2.5 rounded-2xl bg-white border border-amber-200 text-sm">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold text-slate-600 uppercase mb-1">Nominal Transaksi (Rp)</label>
+                        <input type="text" inputmode="numeric" id="inv-nom" required oninput="handleRupiahInput(this)" placeholder="5.000.000" class="w-full px-3.5 py-2.5 rounded-2xl bg-white border border-amber-200 text-sm">
+                    </div>
+                    <button type="submit" class="w-full py-3 bg-amber-400 hover:bg-amber-500 text-slate-900 font-bold rounded-2xl text-sm">Simpan Transaksi</button>
+                </form>
+            `);
+        }
+
+        function submitInvestTransaction(e) {
+            e.preventDefault();
+            const aksi = document.getElementById('inv-aksi').value;
+            const aset = document.getElementById('inv-aset').value;
+            const unit = document.getElementById('inv-unit').value;
+            const nominal = parseRupiahInput(document.getElementById('inv-nom').value);
+            if (nominal <= 0) return;
+
+            state.investasi.riwayatTransaksi.unshift({
+                id: 'TRX-' + Math.floor(882 + Math.random() * 100),
+                tanggal: '2026-11-26',
+                aset,
+                aksi,
+                unit,
+                nominal
+            });
+
+            if (aksi === 'Beli') {
+                state.investasi.modalInvestasi += nominal;
+                state.investasi.nilaiSaatIni += nominal;
+            } else if (aksi === 'Dividen/Kupon') {
+                state.investasi.nilaiSaatIni += nominal;
+            } else if (aksi === 'Jual') {
+                state.investasi.nilaiSaatIni = Math.max(0, state.investasi.nilaiSaatIni - nominal);
+            }
+
+            closeModal();
+            renderPageContent();
+            showToast('Transaksi investasi berhasil ditambahkan!', 'success');
+        }
+
+        function openEditInvestModal(id) {
+            const trx = state.investasi.riwayatTransaksi.find(t => t.id === id);
+            if (!trx) return;
+            openModal(`
+                <div class="flex justify-between items-center mb-4">
+                    <h3 class="font-extrabold text-lg text-slate-800">Edit Transaksi Investasi</h3>
+                    <button onclick="closeModal()" class="p-1.5 rounded-xl hover:bg-pink-50"><i data-lucide="x" class="w-5 h-5"></i></button>
+                </div>
+                <form onsubmit="updateInvestTransaction(event, '${id}')" class="space-y-4">
+                    <div>
+                        <label class="block text-xs font-bold text-slate-600 uppercase mb-1">Tanggal</label>
+                        <input type="date" id="edit-inv-tgl" required value="${trx.tanggal}" class="w-full px-3.5 py-2.5 rounded-2xl bg-white border border-amber-200 text-sm">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold text-slate-600 uppercase mb-1">Aksi Transaksi</label>
+                        <select id="edit-inv-aksi" class="w-full px-3.5 py-2.5 rounded-2xl bg-white border border-amber-200 text-sm">
+                            <option value="Beli" ${trx.aksi === 'Beli' ? 'selected' : ''}>Beli Aset (Top Up Modal)</option>
+                            <option value="Jual" ${trx.aksi === 'Jual' ? 'selected' : ''}>Jual Aset (Realisasi)</option>
+                            <option value="Dividen/Kupon" ${trx.aksi === 'Dividen/Kupon' ? 'selected' : ''}>Dividen / Kupon</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold text-slate-600 uppercase mb-1">Nama Aset / Ticker</label>
+                        <input type="text" id="edit-inv-aset" required value="${trx.aset}" class="w-full px-3.5 py-2.5 rounded-2xl bg-white border border-amber-200 text-sm">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold text-slate-600 uppercase mb-1">Jumlah Unit / Lot</label>
+                        <input type="text" id="edit-inv-unit" required value="${trx.unit}" class="w-full px-3.5 py-2.5 rounded-2xl bg-white border border-amber-200 text-sm">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold text-slate-600 uppercase mb-1">Nominal Transaksi (Rp)</label>
+                        <input type="text" inputmode="numeric" id="edit-inv-nom" required oninput="handleRupiahInput(this)" value="${formatRibuanInput(trx.nominal)}" class="w-full px-3.5 py-2.5 rounded-2xl bg-white border border-amber-200 text-sm">
+                    </div>
+                    <button type="submit" class="w-full py-3 bg-amber-400 hover:bg-amber-500 text-slate-900 font-bold rounded-2xl text-sm">Simpan Perubahan</button>
+                </form>
+            `);
+        }
+
+        function updateInvestTransaction(e, id) {
+            e.preventDefault();
+            const index = state.investasi.riwayatTransaksi.findIndex(t => t.id === id);
+            if (index === -1) return;
+
+            const oldTrx = state.investasi.riwayatTransaksi[index];
+            if (oldTrx.aksi === 'Beli') {
+                state.investasi.modalInvestasi -= oldTrx.nominal;
+                state.investasi.nilaiSaatIni -= oldTrx.nominal;
+            } else if (oldTrx.aksi === 'Dividen/Kupon') {
+                state.investasi.nilaiSaatIni -= oldTrx.nominal;
+            } else if (oldTrx.aksi === 'Jual') {
+                state.investasi.nilaiSaatIni += oldTrx.nominal;
+            }
+
+            const tanggal = document.getElementById('edit-inv-tgl').value;
+            const aksi = document.getElementById('edit-inv-aksi').value;
+            const aset = document.getElementById('edit-inv-aset').value;
+            const unit = document.getElementById('edit-inv-unit').value;
+            const nominal = parseRupiahInput(document.getElementById('edit-inv-nom').value);
+
+            state.investasi.riwayatTransaksi[index] = { id, tanggal, aset, aksi, unit, nominal };
+
+            if (aksi === 'Beli') {
+                state.investasi.modalInvestasi += nominal;
+                state.investasi.nilaiSaatIni += nominal;
+            } else if (aksi === 'Dividen/Kupon') {
+                state.investasi.nilaiSaatIni += nominal;
+            } else if (aksi === 'Jual') {
+                state.investasi.nilaiSaatIni = Math.max(0, state.investasi.nilaiSaatIni - nominal);
+            }
+
+            closeModal();
+            renderPageContent();
+            showToast('Transaksi investasi berhasil diperbarui!', 'success');
+        }
+
+        function deleteInvestTransaction(id) {
+            const index = state.investasi.riwayatTransaksi.findIndex(t => t.id === id);
+            if (index === -1) return;
+            const trx = state.investasi.riwayatTransaksi[index];
+
+            openConfirmDeleteModal(
+                'Hapus Transaksi Investasi?',
+                `Transaksi ${trx.aksi} ${trx.aset} (${formatRupiah(trx.nominal)}) akan dihapus permanen.`,
+                () => {
+                    if (trx.aksi === 'Beli') {
+                        state.investasi.modalInvestasi -= trx.nominal;
+                        state.investasi.nilaiSaatIni -= trx.nominal;
+                    } else if (trx.aksi === 'Dividen/Kupon') {
+                        state.investasi.nilaiSaatIni -= trx.nominal;
+                    } else if (trx.aksi === 'Jual') {
+                        state.investasi.nilaiSaatIni += trx.nominal;
+                    }
+                    state.investasi.riwayatTransaksi.splice(index, 1);
+                    renderPageContent();
+                    showToast('Transaksi investasi berhasil dihapus!', 'info');
+                }
+            );
+        }
+
+        // =====================================================================
+        // D. HALAMAN PENDUKUNG & DOMPET
+        // =====================================================================
+        function renderDompetPage(container) {
+            container.innerHTML = `
+                <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
+                    <div>
+                        <h3 class="text-xl font-extrabold text-slate-800">Dompet & Kantong Keuangan</h3>
+                        <p class="text-sm text-slate-500">Ringkasan seluruh sumber dana dan saldo aktif di ketiga mode Anda.</p>
+                    </div>
+                    <button onclick="showModeSelector()" class="inline-flex items-center justify-center gap-2 bg-pink-500 hover:bg-pink-600 text-white text-sm font-bold px-4 py-2.5 rounded-2xl shadow-2xs transition">
+                        <i data-lucide="repeat" class="w-4 h-4"></i> Pindah Mode
+                    </button>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-5">
+                    <div onclick="selectMode('mandiri'); switchPage('dashboard')" class="cursor-pointer bg-pink-50/80 p-6 rounded-3xl border-2 border-pink-200/70 hover:border-pink-400 transition">
+                        <div class="flex items-center justify-between mb-3">
+                            <span class="text-xs font-extrabold text-pink-600 uppercase">Dompet Mandiri</span>
+                            <i data-lucide="wallet" class="w-5 h-5 text-pink-600"></i>
+                        </div>
+                        <p class="text-2xl font-extrabold text-slate-800">${formatRupiah(state.mandiri.saldo)}</p>
+                        <p class="text-xs text-slate-500 font-semibold mt-2">Tabungan: ${formatRupiah(state.mandiri.tabunganTerkumpul)}</p>
+                    </div>
+
+                    <div onclick="selectMode('perdagangan'); switchPage('dashboard')" class="cursor-pointer bg-emerald-50/80 p-6 rounded-3xl border-2 border-emerald-200/70 hover:border-emerald-400 transition">
+                        <div class="flex items-center justify-between mb-3">
+                            <span class="text-xs font-extrabold text-emerald-700 uppercase">Kas Perdagangan</span>
+                            <i data-lucide="store" class="w-5 h-5 text-emerald-600"></i>
+                        </div>
+                        <p class="text-2xl font-extrabold text-slate-800">${formatRupiah(state.perdagangan.omzet)}</p>
+                        <p class="text-xs text-slate-500 font-semibold mt-2">Modal Usaha: ${formatRupiah(state.perdagangan.modalUsaha)}</p>
+                    </div>
+
+                    <div onclick="selectMode('investasi'); switchPage('dashboard')" class="cursor-pointer bg-amber-50/80 p-6 rounded-3xl border-2 border-amber-200/70 hover:border-amber-400 transition">
+                        <div class="flex items-center justify-between mb-3">
+                            <span class="text-xs font-extrabold text-amber-700 uppercase">Aset Investasi</span>
+                            <i data-lucide="trending-up" class="w-5 h-5 text-amber-600"></i>
+                        </div>
+                        <p class="text-2xl font-extrabold text-slate-800">${formatRupiah(state.investasi.nilaiSaatIni)}</p>
+                        <p class="text-xs text-slate-500 font-semibold mt-2">Modal Disetor: ${formatRupiah(state.investasi.modalInvestasi)}</p>
+                    </div>
+                </div>
+            `;
+        }
+
+        function renderStatistikPage(container) {
+            const months = ['Jun', 'Jul', 'Agu', 'Sep', 'Okt', 'Nov'];
+            const chartData = {
+                mandiri: [
+                    { in: 70, out: 45 }, { in: 75, out: 50 }, { in: 68, out: 42 },
+                    { in: 82, out: 55 }, { in: 80, out: 48 }, { in: 92, out: 40 }
+                ],
+                perdagangan: [
+                    { in: 55, out: 35 }, { in: 65, out: 38 }, { in: 72, out: 40 },
+                    { in: 68, out: 36 }, { in: 85, out: 44 }, { in: 95, out: 48 }
+                ],
+                investasi: [
+                    { in: 60, out: 52 }, { in: 64, out: 55 }, { in: 70, out: 58 },
+                    { in: 76, out: 60 }, { in: 84, out: 63 }, { in: 94, out: 68 }
+                ]
+            }[state.currentMode];
+
+            const labelA = state.currentMode === 'mandiri' ? 'Pemasukan' : state.currentMode === 'perdagangan' ? 'Omzet' : 'Nilai Aset';
+            const labelB = state.currentMode === 'mandiri' ? 'Pengeluaran' : state.currentMode === 'perdagangan' ? 'Biaya & Modal' : 'Modal Disetor';
+
+            container.innerHTML = `
+                <div class="mb-6">
+                    <h3 class="text-xl font-extrabold text-slate-800">Statistik & Grafik Pertumbuhan</h3>
+                    <p class="text-sm text-slate-500">Analisis visual 6 bulan terakhir untuk mode aktif Anda.</p>
+                </div>
+
+                <div class="grid grid-cols-1 xl:grid-cols-3 gap-5 sm:gap-6">
+                    <div class="xl:col-span-2 bg-white p-4 sm:p-6 rounded-3xl border border-pink-100">
+                        <div class="flex flex-wrap items-center justify-between gap-2 mb-5 sm:mb-6">
+                            <h4 class="font-extrabold text-slate-800 text-sm sm:text-base">Tren Arus Keuangan (6 Bulan)</h4>
+                            <div class="flex items-center gap-4 text-xs font-bold">
+                                <span class="flex items-center gap-1.5"><span class="w-3 h-3 rounded-full bg-pink-400"></span> ${labelA}</span>
+                                <span class="flex items-center gap-1.5"><span class="w-3 h-3 rounded-full bg-purple-200"></span> ${labelB}</span>
+                            </div>
+                        </div>
+                        <div class="h-52 sm:h-64 2xl:h-72 flex items-end justify-between gap-2 sm:gap-3 pt-6 px-1 sm:px-2 border-b border-pink-50">
+                            ${months.map((m, idx) => `
+                                <div class="flex-1 flex flex-col items-center gap-2 h-full justify-end">
+                                    <div class="w-full flex justify-center items-end gap-1 sm:gap-1.5 h-36 sm:h-48 2xl:h-56">
+                                        <div class="w-3.5 sm:w-6 2xl:w-7 bg-pink-400 rounded-t-xl transition-all duration-300" style="height: ${chartData[idx].in}%"></div>
+                                        <div class="w-3.5 sm:w-6 2xl:w-7 bg-purple-200 rounded-t-xl transition-all duration-300" style="height: ${chartData[idx].out}%"></div>
+                                    </div>
+                                    <span class="text-[11px] sm:text-xs font-bold text-slate-500">${m}</span>
+                                </div>
+                            `).join('')}
+                        </div>
+                    </div>
+
+                    <div class="bg-white p-6 rounded-3xl border border-purple-100 flex flex-col justify-between">
+                        <div>
+                            <h4 class="font-extrabold text-slate-800 mb-4">Distribusi Kategori</h4>
+                            <div class="space-y-4">
+                                <div>
+                                    <div class="flex justify-between text-xs font-bold mb-1"><span>Operasional / Kebutuhan Pokok</span><span>45%</span></div>
+                                    <div class="w-full h-2.5 bg-purple-100 rounded-full"><div class="h-full bg-purple-400 rounded-full" style="width: 45%"></div></div>
+                                </div>
+                                <div>
+                                    <div class="flex justify-between text-xs font-bold mb-1"><span>Pengembangan & Tabungan</span><span>35%</span></div>
+                                    <div class="w-full h-2.5 bg-emerald-100 rounded-full"><div class="h-full bg-emerald-400 rounded-full" style="width: 35%"></div></div>
+                                </div>
+                                <div>
+                                    <div class="flex justify-between text-xs font-bold mb-1"><span>Cadangan & Lain-lain</span><span>20%</span></div>
+                                    <div class="w-full h-2.5 bg-amber-100 rounded-full"><div class="h-full bg-amber-400 rounded-full" style="width: 20%"></div></div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="mt-6 p-4 rounded-2xl bg-sky-50/80 border border-sky-100 text-xs text-slate-600 leading-relaxed">
+                            <strong class="text-sky-800">Insight Cerdas:</strong> Rasio efisiensi keuangan Anda meningkat <strong>+6.8%</strong> dibanding kuartal sebelumnya.
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        function renderKalenderPage(container) {
+            const days = Array.from({ length: 30 }, (_, i) => i + 1);
+            const events = {
+                5: { label: 'Gaji & Dividen', color: 'bg-emerald-100 text-emerald-800' },
+                12: { label: 'Restock Kopi', color: 'bg-amber-100 text-amber-800' },
+                20: { label: 'Cicilan Rutin', color: 'bg-pink-100 text-pink-800' },
+                26: { label: 'Hari Ini', color: 'bg-purple-500 text-white' }
+            };
+
+            container.innerHTML = `
+                <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
+                    <div>
+                        <h3 class="text-xl font-extrabold text-slate-800">Kalender Keuangan — November 2026</h3>
+                        <p class="text-sm text-slate-500">Jadwal arus kas, jatuh tempo tagihan, dan agenda investasi.</p>
+                    </div>
+                    <span class="inline-flex items-center gap-2 px-3.5 py-2 rounded-2xl bg-purple-50 border border-purple-200 text-xs font-bold text-purple-700">
+                        <i data-lucide="calendar" class="w-4 h-4 text-purple-600"></i> 4 Agenda Bulan Ini
+                    </span>
+                </div>
+
+                <div class="bg-white rounded-3xl border border-pink-100 p-3 sm:p-5 2xl:p-6">
+                    <div class="grid grid-cols-7 gap-1 sm:gap-2 text-center text-[10px] sm:text-xs font-extrabold text-slate-400 uppercase pb-2.5 sm:pb-3 border-b border-pink-50">
+                        <div>Min</div><div>Sen</div><div>Sel</div><div>Rab</div><div>Kam</div><div>Jum</div><div>Sab</div>
+                    </div>
+                    <div class="grid grid-cols-7 gap-1 sm:gap-2 pt-2.5 sm:pt-3">
+                        ${days.map(day => {
+                            const ev = events[day];
+                            return `
+                                <div class="min-h-[54px] sm:min-h-[76px] lg:min-h-[88px] 2xl:min-h-[104px] p-1.5 sm:p-2 rounded-xl sm:rounded-2xl border ${day === 26 ? 'border-purple-400 bg-purple-50/50' : 'border-pink-50 hover:bg-pink-50/30'} flex flex-col justify-between transition">
+                                    <span class="text-[11px] sm:text-xs font-extrabold ${day === 26 ? 'text-purple-600' : 'text-slate-700'}">${day}</span>
+                                    ${ev ? `<span class="text-[9px] sm:text-[10px] font-bold px-1 sm:px-1.5 py-0.5 rounded-md sm:rounded-lg truncate ${ev.color}">${ev.label}</span>` : ''}
+                                </div>
+                            `;
+                        }).join('')}
+                    </div>
+                </div>
+            `;
+        }
+
+        function renderLaporanPage(container) {
+            container.innerHTML = `
+                <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
+                    <div>
+                        <h3 class="text-xl font-extrabold text-slate-800">Laporan Keuangan Terkonsolidasi</h3>
+                        <p class="text-sm text-slate-500">Ringkasan laporan dari ketiga mode keuangan dalam satu akun.</p>
+                    </div>
+                    <button onclick="showToast('Laporan PDF berhasil diunduh!', 'success')" class="inline-flex items-center justify-center gap-2 bg-purple-500 hover:bg-purple-600 text-white text-sm font-bold px-4 py-2.5 rounded-2xl shadow-2xs transition">
+                        <i data-lucide="download" class="w-4 h-4"></i> Unduh Laporan (PDF)
+                    </button>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+                    <div class="bg-pink-50/80 p-5 rounded-3xl border border-pink-200/70">
+                        <span class="text-xs font-extrabold text-pink-600 uppercase">Mode 1 • Mandiri</span>
+                        <p class="text-lg font-extrabold text-slate-800 mt-1">${formatRupiah(state.mandiri.saldo)}</p>
+                        <p class="text-xs text-slate-500 font-semibold mt-1">Surplus bulan ini: ${formatRupiah(state.mandiri.pemasukan - state.mandiri.pengeluaran)}</p>
+                    </div>
+                    <div class="bg-emerald-50/80 p-5 rounded-3xl border border-emerald-200/70">
+                        <span class="text-xs font-extrabold text-emerald-700 uppercase">Mode 2 • Perdagangan</span>
+                        <p class="text-lg font-extrabold text-slate-800 mt-1">${formatRupiah(state.perdagangan.omzet - state.perdagangan.modalUsaha - state.perdagangan.biayaOperasional)}</p>
+                        <p class="text-xs text-slate-500 font-semibold mt-1">Laba bersih dari omzet ${formatRupiah(state.perdagangan.omzet)}</p>
+                    </div>
+                    <div class="bg-amber-50/80 p-5 rounded-3xl border border-amber-200/70">
+                        <span class="text-xs font-extrabold text-amber-700 uppercase">Mode 3 • Investasi</span>
+                        <p class="text-lg font-extrabold text-slate-800 mt-1">${formatRupiah(state.investasi.nilaiSaatIni)}</p>
+                        <p class="text-xs text-slate-500 font-semibold mt-1">Keuntungan belum terealisasi: +${formatRupiah(state.investasi.nilaiSaatIni - state.investasi.modalInvestasi)}</p>
+                    </div>
+                </div>
+
+                <div class="bg-white rounded-3xl border border-pink-100 p-6">
+                    <h4 class="font-extrabold text-slate-800 mb-3">Arsip Laporan Bulanan</h4>
+                    <div class="divide-y divide-pink-50 text-sm">
+                        <div class="py-3.5 flex items-center justify-between">
+                            <div>
+                                <p class="font-bold text-slate-800">Laporan Keuangan Lengkap — November 2026</p>
+                                <p class="text-xs text-slate-400">Mencakup Mandiri, Perdagangan, & Portofolio Investasi</p>
+                            </div>
+                            <button onclick="showToast('Mengunduh Laporan November 2026...', 'info')" class="text-pink-600 font-bold text-xs hover:underline">Unduh CSV / PDF</button>
+                        </div>
+                        <div class="py-3.5 flex items-center justify-between">
+                            <div>
+                                <p class="font-bold text-slate-800">Laporan Keuangan Lengkap — Oktober 2026</p>
+                                <p class="text-xs text-slate-400">Mencakup Mandiri, Perdagangan, & Portofolio Investasi</p>
+                            </div>
+                            <button onclick="showToast('Mengunduh Laporan Oktober 2026...', 'info')" class="text-pink-600 font-bold text-xs hover:underline">Unduh CSV / PDF</button>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        function renderNotifikasiPage(container) {
+            container.innerHTML = `
+                <div class="flex items-center justify-between mb-6">
+                    <div>
+                        <h3 class="text-xl font-extrabold text-slate-800">Pusat Notifikasi</h3>
+                        <p class="text-sm text-slate-500">Peringatan stok, pengingat anggaran, dan pembaruan investasi.</p>
+                    </div>
+                    <button onclick="markAllNotifRead()" class="text-xs font-bold text-pink-600 hover:underline">Tandai semua dibaca</button>
+                </div>
+
+                <div class="space-y-3">
+                    ${state.notifikasi.map(n => `
+                        <div class="bg-white p-4 sm:p-5 rounded-3xl border ${n.dibaca ? 'border-pink-100/60 opacity-75' : 'border-pink-300 bg-pink-50/30'} flex items-start justify-between gap-4">
+                            <div class="flex items-start gap-3.5">
+                                <div class="w-10 h-10 rounded-2xl flex items-center justify-center shrink-0 ${n.tipe === 'warning' ? 'bg-amber-100 text-amber-700' : n.tipe === 'success' ? 'bg-emerald-100 text-emerald-700' : 'bg-sky-100 text-sky-700'}">
+                                    <i data-lucide="${n.tipe === 'warning' ? 'alert-triangle' : n.tipe === 'success' ? 'check-circle' : 'info'}" class="w-5 h-5"></i>
+                                </div>
+                                <div>
+                                    <h4 class="font-extrabold text-slate-800 text-sm">${n.judul}</h4>
+                                    <p class="text-xs sm:text-sm text-slate-600 mt-0.5">${n.pesan}</p>
+                                    <span class="text-[11px] text-slate-400 font-semibold mt-1.5 inline-block">${n.waktu}</span>
+                                </div>
+                            </div>
+                            ${!n.dibaca ? '<span class="w-2.5 h-2.5 rounded-full bg-pink-500 shrink-0 mt-1.5"></span>' : ''}
+                        </div>
+                    `).join('')}
+                </div>
+            `;
+        }
+
+        function markAllNotifRead() {
+            state.notifikasi.forEach(n => n.dibaca = true);
+            document.getElementById('sidebar-notif-badge').textContent = '0';
+            renderPageContent();
+            showToast('Semua notifikasi ditandai sudah dibaca.', 'info');
+        }
+
+        function renderPengaturanPage(container) {
+            container.innerHTML = `
+                <div class="mb-6">
+                    <h3 class="text-xl font-extrabold text-slate-800">Pengaturan Sistem</h3>
+                    <p class="text-sm text-slate-500">Sesuaikan preferensi mata uang, keamanan akun, dan notifikasi.</p>
+                </div>
+
+                <div class="bg-white rounded-3xl border border-pink-100 divide-y divide-pink-50 max-w-3xl 2xl:max-w-4xl">
+                    <div class="p-5 flex items-center justify-between gap-4">
+                        <div>
+                            <h4 class="font-bold text-slate-800 text-sm">Mata Uang Utama</h4>
+                            <p class="text-xs text-slate-500">Format tampilan nominal di seluruh mode keuangan.</p>
+                        </div>
+                        <select onchange="showToast('Preferensi mata uang disimpan', 'success')" class="bg-pink-50/70 border border-pink-200 rounded-2xl px-3 py-2 text-sm font-bold">
+                            <option>IDR (Rp)</option>
+                            <option>USD ($)</option>
+                            <option>SGD (S$)</option>
+                        </select>
+                    </div>
+
+                    <div class="p-5 flex items-center justify-between gap-4">
+                        <div>
+                            <h4 class="font-bold text-slate-800 text-sm">Peringatan Otomatis Stok & Anggaran</h4>
+                            <p class="text-xs text-slate-500">Kirim notifikasi saat anggaran > 75% atau stok menipis.</p>
+                        </div>
+                        <input type="checkbox" checked onchange="showToast('Pengaturan notifikasi diperbarui', 'info')" class="w-5 h-5 accent-pink-500 rounded cursor-pointer">
+                    </div>
+
+                    <div class="p-5 flex items-center justify-between gap-4">
+                        <div>
+                            <h4 class="font-bold text-slate-800 text-sm">Autentikasi Dua Faktor (2FA)</h4>
+                            <p class="text-xs text-slate-500">Tambahkan lapisan keamanan ekstra saat login.</p>
+                        </div>
+                        <input type="checkbox" checked onchange="showToast('Status keamanan 2FA diperbarui', 'info')" class="w-5 h-5 accent-pink-500 rounded cursor-pointer">
+                    </div>
+                </div>
+            `;
+        }
+
+        function renderProfilPage(container) {
+            const u = state.user;
+            container.innerHTML = `
+                <div class="mb-6">
+                    <h3 class="text-xl font-extrabold text-slate-800">Profil Pengguna</h3>
+                    <p class="text-sm text-slate-500">Informasi akun terpadu untuk Keuangan Mandiri, Perdagangan, dan Investasi.</p>
+                </div>
+
+                <div class="bg-white rounded-3xl border border-purple-100 p-4 sm:p-6 max-w-3xl 2xl:max-w-4xl">
+                    <div class="flex flex-col sm:flex-row items-center gap-5 pb-6 border-b border-purple-50">
+                        <div class="w-20 h-20 rounded-3xl bg-gradient-to-br from-pink-400 to-purple-500 text-white text-2xl font-extrabold flex items-center justify-center">
+                            ${u.name.split(' ').map(n => n[0]).join('').substring(0, 2).toUpperCase()}
+                        </div>
+                        <div class="text-center sm:text-left">
+                            <div class="flex flex-wrap items-center justify-center sm:justify-start gap-2">
+                                <h4 class="text-xl font-extrabold text-slate-800">${u.name}</h4>
+                                <span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-emerald-100 text-emerald-800 text-xs font-bold">
+                                    <i data-lucide="badge-check" class="w-3.5 h-3.5"></i> Terverifikasi
+                                </span>
+                            </div>
+                            <p class="text-sm text-slate-500 font-semibold mt-0.5">${u.job}</p>
+                        </div>
+                    </div>
+
+                    <form onsubmit="updateUserProfile(event)" class="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-6">
+                        <div>
+                            <label class="block text-xs font-bold text-slate-600 uppercase mb-1">Nama Lengkap</label>
+                            <input type="text" id="prof-name" value="${u.name}" required class="w-full px-3.5 py-2.5 rounded-2xl bg-white border border-purple-200 text-sm">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-bold text-slate-600 uppercase mb-1">Email</label>
+                            <input type="email" id="prof-email" value="${u.email}" required class="w-full px-3.5 py-2.5 rounded-2xl bg-white border border-purple-200 text-sm">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-bold text-slate-600 uppercase mb-1">Nomor Telepon</label>
+                            <input type="text" id="prof-phone" value="${u.phone}" required class="w-full px-3.5 py-2.5 rounded-2xl bg-white border border-purple-200 text-sm">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-bold text-slate-600 uppercase mb-1">Profesi / Bidang Usaha</label>
+                            <input type="text" id="prof-job" value="${u.job}" required class="w-full px-3.5 py-2.5 rounded-2xl bg-white border border-purple-200 text-sm">
+                        </div>
+                        <div class="sm:col-span-2 pt-2 flex justify-end">
+                            <button type="submit" class="px-6 py-2.5 bg-purple-500 hover:bg-purple-600 text-white font-bold rounded-2xl text-sm shadow-2xs transition">
+                                Simpan Perubahan Profil
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            `;
+        }
+
+        function updateUserProfile(e) {
+            e.preventDefault();
+            state.user.name = document.getElementById('prof-name').value;
+            state.user.email = document.getElementById('prof-email').value;
+            state.user.phone = document.getElementById('prof-phone').value;
+            state.user.job = document.getElementById('prof-job').value;
+
+            document.getElementById('header-username').textContent = state.user.name;
+            document.getElementById('header-avatar').textContent = state.user.name.split(' ').map(n => n[0]).join('').substring(0, 2).toUpperCase();
+            renderPageContent();
+            showToast('Profil pengguna berhasil diperbarui!', 'success');
+        }
+
+        // =====================================================================
+        // E. FITUR PENCARIAN CEPAT (QUICK SEARCH / COMMAND PALETTE)
+        // =====================================================================
+        function openQuickSearchModal() {
+            openModal(`
+                <div>
+                    <div class="flex items-center gap-3 pb-3 border-b border-pink-100">
+                        <i data-lucide="search" class="w-5 h-5 text-pink-500 shrink-0"></i>
+                        <input type="text" id="quick-search-input" oninput="handleQuickSearchInput(this.value)" placeholder="Cari transaksi, produk, aset, atau halaman..." class="w-full text-sm text-slate-800 placeholder-slate-400 focus:outline-none bg-transparent">
+                        <button onclick="closeModal()" class="p-1 rounded-xl hover:bg-pink-50 text-slate-400"><i data-lucide="x" class="w-4 h-4"></i></button>
+                    </div>
+                    <div id="quick-search-results" class="mt-3 max-h-80 overflow-y-auto space-y-1.5"></div>
+                </div>
+            `);
+            setTimeout(() => {
+                const input = document.getElementById('quick-search-input');
+                if (input) {
+                    input.focus();
+                    handleQuickSearchInput('');
+                }
+            }, 50);
+        }
+
+        function handleQuickSearchInput(query) {
+            const resultsContainer = document.getElementById('quick-search-results');
+            if (!resultsContainer) return;
+
+            const q = query.trim().toLowerCase();
+            const items = [];
+
+            state.mandiri.transaksi.forEach(t => {
+                items.push({
+                    title: t.keterangan,
+                    subtitle: `Mandiri • ${t.kategori} • ${t.tanggal}`,
+                    amount: `${t.tipe === 'masuk' ? '+' : '-'} ${formatRupiah(t.nominal)}`,
+                    badgeColor: 'bg-pink-100 text-pink-700',
+                    mode: 'mandiri',
+                    page: 'dashboard',
+                    icon: 'wallet'
+                });
+            });
+
+            state.perdagangan.stokBarang.forEach(s => {
+                items.push({
+                    title: s.nama,
+                    subtitle: `Stok Dagang • Sisa ${s.stok} unit (${s.status})`,
+                    amount: formatRupiah(s.hargaJual),
+                    badgeColor: 'bg-emerald-100 text-emerald-700',
+                    mode: 'perdagangan',
+                    page: 'dashboard',
+                    icon: 'package'
+                });
+            });
+            state.perdagangan.riwayatPenjualan.forEach(p => {
+                items.push({
+                    title: `${p.pelanggan} (${p.id})`,
+                    subtitle: `Penjualan • ${p.item} • ${p.tanggal}`,
+                    amount: formatRupiah(p.total),
+                    badgeColor: 'bg-emerald-100 text-emerald-700',
+                    mode: 'perdagangan',
+                    page: 'dashboard',
+                    icon: 'receipt'
+                });
+            });
+
+            state.investasi.portofolio.forEach(a => {
+                items.push({
+                    title: a.aset,
+                    subtitle: `Portofolio • ${a.jenis} (${a.porsi}%)`,
+                    amount: formatRupiah(a.nilaiSekarang),
+                    badgeColor: 'bg-amber-100 text-amber-800',
+                    mode: 'investasi',
+                    page: 'dashboard',
+                    icon: 'trending-up'
+                });
+            });
+            state.investasi.riwayatTransaksi.forEach(inv => {
+                items.push({
+                    title: `${inv.aksi} ${inv.aset}`,
+                    subtitle: `Investasi • ${inv.unit} • ${inv.tanggal}`,
+                    amount: formatRupiah(inv.nominal),
+                    badgeColor: 'bg-amber-100 text-amber-800',
+                    mode: 'investasi',
+                    page: 'dashboard',
+                    icon: 'arrow-left-right'
+                });
+            });
+
+            const navPages = [
+                { title: 'Halaman Statistik & Grafik', subtitle: 'Navigasi Cepat', page: 'statistik', icon: 'bar-chart-3' },
+                { title: 'Halaman Kalender Keuangan', subtitle: 'Navigasi Cepat', page: 'kalender', icon: 'calendar-days' },
+                { title: 'Halaman Laporan Terkonsolidasi', subtitle: 'Navigasi Cepat', page: 'laporan', icon: 'file-spreadsheet' },
+                { title: 'Dompet & Saldo Semua Mode', subtitle: 'Navigasi Cepat', page: 'dompet', icon: 'wallet' }
+            ];
+            navPages.forEach(nav => {
+                items.push({
+                    title: nav.title,
+                    subtitle: nav.subtitle,
+                    amount: 'Buka',
+                    badgeColor: 'bg-purple-100 text-purple-700',
+                    mode: state.currentMode,
+                    page: nav.page,
+                    icon: nav.icon
+                });
+            });
+
+            const filtered = q === ''
+                ? items.slice(0, 7)
+                : items.filter(item =>
+                    item.title.toLowerCase().includes(q) ||
+                    item.subtitle.toLowerCase().includes(q)
+                );
+
+            if (filtered.length === 0) {
+                resultsContainer.innerHTML = `
+                    <div class="py-8 text-center text-sm text-slate-400">
+                        Tidak ditemukan hasil untuk "<strong>${query}</strong>"
+                    </div>
+                `;
+                return;
+            }
+
+            resultsContainer.innerHTML = `
+                <p class="text-[11px] font-extrabold text-slate-400 uppercase tracking-wider px-2 pb-1">
+                    ${q === '' ? 'Saran & Akses Cepat' : `Hasil Pencarian (${filtered.length})`}
+                </p>
+                ${filtered.map(item => `
+                    <button type="button" onclick="navigateFromSearch('${item.mode}', '${item.page}')" class="w-full flex items-center justify-between gap-3 p-2.5 rounded-2xl hover:bg-pink-50/70 text-left transition group">
+                        <div class="flex items-center gap-3 min-w-0">
+                            <div class="w-8 h-8 rounded-xl ${item.badgeColor} flex items-center justify-center shrink-0">
+                                <i data-lucide="${item.icon}" class="w-4 h-4"></i>
+                            </div>
+                            <div class="min-w-0">
+                                <p class="text-sm font-bold text-slate-800 truncate group-hover:text-pink-600">${item.title}</p>
+                                <p class="text-xs text-slate-400 truncate">${item.subtitle}</p>
+                            </div>
+                        </div>
+                        <span class="text-xs font-extrabold text-slate-700 shrink-0">${item.amount}</span>
+                    </button>
+                `).join('')}
+            `;
+            lucide.createIcons();
+        }
+
+        function navigateFromSearch(mode, page) {
+            closeModal();
+            if (state.currentMode !== mode) {
+                selectMode(mode);
+            }
+            switchPage(page);
+            showToast('Berpindah ke hasil pencarian.', 'info');
+        }
+
+        // Pintasan Keyboard Ctrl+K / Cmd+K & Escape
+        document.addEventListener('keydown', (e) => {
+            if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'k') {
+                const isAppVisible = !document.getElementById('main-app-wrapper').classList.contains('hidden');
+                if (isAppVisible) {
+                    e.preventDefault();
+                    openQuickSearchModal();
+                }
+            } else if (e.key === 'Escape') {
+                closeModal();
+            }
+        });
+
+        // Inisialisasi ikon saat halaman pertama kali dimuat
+        window.addEventListener('DOMContentLoaded', () => {
+            lucide.createIcons();
+        });
+    </script>
+</body>
+</html>
