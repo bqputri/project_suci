@@ -505,15 +505,18 @@
             </label>
         </div>
 
-        <!-- Action Buttons: Tes Suara & Buat Pengingat -->
-        <div class="grid grid-cols-2 gap-2 mb-3">
+        <!-- Action Buttons: Tes Suara, Buat Pengingat & Ubah Nada Dering -->
+        <div class="grid grid-cols-2 gap-2 mb-2">
             <button type="button" onclick="testNotificationChime()" class="btn-bounce py-1.5 px-2.5 rounded-xl text-[11px] font-bold text-pink-600 dark:text-pink-300 glass-pill border border-pink-200 dark:border-pink-800 hover:bg-pink-50 flex items-center justify-center gap-1.5">
-                <i class="fa-solid fa-music text-[10px]"></i> Tes Suara Alarm
+                <i class="fa-solid fa-play text-[10px]"></i> Putar Nada
             </button>
             <button type="button" onclick="openAddPengingatModal()" class="btn-bounce py-1.5 px-2.5 rounded-xl text-[11px] font-bold text-white bg-gradient-to-r from-pink-500 to-purple-500 shadow-sm flex items-center justify-center gap-1.5">
                 <i class="fa-solid fa-plus text-[10px]"></i> + Buat Pengingat
             </button>
         </div>
+        <button type="button" onclick="openRingtoneModal()" class="w-full mb-3 btn-bounce py-1.5 px-2.5 rounded-xl text-[11px] font-bold text-purple-700 dark:text-purple-300 glass-pill border border-purple-200 dark:border-purple-800 hover:bg-purple-50/80 flex items-center justify-center gap-1.5">
+            <i class="fa-solid fa-sliders text-[11px] text-purple-500"></i> Pilihan Nada: <span id="activeRingtoneBadgeName" class="underline font-black">Adzan Suci</span>
+        </button>
 
         <!-- Notification List -->
         <div id="notificationList" class="space-y-2.5 flex-1 overflow-y-auto pr-1 max-h-72">
@@ -709,6 +712,7 @@
                             <option value="Kelas 10">Kelas 10</option>
                             <option value="Kelas 11">Kelas 11</option>
                             <option value="Kelas 12">Kelas 12</option>
+                            <option value="Pengabdian">Pengabdian</option>
                         </select>
                     </div>
 
@@ -717,8 +721,8 @@
                             <i class="fa-solid fa-arrow-down-a-z text-pink-500"></i> Urutkan:
                         </span>
                         <select id="santriSortBy" onchange="renderSantriTable()" class="glass-input px-3 py-2 rounded-2xl text-xs font-bold text-pink-600 dark:text-pink-300 focus:outline-none border border-pink-200 dark:border-pink-800">
+                            <option value="kelas_abjad" selected>Kelas lalu Nama (A - Z)</option>
                             <option value="abjad_kelas">Abjad Nama (A - Z) lalu Kelas</option>
-                            <option value="kelas_abjad">Kelas (7 - 12) lalu Abjad Nama</option>
                         </select>
                     </div>
                 </div>
@@ -763,6 +767,9 @@
                         <button onclick="openSantriModal()" class="btn-bounce px-4 py-2 bg-slate-800 hover:bg-slate-900 text-white rounded-2xl text-xs font-bold shadow-md transition flex items-center gap-1.5">
                             <i class="fa-solid fa-user-plus text-xs"></i> + Santri
                         </button>
+                        <button onclick="openMasbuqModal()" class="btn-bounce px-4 py-2 bg-gradient-to-r from-amber-500 to-orange-500 text-white rounded-2xl text-xs font-bold shadow-md transition flex items-center gap-1.5">
+                            <i class="fa-solid fa-clock-rotate-left"></i> + Catat Telat Raka'at
+                        </button>
                         <button onclick="markAllMusholaPresent()" class="btn-bounce px-4 py-2 bg-gradient-to-r from-pink-500 to-purple-500 text-white rounded-2xl text-xs font-bold shadow-md transition flex items-center gap-1.5">
                             <i class="fa-solid fa-check-double"></i> Tandai Subuh Hadir Semua
                         </button>
@@ -770,7 +777,7 @@
                 </div>
 
                 <!-- Search, Room Filter & Favorites Toggle -->
-                <div class="flex flex-col sm:flex-row items-center gap-3 mb-5">
+                <div class="flex flex-col sm:flex-row items-center gap-3 mb-4">
                     <div class="relative w-full sm:w-64">
                         <i class="fa-solid fa-magnifying-glass absolute left-3.5 top-3 text-slate-400 text-xs"></i>
                         <input type="text" id="musholaSearch" oninput="renderMusholaPresensi()" placeholder="Cari santriwati..." class="glass-input pl-9 pr-4 py-2 rounded-2xl text-xs w-full focus:outline-none">
@@ -783,9 +790,22 @@
                         <option value="Kelas 10">Kelas 10</option>
                         <option value="Kelas 11">Kelas 11</option>
                         <option value="Kelas 12">Kelas 12</option>
+                        <option value="Pengabdian">Pengabdian</option>
                     </select>
                     <button id="toggleFavFilterBtn" onclick="toggleFavFilter()" class="btn-bounce w-full sm:w-auto px-4 py-2 rounded-2xl text-xs font-bold glass-pill border border-pink-300 text-pink-600 dark:text-pink-300 flex items-center justify-center gap-1.5">
                         <i class="fa-solid fa-star text-amber-400"></i> Hanya Favorit
+                    </button>
+                </div>
+
+                <!-- Masbuq Summary Bar & Quick Rekap Link -->
+                <div id="masbuqSummaryBanner" class="mb-5 p-3 rounded-2xl bg-amber-50/70 dark:bg-amber-950/30 border border-amber-200/80 dark:border-amber-900/50 flex flex-wrap items-center justify-between gap-3 text-xs">
+                    <div class="flex items-center gap-2 text-amber-800 dark:text-amber-200 font-semibold">
+                        <i class="fa-solid fa-clock-rotate-left text-amber-500 text-sm"></i>
+                        <span>Santriwati Masbuq / Telat Raka'at Tanggal Ini:</span>
+                        <span id="masbuqCountToday" class="font-bold bg-amber-200 dark:bg-amber-900/80 px-2.5 py-0.5 rounded-full text-amber-900 dark:text-amber-100">0 Santriwati</span>
+                    </div>
+                    <button onclick="toggleMasbuqListModal()" class="btn-bounce text-xs font-bold text-amber-700 dark:text-amber-300 hover:text-amber-800 flex items-center gap-1.5 glass-pill px-3 py-1 border border-amber-300/80">
+                        <i class="fa-solid fa-clipboard-list"></i> Lihat Catatan Masbuq →
                     </button>
                 </div>
 
@@ -794,12 +814,12 @@
                     <table class="w-full text-left text-sm">
                         <thead class="bg-pink-50/60 dark:bg-slate-800/80 text-slate-600 dark:text-slate-300 text-xs uppercase tracking-wider border-b border-white/80 dark:border-slate-700">
                             <tr>
-                                <th class="p-4 font-bold">Favorit</th>
+                                <th class="p-4 font-bold text-center">Favorit</th>
                                 <th class="p-4 font-bold">Nama Santriwati</th>
                                 <th class="p-3 text-center font-bold">Subuh</th>
                                 <th class="p-3 text-center font-bold">Maghrib</th>
                                 <th class="p-3 text-center font-bold">Isya</th>
-                                <th class="p-4 text-center font-bold">Kehadiran</th>
+                                <th class="p-4 text-center font-bold">Kehadiran & Status</th>
                             </tr>
                         </thead>
                         <tbody id="musholaPresensiBody" class="divide-y divide-white/60 dark:divide-slate-700/60">
@@ -1251,6 +1271,7 @@
                         <option value="Kelas 10">Kelas 10</option>
                         <option value="Kelas 11">Kelas 11</option>
                         <option value="Kelas 12">Kelas 12</option>
+                        <option value="Pengabdian">Pengabdian</option>
                     </select>
                 </div>
                 <div class="flex justify-end gap-2 pt-2">
@@ -1344,12 +1365,15 @@
     <div id="modalPiket" class="hidden fixed inset-0 bg-slate-900/40 backdrop-blur-md z-50 flex items-center justify-center p-4">
         <div class="glass-card rounded-3xl max-w-md w-full p-6 shadow-2xl border border-white/80 dark:border-slate-700">
             <div class="flex justify-between items-center mb-4">
-                <h3 class="font-bold text-slate-800 dark:text-slate-100 text-base">Tambah Tugas Piket Baru</h3>
+                <h3 id="piketModalTitle" class="font-bold text-slate-800 dark:text-slate-100 text-base flex items-center gap-2">
+                    <i class="fa-solid fa-broom text-amber-500"></i> <span>Tambah Tugas Piket Baru</span>
+                </h3>
                 <button onclick="closePiketModal()" class="text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 w-8 h-8 rounded-full flex items-center justify-center hover:bg-slate-100/50">
                     <i class="fa-solid fa-xmark text-lg"></i>
                 </button>
             </div>
             <form id="formPiket" onsubmit="savePiket(event)" class="space-y-4">
+                <input type="hidden" id="piketEditId" value="">
                 <div>
                     <label class="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">Nama Area Piket</label>
                     <input type="text" id="piketArea" required placeholder="Contoh: Teras & Koridor Depan" class="w-full glass-input px-3.5 py-2.5 rounded-2xl text-xs focus:outline-none">
@@ -1364,7 +1388,7 @@
                 </div>
                 <div class="flex justify-end gap-2 pt-2">
                     <button type="button" onclick="closePiketModal()" class="px-4 py-2 text-xs font-bold text-slate-600 dark:text-slate-300 glass-pill hover:bg-white/80 rounded-2xl">Batal</button>
-                    <button type="submit" class="btn-bounce px-4 py-2 text-xs font-bold text-white bg-gradient-to-r from-amber-500 to-orange-500 rounded-2xl shadow-md">Simpan Piket</button>
+                    <button id="piketSubmitBtn" type="submit" class="btn-bounce px-4 py-2 text-xs font-bold text-white bg-gradient-to-r from-amber-500 to-orange-500 rounded-2xl shadow-md">Simpan Piket</button>
                 </div>
             </form>
         </div>
@@ -1583,6 +1607,24 @@
                     <textarea id="pengingatPesan" rows="2" placeholder="Contoh: Bersiap di mushola membawa mushaf Al-Qur'an..." class="w-full glass-input px-3.5 py-2.5 rounded-2xl text-xs focus:outline-none"></textarea>
                 </div>
 
+                <div>
+                    <label class="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">Pilihan Nada Dering Pengingat</label>
+                    <div class="flex items-center gap-2">
+                        <select id="pengingatRingtone" class="w-full glass-input px-3.5 py-2 rounded-2xl text-xs focus:outline-none">
+                            <option value="default">✨ Ikuti Nada Utama (Default)</option>
+                            <option value="adzan">🕌 Adzan Suci</option>
+                            <option value="chime">🔔 Lonceng Estetik</option>
+                            <option value="harpa">🎵 Harpa Subuh</option>
+                            <option value="bedug">🥁 Bedug Mini</option>
+                            <option value="beep">⏰ Beep Ceria</option>
+                            <option value="custom">📁 Nada Kustom Saya</option>
+                        </select>
+                        <button type="button" onclick="previewPengingatTone()" title="Tes Suara" class="btn-bounce px-3 py-2 text-xs font-bold text-pink-600 dark:text-pink-300 glass-pill border border-pink-300 rounded-xl flex items-center gap-1 shrink-0">
+                            <i class="fa-solid fa-play text-[10px]"></i>
+                        </button>
+                    </div>
+                </div>
+
                 <div class="flex items-center gap-2 pt-1">
                     <input type="checkbox" id="pengingatSound" checked class="rounded text-pink-500 focus:ring-0 cursor-pointer">
                     <label for="pengingatSound" class="text-xs font-bold text-slate-600 dark:text-slate-300 cursor-pointer flex items-center gap-1.5">
@@ -1597,6 +1639,192 @@
                     </button>
                 </div>
             </form>
+        </div>
+    </div>
+
+    <!-- MODAL CATAT TELAT RAKAAT (MASBUQ) -->
+    <div id="modalMasbuq" class="hidden fixed inset-0 bg-slate-900/40 backdrop-blur-md z-50 flex items-center justify-center p-4">
+        <div class="glass-card rounded-3xl max-w-md w-full p-6 shadow-2xl border border-white/80 dark:border-slate-700">
+            <div class="flex justify-between items-center mb-4">
+                <h3 class="font-bold text-slate-800 dark:text-slate-100 text-base flex items-center gap-2">
+                    <i class="fa-solid fa-clock-rotate-left text-amber-500"></i> Catat Telat Raka'at Sholat Jamaah
+                </h3>
+                <button onclick="closeMasbuqModal()" class="text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 w-8 h-8 rounded-full flex items-center justify-center hover:bg-slate-100/50">
+                    <i class="fa-solid fa-xmark text-lg"></i>
+                </button>
+            </div>
+            <form id="formMasbuq" onsubmit="saveMasbuqRecord(event)" class="space-y-4">
+                <div>
+                    <label class="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">Pilih Santriwati</label>
+                    <select id="masbuqSantriSelect" required class="w-full glass-input px-3.5 py-2.5 rounded-2xl text-xs focus:outline-none">
+                        <!-- Populated dynamically with sorted santri -->
+                    </select>
+                </div>
+                <div class="grid grid-cols-2 gap-3">
+                    <div>
+                        <label class="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">Waktu Sholat</label>
+                        <select id="masbuqPrayerSelect" onchange="updateMasbuqRakaatOptions()" class="w-full glass-input px-3.5 py-2.5 rounded-2xl text-xs focus:outline-none">
+                            <option value="subuh">Sholat Subuh (2 Rakaat)</option>
+                            <option value="maghrib">Sholat Maghrib (3 Rakaat)</option>
+                            <option value="isya" selected>Sholat Isya (4 Rakaat)</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">Telat Berapa Raka'at?</label>
+                        <select id="masbuqRakaatSelect" class="w-full glass-input px-3.5 py-2.5 rounded-2xl text-xs font-bold text-amber-600 focus:outline-none">
+                            <option value="1">1 Raka'at Masbuq</option>
+                            <option value="2">2 Raka'at Masbuq</option>
+                            <option value="3">3 Raka'at Masbuq</option>
+                        </select>
+                    </div>
+                </div>
+                <div>
+                    <label class="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">Alasan / Catatan Telat Raka'at</label>
+                    <input type="text" id="masbuqAlasan" placeholder="Contoh: Antre wudhu, piket asrama, kesiangan" class="w-full glass-input px-3.5 py-2.5 rounded-2xl text-xs focus:outline-none">
+                </div>
+                <div class="flex justify-end gap-2 pt-2">
+                    <button type="button" onclick="closeMasbuqModal()" class="px-4 py-2 text-xs font-bold text-slate-600 dark:text-slate-300 glass-pill hover:bg-white/80 rounded-2xl">Batal</button>
+                    <button type="submit" class="btn-bounce px-4 py-2 text-xs font-bold text-white bg-gradient-to-r from-amber-500 to-orange-500 rounded-2xl shadow-md">Simpan Telat Raka'at</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- MODAL DAFTAR REKAP TELAT RAKAAT -->
+    <div id="modalMasbuqList" class="hidden fixed inset-0 bg-slate-900/40 backdrop-blur-md z-50 flex items-center justify-center p-4">
+        <div class="glass-card rounded-3xl max-w-lg w-full p-6 shadow-2xl border border-white/80 dark:border-slate-700 max-h-[85vh] flex flex-col">
+            <div class="flex justify-between items-center mb-4">
+                <h3 class="font-bold text-slate-800 dark:text-slate-100 text-base flex items-center gap-2">
+                    <i class="fa-solid fa-clipboard-list text-amber-500"></i> Rekap Santriwati Masbuq / Telat Raka'at
+                </h3>
+                <button onclick="closeMasbuqListModal()" class="text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 w-8 h-8 rounded-full flex items-center justify-center hover:bg-slate-100/50">
+                    <i class="fa-solid fa-xmark text-lg"></i>
+                </button>
+            </div>
+            <div id="masbuqListContent" class="overflow-y-auto space-y-2.5 flex-1 pr-1 custom-scrollbar max-h-96">
+                <!-- Rendered dynamically -->
+            </div>
+            <div class="pt-4 mt-2 border-t border-slate-200/60 dark:border-slate-700 flex justify-between items-center">
+                <span class="text-xs text-slate-500 dark:text-slate-400" id="masbuqTotalCountInfo">Total 0 catatan masbuq</span>
+                <button onclick="closeMasbuqListModal()" class="px-4 py-2 text-xs font-bold text-slate-600 dark:text-slate-300 glass-pill hover:bg-white/80 rounded-2xl">Tutup</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL PENGATURAN NADA DERING SHOLAT & PENGINGAT -->
+    <div id="modalRingtone" class="hidden fixed inset-0 bg-slate-900/40 backdrop-blur-md z-50 flex items-center justify-center p-4">
+        <div class="glass-card rounded-3xl max-w-md w-full p-6 shadow-2xl border border-white/80 dark:border-slate-700">
+            <div class="flex justify-between items-center mb-4">
+                <h3 class="font-bold text-slate-800 dark:text-slate-100 text-base flex items-center gap-2">
+                    <i class="fa-solid fa-music text-pink-500"></i> Pilihan Nada Dering Sholat & Alarm
+                </h3>
+                <button onclick="closeRingtoneModal()" class="text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 w-8 h-8 rounded-full flex items-center justify-center hover:bg-slate-100/50">
+                    <i class="fa-solid fa-xmark text-lg"></i>
+                </button>
+            </div>
+            
+            <div class="space-y-4">
+                <div>
+                    <label class="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-2">Pilih Nada Dering Utama</label>
+                    <div class="space-y-2" id="ringtoneOptionList">
+                        <label class="flex items-center justify-between p-2.5 rounded-2xl border border-pink-200/80 dark:border-slate-700 bg-white/60 dark:bg-slate-800/60 cursor-pointer hover:bg-pink-50/50">
+                            <div class="flex items-center gap-2.5">
+                                <input type="radio" name="activeRingtoneRadio" value="adzan" onchange="previewSelectedRingtone('adzan')" class="text-pink-500 focus:ring-0">
+                                <div>
+                                    <span class="text-xs font-bold text-slate-800 dark:text-slate-100 block">🕌 Adzan Suci</span>
+                                    <span class="text-[10px] text-slate-500 dark:text-slate-400 block">Melodi adzan spiritual, khusyuk & menenangkan</span>
+                                </div>
+                            </div>
+                            <button type="button" onclick="previewSelectedRingtone('adzan')" class="text-pink-500 text-xs px-2 py-1 rounded-lg hover:bg-pink-100/60"><i class="fa-solid fa-play"></i></button>
+                        </label>
+
+                        <label class="flex items-center justify-between p-2.5 rounded-2xl border border-pink-200/80 dark:border-slate-700 bg-white/60 dark:bg-slate-800/60 cursor-pointer hover:bg-pink-50/50">
+                            <div class="flex items-center gap-2.5">
+                                <input type="radio" name="activeRingtoneRadio" value="chime" onchange="previewSelectedRingtone('chime')" class="text-pink-500 focus:ring-0">
+                                <div>
+                                    <span class="text-xs font-bold text-slate-800 dark:text-slate-100 block">🔔 Lonceng Estetik</span>
+                                    <span class="text-[10px] text-slate-500 dark:text-slate-400 block">3 nada lonceng kristal lembut dan jernih</span>
+                                </div>
+                            </div>
+                            <button type="button" onclick="previewSelectedRingtone('chime')" class="text-pink-500 text-xs px-2 py-1 rounded-lg hover:bg-pink-100/60"><i class="fa-solid fa-play"></i></button>
+                        </label>
+
+                        <label class="flex items-center justify-between p-2.5 rounded-2xl border border-pink-200/80 dark:border-slate-700 bg-white/60 dark:bg-slate-800/60 cursor-pointer hover:bg-pink-50/50">
+                            <div class="flex items-center gap-2.5">
+                                <input type="radio" name="activeRingtoneRadio" value="harpa" onchange="previewSelectedRingtone('harpa')" class="text-pink-500 focus:ring-0">
+                                <div>
+                                    <span class="text-xs font-bold text-slate-800 dark:text-slate-100 block">🎵 Harpa Subuh</span>
+                                    <span class="text-[10px] text-slate-500 dark:text-slate-400 block">Petikan arpeggio santai membangkitkan semangat</span>
+                                </div>
+                            </div>
+                            <button type="button" onclick="previewSelectedRingtone('harpa')" class="text-pink-500 text-xs px-2 py-1 rounded-lg hover:bg-pink-100/60"><i class="fa-solid fa-play"></i></button>
+                        </label>
+
+                        <label class="flex items-center justify-between p-2.5 rounded-2xl border border-pink-200/80 dark:border-slate-700 bg-white/60 dark:bg-slate-800/60 cursor-pointer hover:bg-pink-50/50">
+                            <div class="flex items-center gap-2.5">
+                                <input type="radio" name="activeRingtoneRadio" value="bedug" onchange="previewSelectedRingtone('bedug')" class="text-pink-500 focus:ring-0">
+                                <div>
+                                    <span class="text-xs font-bold text-slate-800 dark:text-slate-100 block">🥁 Bedug Mini Asrama</span>
+                                    <span class="text-[10px] text-slate-500 dark:text-slate-400 block">Tabuhan bedug rendah berirama khas mushola</span>
+                                </div>
+                            </div>
+                            <button type="button" onclick="previewSelectedRingtone('bedug')" class="text-pink-500 text-xs px-2 py-1 rounded-lg hover:bg-pink-100/60"><i class="fa-solid fa-play"></i></button>
+                        </label>
+
+                        <label class="flex items-center justify-between p-2.5 rounded-2xl border border-pink-200/80 dark:border-slate-700 bg-white/60 dark:bg-slate-800/60 cursor-pointer hover:bg-pink-50/50">
+                            <div class="flex items-center gap-2.5">
+                                <input type="radio" name="activeRingtoneRadio" value="beep" onchange="previewSelectedRingtone('beep')" class="text-pink-500 focus:ring-0">
+                                <div>
+                                    <span class="text-xs font-bold text-slate-800 dark:text-slate-100 block">⏰ Beep Alarm Ceria</span>
+                                    <span class="text-[10px] text-slate-500 dark:text-slate-400 block">Nada pengingat ritmis aktif untuk piket/jadwal</span>
+                                </div>
+                            </div>
+                            <button type="button" onclick="previewSelectedRingtone('beep')" class="text-pink-500 text-xs px-2 py-1 rounded-lg hover:bg-pink-100/60"><i class="fa-solid fa-play"></i></button>
+                        </label>
+                    </div>
+                </div>
+
+                <!-- Custom Audio Upload Section -->
+                <div class="p-3.5 rounded-2xl bg-pink-50/60 dark:bg-slate-800/60 border border-pink-200/80 dark:border-slate-700 space-y-2">
+                    <div class="flex items-center justify-between">
+                        <label class="flex items-center gap-2 cursor-pointer">
+                            <input type="radio" name="activeRingtoneRadio" value="custom" onchange="previewSelectedRingtone('custom')" class="text-pink-500 focus:ring-0">
+                            <span class="text-xs font-bold text-slate-800 dark:text-slate-100 flex items-center gap-1.5">
+                                <i class="fa-solid fa-cloud-arrow-up text-pink-500"></i> Nada Kustom (Upload Sendiri)
+                            </span>
+                        </label>
+                        <span id="customAudioStatusBadge" class="text-[10px] px-2 py-0.5 rounded-full font-bold bg-slate-200 text-slate-600 dark:bg-slate-700 dark:text-slate-300">Belum ada file</span>
+                    </div>
+                    <input type="file" id="customAudioFileInput" accept="audio/*" onchange="handleCustomAudioUpload(event)" class="text-xs text-slate-500 file:mr-2 file:py-1 file:px-3 file:rounded-xl file:border-0 file:text-xs file:font-bold file:bg-pink-500 file:text-white file:cursor-pointer hover:file:bg-pink-600 w-full">
+                    <p class="text-[10px] text-slate-500 dark:text-slate-400">Pilih file MP3/WAV/Audio kesukaanmu dari komputer untuk dijadikan nada pengingat.</p>
+                </div>
+
+                <!-- Volume Slider -->
+                <div>
+                    <div class="flex justify-between items-center mb-1">
+                        <label class="text-xs font-bold text-slate-700 dark:text-slate-300 flex items-center gap-1.5">
+                            <i class="fa-solid fa-volume-high text-pink-500"></i> Volume Suara
+                        </label>
+                        <span id="ringtoneVolumeLabel" class="text-xs font-bold text-pink-600 dark:text-pink-400">80%</span>
+                    </div>
+                    <input type="range" id="ringtoneVolumeSlider" min="10" max="100" value="80" oninput="updateRingtoneVolume(this.value)" class="w-full accent-pink-500 cursor-pointer">
+                </div>
+
+                <!-- Action Buttons: Preview & Save -->
+                <div class="flex items-center justify-between pt-2 border-t border-slate-200/60 dark:border-slate-700">
+                    <div class="flex gap-2">
+                        <button type="button" onclick="previewCurrentSelectedRingtone()" class="btn-bounce px-3 py-2 text-xs font-bold text-pink-600 dark:text-pink-300 glass-pill border border-pink-300 flex items-center gap-1">
+                            <i class="fa-solid fa-play text-[10px]"></i> Putar
+                        </button>
+                        <button type="button" onclick="stopActiveRingtone()" class="btn-bounce px-3 py-2 text-xs font-bold text-slate-500 glass-pill border border-slate-300 flex items-center gap-1">
+                            <i class="fa-solid fa-stop text-[10px]"></i> Stop
+                        </button>
+                    </div>
+                    <button type="button" onclick="saveRingtoneSettings()" class="btn-bounce px-4 py-2 text-xs font-bold text-white bg-gradient-to-r from-pink-500 to-purple-500 rounded-2xl shadow-md">
+                        Simpan Nada
+                    </button>
+                </div>
+            </div>
         </div>
     </div>
 
@@ -2068,14 +2296,15 @@
         ];
 
         const initialSantri = [
-            { id: 'S1', nama: 'Aisyah Az-Zahra', kelas: 'Kelas 10', favorite: true },
-            { id: 'S2', nama: 'Khadijah Maryam', kelas: 'Kelas 10', favorite: false },
-            { id: 'S3', nama: 'Fatimah Az-Zahra', kelas: 'Kelas 11', favorite: true },
-            { id: 'S4', nama: 'Nabila Putri', kelas: 'Kelas 11', favorite: false },
-            { id: 'S5', nama: 'Zahra Humaira', kelas: 'Kelas 12', favorite: false },
-            { id: 'S6', nama: 'Siti Safiyah', kelas: 'Kelas 12', favorite: false },
-            { id: 'S7', nama: 'Siti Aminah', kelas: 'Kelas 7', favorite: false },
-            { id: 'S8', nama: 'Ruqayyah Mufidah', kelas: 'Kelas 8', favorite: false }
+            { id: 'S1', nama: 'Siti Aminah', kelas: 'Kelas 7', favorite: false },
+            { id: 'S2', nama: 'Ruqayyah Mufidah', kelas: 'Kelas 8', favorite: false },
+            { id: 'S3', nama: 'Aisyah Az-Zahra', kelas: 'Kelas 10', favorite: true },
+            { id: 'S4', nama: 'Khadijah Maryam', kelas: 'Kelas 10', favorite: false },
+            { id: 'S5', nama: 'Fatimah Az-Zahra', kelas: 'Kelas 11', favorite: true },
+            { id: 'S6', nama: 'Nabila Putri', kelas: 'Kelas 11', favorite: false },
+            { id: 'S7', nama: 'Siti Safiyah', kelas: 'Kelas 12', favorite: false },
+            { id: 'S8', nama: 'Zahra Humaira', kelas: 'Kelas 12', favorite: false },
+            { id: 'S9', nama: 'Suci Ramadhani', kelas: 'Pengabdian', favorite: true }
         ];
 
         const initialPiket = [
@@ -2133,6 +2362,12 @@
             }
             return s;
         });
+
+        // Pastikan santriwati kelas Pengabdian tersedia jika belum ada
+        if (!santriList.some(s => (s.kelas || '').toLowerCase().includes('pengabdian'))) {
+            santriList.push({ id: 'S' + (santriList.length + 1), nama: 'Suci Ramadhani', kelas: 'Pengabdian', favorite: true });
+            setStorage('asramaku_santri', santriList);
+        }
         let piketList = getStorage('asramaku_piket', initialPiket);
         let pengumumanList = getStorage('asramaku_pengumuman', initialPengumuman);
         let hukumanList = getStorage('asramaku_hukuman', initialHukuman);
@@ -2141,13 +2376,28 @@
             [`${selectedMusholaDate}_S1`]: { subuh: 'hadir', maghrib: 'hadir', isya: 'hadir' },
             [`${selectedMusholaDate}_S2`]: { subuh: 'hadir', maghrib: 'hadir', isya: 'hadir' },
             [`${selectedMusholaDate}_S3`]: { subuh: 'uzur', maghrib: 'uzur', isya: 'uzur' },
-            [`${selectedMusholaDate}_S4`]: { subuh: 'terlambat', maghrib: 'hadir', isya: 'hadir' }
+            [`${selectedMusholaDate}_S4`]: { subuh: 'telat_1', maghrib: 'hadir', isya: 'hadir', telatRakaat: { subuh: 1 } }
         });
+        let masbuqLogList = getStorage('asramaku_masbuq_logs', [
+            {
+                id: 1,
+                date: selectedMusholaDate,
+                santriId: 'S4',
+                santriName: 'Nabila Putri',
+                santriKelas: 'Kelas 11',
+                prayer: 'subuh',
+                rakaat: 1,
+                alasan: 'Antre wudhu di asrama',
+                timestamp: '04:45'
+            }
+        ]);
 
         // --- HELPER SORT DATA SANTRIWATI (ABJAD & KELAS) ---
-        function sortSantriData(list, sortMode = 'abjad_kelas') {
+        function sortSantriData(list, sortMode = 'kelas_abjad') {
             const parseClassNum = (cls) => {
                 if (!cls) return 99;
+                const lower = cls.toLowerCase();
+                if (lower.includes('pengabdian')) return 20; // Kelas Pengabdian diurutkan setelah kelas 12
                 const m = cls.match(/\d+/);
                 return m ? parseInt(m[0], 10) : 99;
             };
@@ -2157,18 +2407,27 @@
                 const classA = parseClassNum(a.kelas || a.kamar);
                 const classB = parseClassNum(b.kelas || b.kamar);
 
-                if (sortMode === 'kelas_abjad') {
-                    // 1. Urutkan berdasarkan tingkat kelas (Kelas 7 -> 12)
-                    if (classA !== classB) return classA - classB;
-                    // 2. Jika kelas sama, urutkan berdasarkan abjad nama (A - Z)
-                    return nameComp;
-                } else {
+                if (sortMode === 'abjad_kelas') {
                     // 1. Urutkan berdasarkan abjad nama (A - Z)
                     if (nameComp !== 0) return nameComp;
                     // 2. Jika nama sama, urutkan berdasarkan tingkat kelas
                     return classA - classB;
+                } else {
+                    // Default 'kelas_abjad': Kelas (7 -> 12 -> Pengabdian) lalu Abjad Nama (A - Z)
+                    if (classA !== classB) return classA - classB;
+                    return nameComp;
                 }
             });
+        }
+
+        // Helper untuk menghasilkan ID Santri yang berurutan sesuai kelas dan nama
+        function getSantriDisplayId(santri) {
+            const masterSorted = sortSantriData(santriList, 'kelas_abjad');
+            const idx = masterSorted.findIndex(s => s.id === santri.id || (s.nama === santri.nama && s.kelas === santri.kelas));
+            if (idx !== -1) {
+                return `S-${String(idx + 1).padStart(2, '0')}`;
+            }
+            return santri.id || 'S-01';
         }
 
         // --- RENDER FUNCTIONS ---
@@ -2180,7 +2439,7 @@
 
             const searchVal = (document.getElementById('santriSearchInput')?.value || '').toLowerCase().trim();
             const classVal = document.getElementById('santriClassFilter')?.value || 'ALL';
-            const sortMode = document.getElementById('santriSortBy')?.value || 'abjad_kelas';
+            const sortMode = document.getElementById('santriSortBy')?.value || 'kelas_abjad';
 
             let filtered = santriList.filter(s => {
                 const matchName = (s.nama || '').toLowerCase().includes(searchVal);
@@ -2189,7 +2448,7 @@
                 return matchName && matchClass;
             });
 
-            // Urutkan data santriwati sesuai abjad dan kelas
+            // Urutkan data santriwati sesuai kelas dan abjad nama
             const sortedList = sortSantriData(filtered, sortMode);
 
             if (sortedList.length === 0) {
@@ -2201,7 +2460,9 @@
                 const tr = document.createElement('tr');
                 tr.className = "hover:bg-pink-50/30 dark:hover:bg-slate-700/30 transition border-b border-white/40 dark:border-slate-700/40";
                 tr.innerHTML = `
-                    <td class="p-4 font-bold text-xs text-pink-600 dark:text-pink-400 font-mono">${santri.id}</td>
+                    <td class="p-4 font-bold text-xs text-pink-600 dark:text-pink-400 font-mono">
+                        <span class="px-2.5 py-1 rounded-xl bg-pink-50 dark:bg-pink-950/40 border border-pink-200 dark:border-pink-800 shadow-sm font-black">${getSantriDisplayId(santri)}</span>
+                    </td>
                     <td class="p-4 font-bold text-xs text-slate-800 dark:text-slate-100 flex items-center gap-2">
                         <button onclick="toggleFavoriteSantri('${santri.id}')" class="text-amber-400 text-sm hover:scale-125 transition-transform">
                             <i class="${santri.favorite ? 'fa-solid' : 'fa-regular'} fa-star"></i>
@@ -2675,7 +2936,7 @@
                 return;
             }
 
-            const sortedSantri = sortSantriData(filteredSantri, 'abjad_kelas');
+            const sortedSantri = sortSantriData(filteredSantri, 'kelas_abjad');
             const prayers = ['subuh', 'maghrib', 'isya'];
 
             sortedSantri.forEach(santri => {
@@ -2686,8 +2947,22 @@
                 const record = musholaPresensiRecords[key];
 
                 let hadirCount = 0;
-                prayers.forEach(p => { if (record[p] === 'hadir') hadirCount++; });
-                const percentage = Math.round((hadirCount / prayers.length) * 100);
+                let hasMasbuq = false;
+                let masbuqRakaatTotal = 0;
+
+                prayers.forEach(p => { 
+                    const st = record[p];
+                    if (st === 'hadir') hadirCount += 1;
+                    else if (st && (st.startsWith('telat') || st === 'terlambat')) {
+                        hadirCount += 0.8;
+                        hasMasbuq = true;
+                        const rk = st.startsWith('telat_') ? parseInt(st.split('_')[1]) : (record.telatRakaat?.[p] || 1);
+                        masbuqRakaatTotal += rk;
+                    } else if (st === 'uzur') {
+                        hadirCount += 1;
+                    }
+                });
+                const percentage = Math.min(100, Math.round((hadirCount / prayers.length) * 100));
 
                 const tr = document.createElement('tr');
                 tr.className = "hover:bg-pink-50/30 dark:hover:bg-slate-700/30 transition border-b border-white/40 dark:border-slate-700/40";
@@ -2698,14 +2973,24 @@
                     let btnStyle = "bg-slate-100 dark:bg-slate-700 text-slate-500 dark:text-slate-300";
                     let label = "Belum";
 
-                    if (status === 'hadir') { btnStyle = "bg-emerald-500 text-white shadow-sm"; label = "Hadir"; }
-                    else if (status === 'terlambat') { btnStyle = "bg-amber-500 text-white shadow-sm"; label = "Telat"; }
-                    else if (status === 'uzur') { btnStyle = "bg-sky-500 text-white shadow-sm"; label = "Uzur"; }
-                    else if (status === 'alpha') { btnStyle = "bg-rose-500 text-white shadow-sm"; label = "Alpha"; }
+                    if (status === 'hadir') { 
+                        btnStyle = "bg-emerald-500 hover:bg-emerald-600 text-white shadow-sm"; 
+                        label = "Hadir"; 
+                    } else if (status.startsWith('telat_') || status === 'terlambat') { 
+                        const rk = status.startsWith('telat_') ? status.split('_')[1] : (record.telatRakaat?.[p] || 1);
+                        btnStyle = "bg-amber-500 hover:bg-amber-600 text-white shadow-sm ring-2 ring-amber-300 dark:ring-amber-500"; 
+                        label = `⚠️ Telat ${rk} Rk`; 
+                    } else if (status === 'uzur') { 
+                        btnStyle = "bg-sky-500 hover:bg-sky-600 text-white shadow-sm"; 
+                        label = "Uzur"; 
+                    } else if (status === 'alpha') { 
+                        btnStyle = "bg-rose-500 hover:bg-rose-600 text-white shadow-sm"; 
+                        label = "Alpha"; 
+                    }
 
                     prayerCellsHtml += `
                         <td class="p-3 text-center">
-                            <button onclick="cycleMusholaStatus('${santri.id}', '${p}')" class="btn-bounce px-2.5 py-1 rounded-xl text-[11px] font-bold transition-all ${btnStyle}">
+                            <button onclick="cycleMusholaStatus('${santri.id}', '${p}')" title="Klik untuk ubah: Hadir, Telat Raka'at, Uzur, Alpha" class="btn-bounce px-2.5 py-1 rounded-xl text-[11px] font-bold transition-all ${btnStyle}">
                                 ${label}
                             </button>
                         </td>
@@ -2719,12 +3004,16 @@
                         </button>
                     </td>
                     <td class="p-4">
-                        <span class="font-bold text-xs text-slate-800 dark:text-slate-100 block">${santri.nama}</span>
-                        <span class="text-[10px] text-slate-500 dark:text-slate-400 font-semibold">${santri.kelas || santri.kamar || '-'}</span>
+                        <div class="flex items-center gap-1.5">
+                            <span class="text-[10px] font-mono font-bold text-pink-600 dark:text-pink-400 bg-pink-50 dark:bg-pink-950/40 px-1.5 py-0.5 rounded-lg border border-pink-200/60 dark:border-pink-800/60">${getSantriDisplayId(santri)}</span>
+                            <span class="font-bold text-xs text-slate-800 dark:text-slate-100 block">${santri.nama}</span>
+                        </div>
+                        <span class="text-[10px] text-slate-500 dark:text-slate-400 font-semibold block mt-0.5">${santri.kelas || santri.kamar || '-'}</span>
                     </td>
                     ${prayerCellsHtml}
                     <td class="p-4 text-center">
                         <span class="text-xs font-black text-purple-600 dark:text-purple-300 glass-pill px-2.5 py-1 rounded-full border border-purple-200 dark:border-purple-800">${percentage}%</span>
+                        ${hasMasbuq ? `<span class="mt-1 block text-[10px] font-bold text-amber-600 dark:text-amber-400 bg-amber-50 dark:bg-amber-950/40 px-2 py-0.5 rounded-full border border-amber-200 dark:border-amber-800">⚠️ Masbuq (${masbuqRakaatTotal} Rk)</span>` : ''}
                     </td>
                 `;
                 tbody.appendChild(tr);
@@ -2739,13 +3028,202 @@
                 musholaPresensiRecords[key] = { subuh: 'belum', maghrib: 'belum', isya: 'belum' };
             }
 
+            // Batas raka'at masbuq sesuai jumlah raka'at shalat
+            let states = ['belum', 'hadir', 'telat_1', 'uzur', 'alpha'];
+            if (prayer === 'maghrib') {
+                states = ['belum', 'hadir', 'telat_1', 'telat_2', 'uzur', 'alpha'];
+            } else if (prayer === 'isya') {
+                states = ['belum', 'hadir', 'telat_1', 'telat_2', 'telat_3', 'uzur', 'alpha'];
+            }
+
             const current = musholaPresensiRecords[key][prayer];
-            const states = ['belum', 'hadir', 'terlambat', 'uzur', 'alpha'];
-            const nextIdx = (states.indexOf(current) + 1) % states.length;
-            musholaPresensiRecords[key][prayer] = states[nextIdx];
+            const curMapped = current === 'terlambat' ? 'telat_1' : current;
+            let nextIdx = (states.indexOf(curMapped) + 1) % states.length;
+            if (nextIdx < 0) nextIdx = 0;
+
+            const nextState = states[nextIdx];
+            musholaPresensiRecords[key][prayer] = nextState;
+
+            if (nextState.startsWith('telat_')) {
+                const rk = parseInt(nextState.split('_')[1]);
+                musholaPresensiRecords[key].telatRakaat = musholaPresensiRecords[key].telatRakaat || {};
+                musholaPresensiRecords[key].telatRakaat[prayer] = rk;
+
+                const santri = santriList.find(s => s.id === santriId);
+                const santriName = santri ? santri.nama : 'Santriwati';
+
+                // Tambahkan otomatis ke masbuqLogList jika belum ada
+                const existingLog = masbuqLogList.find(l => l.date === selectedMusholaDate && l.santriId === santriId && l.prayer === prayer);
+                if (existingLog) {
+                    existingLog.rakaat = rk;
+                } else {
+                    masbuqLogList.unshift({
+                        id: Date.now(),
+                        date: selectedMusholaDate,
+                        santriId: santriId,
+                        santriName: santriName,
+                        santriKelas: santri?.kelas || '-',
+                        prayer: prayer,
+                        rakaat: rk,
+                        alasan: 'Masbuq / Telat rakaat shalat jamaah',
+                        timestamp: new Date().toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' })
+                    });
+                }
+                setStorage('asramaku_masbuq_logs', masbuqLogList);
+                showToast(`⚠️ ${santriName} tercatat masbuq ${rk} raka'at shalat ${prayer.toUpperCase()}`, 'warning');
+            } else {
+                // Jika tidak telat lagi, hapus log masbuq untuk prayer ini
+                masbuqLogList = masbuqLogList.filter(l => !(l.date === selectedMusholaDate && l.santriId === santriId && l.prayer === prayer));
+                setStorage('asramaku_masbuq_logs', masbuqLogList);
+            }
 
             setStorage('asramaku_mushola', musholaPresensiRecords);
             renderMusholaPresensi();
+        }
+
+        // --- MASBUQ (TELAT RAKAAT) MODAL & LOG HANDLERS ---
+        function openMasbuqModal(preselectedSantriId = null, preselectedPrayer = 'isya') {
+            const select = document.getElementById('masbuqSantriSelect');
+            if (select) {
+                select.innerHTML = '';
+                const sorted = sortSantriData(santriList, 'kelas_abjad');
+                sorted.forEach(s => {
+                    const opt = document.createElement('option');
+                    opt.value = s.id;
+                    opt.innerText = `${getSantriDisplayId(s)} - ${s.nama} (${s.kelas || '-'})`;
+                    if (preselectedSantriId && s.id === preselectedSantriId) opt.selected = true;
+                    select.appendChild(opt);
+                });
+            }
+            if (preselectedPrayer) {
+                const prayerSel = document.getElementById('masbuqPrayerSelect');
+                if (prayerSel) prayerSel.value = preselectedPrayer;
+            }
+            updateMasbuqRakaatOptions();
+            document.getElementById('masbuqAlasan').value = '';
+            document.getElementById('modalMasbuq').classList.remove('hidden');
+        }
+
+        function closeMasbuqModal() {
+            document.getElementById('modalMasbuq').classList.add('hidden');
+        }
+
+        function updateMasbuqRakaatOptions() {
+            const prayer = document.getElementById('masbuqPrayerSelect').value;
+            const rakaatSel = document.getElementById('masbuqRakaatSelect');
+            if (!rakaatSel) return;
+            rakaatSel.innerHTML = '';
+            let maxRakaat = 1;
+            if (prayer === 'maghrib') maxRakaat = 2;
+            else if (prayer === 'isya') maxRakaat = 3;
+
+            for (let i = 1; i <= maxRakaat; i++) {
+                const opt = document.createElement('option');
+                opt.value = i;
+                opt.innerText = `Tertinggal ${i} Raka'at`;
+                rakaatSel.appendChild(opt);
+            }
+        }
+
+        function saveMasbuqRecord(e) {
+            e.preventDefault();
+            const santriId = document.getElementById('masbuqSantriSelect').value;
+            const prayer = document.getElementById('masbuqPrayerSelect').value;
+            const rakaat = parseInt(document.getElementById('masbuqRakaatSelect').value);
+            const alasan = document.getElementById('masbuqAlasan').value.trim() || 'Antre wudhu / telat masuk shaf';
+
+            const santri = santriList.find(s => s.id === santriId);
+            if (!santri) return;
+
+            // 1. Simpan ke musholaPresensiRecords
+            const key = `${selectedMusholaDate}_${santriId}`;
+            if (!musholaPresensiRecords[key]) {
+                musholaPresensiRecords[key] = { subuh: 'belum', maghrib: 'belum', isya: 'belum' };
+            }
+            musholaPresensiRecords[key][prayer] = `telat_${rakaat}`;
+            musholaPresensiRecords[key].telatRakaat = musholaPresensiRecords[key].telatRakaat || {};
+            musholaPresensiRecords[key].telatRakaat[prayer] = rakaat;
+            setStorage('asramaku_mushola', musholaPresensiRecords);
+
+            // 2. Simpan ke masbuqLogList
+            const newLog = {
+                id: Date.now(),
+                date: selectedMusholaDate,
+                santriId: santri.id,
+                santriName: santri.nama,
+                santriKelas: santri.kelas || '-',
+                prayer: prayer,
+                rakaat: rakaat,
+                alasan: alasan,
+                timestamp: new Date().toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' })
+            };
+            masbuqLogList.unshift(newLog);
+            setStorage('asramaku_masbuq_logs', masbuqLogList);
+
+            renderMusholaPresensi();
+            closeMasbuqModal();
+            showToast(`Catatan masbuq ${santri.nama} (${rakaat} raka'at ${prayer.toUpperCase()}) disimpan! ⚠️`, 'warning');
+        }
+
+        function toggleMasbuqListModal() {
+            renderMasbuqList();
+            document.getElementById('modalMasbuqList').classList.remove('hidden');
+        }
+
+        function closeMasbuqListModal() {
+            document.getElementById('modalMasbuqList').classList.add('hidden');
+        }
+
+        function renderMasbuqList() {
+            const container = document.getElementById('masbuqListContent');
+            if (!container) return;
+            container.innerHTML = '';
+
+            const todayLogs = masbuqLogList.filter(l => l.date === selectedMusholaDate);
+            const totalInfo = document.getElementById('masbuqTotalCountInfo');
+            if (totalInfo) totalInfo.innerText = `Total ${todayLogs.length} catatan masbuq pada tanggal ${selectedMusholaDate}`;
+
+            if (todayLogs.length === 0) {
+                container.innerHTML = `<div class="p-8 text-center text-slate-400 font-medium">Alhamdulillah, belum ada catatan santriwati telat raka'at pada tanggal ini. 🌸</div>`;
+                return;
+            }
+
+            todayLogs.forEach(log => {
+                const div = document.createElement('div');
+                div.className = "p-3 rounded-2xl glass-card border border-amber-200/80 dark:border-amber-900/50 flex items-center justify-between gap-3";
+                div.innerHTML = `
+                    <div class="flex items-start gap-2.5">
+                        <div class="w-8 h-8 rounded-xl bg-amber-100 dark:bg-amber-900/60 text-amber-700 dark:text-amber-200 flex items-center justify-center font-black shrink-0 text-xs">
+                            ${log.rakaat}R
+                        </div>
+                        <div>
+                            <span class="text-xs font-bold text-slate-800 dark:text-slate-100 block">${log.santriName} <span class="text-[10px] text-pink-600 font-semibold">(${log.santriKelas})</span></span>
+                            <span class="text-[11px] text-amber-700 dark:text-amber-300 font-semibold block">Sholat ${log.prayer.toUpperCase()} • Telat ${log.rakaat} Raka'at (${log.timestamp})</span>
+                            <span class="text-[10px] text-slate-500 dark:text-slate-400 block italic">"${log.alasan}"</span>
+                        </div>
+                    </div>
+                    <button onclick="deleteMasbuqRecord(${log.id})" class="btn-bounce text-slate-400 hover:text-rose-500 p-2 rounded-xl text-xs hover:bg-rose-50 dark:hover:bg-rose-950/40" title="Hapus catatan">
+                        <i class="fa-solid fa-trash-can"></i>
+                    </button>
+                `;
+                container.appendChild(div);
+            });
+        }
+
+        function deleteMasbuqRecord(id) {
+            const target = masbuqLogList.find(l => l.id === id);
+            if (target) {
+                const key = `${target.date}_${target.santriId}`;
+                if (musholaPresensiRecords[key] && musholaPresensiRecords[key][target.prayer]?.startsWith('telat')) {
+                    musholaPresensiRecords[key][target.prayer] = 'hadir';
+                    setStorage('asramaku_mushola', musholaPresensiRecords);
+                }
+            }
+            masbuqLogList = masbuqLogList.filter(l => l.id !== id);
+            setStorage('asramaku_masbuq_logs', masbuqLogList);
+            renderMasbuqList();
+            renderMusholaPresensi();
+            showToast('Catatan masbuq berhasil dihapus.', 'info');
         }
 
         function changeMusholaDate(val) {
@@ -2772,21 +3250,31 @@
         function updateMusholaStatSummary() {
             let totalChecks = 0;
             let totalHadir = 0;
+            let masbuqTodayCount = 0;
 
             santriList.forEach(s => {
                 const key = `${selectedMusholaDate}_${s.id}`;
                 const rec = musholaPresensiRecords[key];
                 if (rec) {
+                    let hasLate = false;
                     ['subuh', 'maghrib', 'isya'].forEach(p => {
                         totalChecks++;
                         if (rec[p] === 'hadir' || rec[p] === 'uzur') totalHadir++;
+                        else if (rec[p] && (rec[p].startsWith('telat') || rec[p] === 'terlambat')) {
+                            totalHadir += 0.8;
+                            hasLate = true;
+                        }
                     });
+                    if (hasLate) masbuqTodayCount++;
                 }
             });
 
             const rate = totalChecks > 0 ? Math.round((totalHadir / totalChecks) * 100) : 100;
             const statElem = document.getElementById('statMusholaRate');
             if (statElem) statElem.innerText = `${rate}%`;
+
+            const masbuqBadge = document.getElementById('masbuqCountToday');
+            if (masbuqBadge) masbuqBadge.innerText = `${masbuqTodayCount} Santriwati`;
         }
 
         function renderPiket() {
@@ -2817,15 +3305,21 @@
                                 : 'bg-amber-100 text-amber-700 dark:bg-amber-950/50 dark:text-amber-300 border border-amber-300'
                         }">${item.status}</span>
                     </td>
-                    <td class="p-4 text-right flex items-center justify-end gap-2">
+                    <td class="p-4 text-right flex items-center justify-end gap-1.5">
                         <button onclick="togglePiketStatus(${item.id})" class="btn-bounce px-2.5 py-1.5 rounded-xl text-xs font-bold text-white transition ${
                             item.status === 'Selesai' ? 'bg-slate-400 hover:bg-slate-500' : 'bg-gradient-to-r from-pink-500 to-purple-500'
                         }">
                             ${item.status === 'Selesai' ? 'Batalkan' : 'Selesai'}
                         </button>
+                        <button onclick="openEditPiketModal(${item.id})" title="Edit Tugas Piket" class="btn-bounce px-2.5 py-1.5 bg-amber-500 hover:bg-amber-600 text-white rounded-xl text-xs font-bold transition shadow-sm">
+                            <i class="fa-solid fa-pen-to-square"></i>
+                        </button>
+                        <button onclick="deletePiket(${item.id})" title="Hapus Tugas Piket" class="btn-bounce px-2.5 py-1.5 bg-rose-500 hover:bg-rose-600 text-white rounded-xl text-xs font-bold transition shadow-sm">
+                            <i class="fa-solid fa-trash-can"></i>
+                        </button>
                         ${item.status !== 'Selesai' ? `
-                            <button onclick="hukumPiket('${item.petugas}', '${item.area}')" title="Catat Pelanggaran Piket" class="btn-bounce px-2.5 py-1.5 bg-rose-500 hover:bg-rose-600 text-white rounded-xl text-xs font-bold transition shadow-sm">
-                                <i class="fa-solid fa-gavel mr-1"></i> Sanksi
+                            <button onclick="hukumPiket('${item.petugas}', '${item.area}')" title="Catat Pelanggaran Piket" class="btn-bounce px-2.5 py-1.5 bg-purple-600 hover:bg-purple-700 text-white rounded-xl text-xs font-bold transition shadow-sm">
+                                <i class="fa-solid fa-gavel"></i>
                             </button>
                         ` : ''}
                     </td>
@@ -2837,22 +3331,79 @@
             if (statElem) statElem.innerText = `${completed} / ${piketList.length}`;
         }
 
-        function openPiketModal() { document.getElementById('modalPiket').classList.remove('hidden'); }
-        function closePiketModal() { document.getElementById('modalPiket').classList.add('hidden'); }
+        function openPiketModal() { 
+            const title = document.getElementById('piketModalTitle');
+            if (title) title.innerHTML = '<i class="fa-solid fa-broom text-amber-500"></i> <span>Tambah Tugas Piket Baru</span>';
+            const btn = document.getElementById('piketSubmitBtn');
+            if (btn) btn.innerText = 'Simpan Piket';
+            const editInput = document.getElementById('piketEditId');
+            if (editInput) editInput.value = '';
+            document.getElementById('formPiket').reset();
+            document.getElementById('modalPiket').classList.remove('hidden'); 
+        }
+
+        function openEditPiketModal(id) {
+            const item = piketList.find(p => p.id === id);
+            if (!item) return;
+            const title = document.getElementById('piketModalTitle');
+            if (title) title.innerHTML = '<i class="fa-solid fa-pen-to-square text-amber-500"></i> <span>Edit Tugas Piket</span>';
+            const btn = document.getElementById('piketSubmitBtn');
+            if (btn) btn.innerText = 'Simpan Perubahan';
+            const editInput = document.getElementById('piketEditId');
+            if (editInput) editInput.value = item.id;
+
+            document.getElementById('piketArea').value = item.area;
+            document.getElementById('piketPetugas').value = item.petugas;
+            document.getElementById('piketDetail').value = item.detail;
+            document.getElementById('modalPiket').classList.remove('hidden');
+        }
+
+        function closePiketModal() { 
+            document.getElementById('modalPiket').classList.add('hidden');
+            document.getElementById('formPiket').reset();
+            const editInput = document.getElementById('piketEditId');
+            if (editInput) editInput.value = '';
+        }
 
         function savePiket(e) {
             e.preventDefault();
+            const editId = document.getElementById('piketEditId')?.value;
             const area = document.getElementById('piketArea').value.trim();
             const petugas = document.getElementById('piketPetugas').value.trim();
             const detail = document.getElementById('piketDetail').value.trim();
 
-            piketList.push({ id: Date.now(), area, petugas, detail, status: 'Belum' });
-            setStorage('asramaku_piket', piketList);
+            if (!area || !petugas || !detail) return;
+
+            if (editId) {
+                const idNum = parseInt(editId);
+                const item = piketList.find(p => p.id === idNum);
+                if (item) {
+                    item.area = area;
+                    item.petugas = petugas;
+                    item.detail = detail;
+                    setStorage('asramaku_piket', piketList);
+                    showToast('Tugas piket berhasil diperbarui! ✨');
+                }
+            } else {
+                piketList.push({ id: Date.now(), area, petugas, detail, status: 'Belum' });
+                setStorage('asramaku_piket', piketList);
+                showToast('Tugas piket baru ditambahkan! 🧹');
+            }
 
             renderPiket();
             closePiketModal();
             document.getElementById('formPiket').reset();
-            showToast('Tugas piket baru ditambahkan! 🧹');
+        }
+
+        function deletePiket(id) {
+            const item = piketList.find(p => p.id === id);
+            if (!item) return;
+            if (confirm(`Yakin ingin menghapus tugas piket area "${item.area}" (${item.petugas})?`)) {
+                piketList = piketList.filter(p => p.id !== id);
+                setStorage('asramaku_piket', piketList);
+                renderPiket();
+                showToast(`Tugas piket "${item.area}" berhasil dihapus.`, 'info');
+            }
         }
 
         function togglePiketStatus(id) {
@@ -2994,8 +3545,54 @@
 
         // --- REAL-TIME AUDIO & BROWSER NOTIFICATION SYSTEM ---
         let audioCtxInstance = null;
+        let currentRingtone = getStorage('asramaku_ringtone_key', 'adzan');
+        let customAudioData = localStorage.getItem('asramaku_custom_audio_data') || null;
+        let ringtoneVolume = getStorage('asramaku_ringtone_volume', 80);
+        let activeAudioElement = null;
+        let activeOscillators = [];
 
-        function playChimeSound() {
+        const ringtoneNames = {
+            adzan: '🕌 Adzan Suci',
+            chime: '🔔 Lonceng Estetik',
+            harpa: '🎵 Harpa Subuh',
+            bedug: '🥁 Bedug Mini',
+            beep: '⏰ Beep Ceria',
+            custom: '📁 Nada Kustom'
+        };
+
+        function stopActiveRingtone() {
+            if (activeAudioElement) {
+                try {
+                    activeAudioElement.pause();
+                    activeAudioElement.currentTime = 0;
+                } catch (e) {}
+                activeAudioElement = null;
+            }
+            if (activeOscillators && activeOscillators.length > 0) {
+                activeOscillators.forEach(osc => {
+                    try { osc.stop(); } catch (e) {}
+                });
+                activeOscillators = [];
+            }
+        }
+
+        function playNotificationRingtone(selectedTone) {
+            stopActiveRingtone();
+            const toneKey = (!selectedTone || selectedTone === 'default') ? currentRingtone : selectedTone;
+            const vol = Math.max(0.05, Math.min(1.0, (ringtoneVolume || 80) / 100));
+
+            // Custom Audio uploaded by user
+            if (toneKey === 'custom' && customAudioData) {
+                try {
+                    activeAudioElement = new Audio(customAudioData);
+                    activeAudioElement.volume = vol;
+                    activeAudioElement.play().catch(e => console.warn('Custom audio playback error:', e));
+                    return;
+                } catch (e) {
+                    console.warn('Fallback to synth:', e);
+                }
+            }
+
             try {
                 const AudioCtx = window.AudioContext || window.webkitAudioContext;
                 if (!AudioCtx) return;
@@ -3007,30 +3604,192 @@
                 }
 
                 const now = audioCtxInstance.currentTime;
-                const playTone = (freq, start, duration) => {
-                    const osc = audioCtxInstance.createOscillator();
-                    const gain = audioCtxInstance.createGain();
+                const masterGain = audioCtxInstance.createGain();
+                masterGain.gain.setValueAtTime(vol * 0.45, now);
+                masterGain.connect(audioCtxInstance.destination);
 
-                    osc.type = 'sine';
+                const playNote = (freq, startOffset, duration, type = 'sine', decayTime = null) => {
+                    const osc = audioCtxInstance.createOscillator();
+                    const noteGain = audioCtxInstance.createGain();
+                    const start = now + startOffset;
+                    const stop = start + duration;
+
+                    osc.type = type;
                     osc.frequency.setValueAtTime(freq, start);
 
-                    gain.gain.setValueAtTime(0, start);
-                    gain.gain.linearRampToValueAtTime(0.2, start + 0.04);
-                    gain.gain.exponentialRampToValueAtTime(0.0001, start + duration);
+                    noteGain.gain.setValueAtTime(0, start);
+                    noteGain.gain.linearRampToValueAtTime(0.35, start + 0.03);
+                    noteGain.gain.exponentialRampToValueAtTime(0.0001, start + (decayTime || duration));
 
-                    osc.connect(gain);
-                    gain.connect(audioCtxInstance.destination);
+                    osc.connect(noteGain);
+                    noteGain.connect(masterGain);
 
                     osc.start(start);
-                    osc.stop(start + duration);
+                    osc.stop(stop);
+                    activeOscillators.push(osc);
                 };
 
-                // Harmonious two-tone gentle bell chime: E5 (659.25Hz) -> A5 (880Hz)
-                playTone(659.25, now, 0.5);
-                playTone(880.00, now + 0.16, 0.8);
+                if (toneKey === 'adzan') {
+                    // Melodi spiritual khas nada adzan mendayu-dayu (Maqam Bayati / Hijaz feel)
+                    // D4, F4, G4, A4, Bb4, A4, G4, F4, D4
+                    const notes = [
+                        { f: 293.66, t: 0.0, d: 0.42 },
+                        { f: 349.23, t: 0.40, d: 0.45 },
+                        { f: 392.00, t: 0.82, d: 0.55 },
+                        { f: 440.00, t: 1.34, d: 0.70 },
+                        { f: 466.16, t: 2.00, d: 0.45 },
+                        { f: 440.00, t: 2.42, d: 0.65 },
+                        { f: 392.00, t: 3.05, d: 0.55 },
+                        { f: 349.23, t: 3.58, d: 0.50 },
+                        { f: 293.66, t: 4.05, d: 1.10 }
+                    ];
+                    notes.forEach(n => playNote(n.f, n.t, n.d, 'triangle', n.d * 1.1));
+                } else if (toneKey === 'chime') {
+                    // Lonceng kristal estetik 3 nada: C6 -> E6 -> G6
+                    playNote(1046.50, 0.0, 0.6, 'sine', 0.8);
+                    playNote(1318.51, 0.2, 0.7, 'sine', 0.9);
+                    playNote(1567.98, 0.42, 1.2, 'sine', 1.5);
+                } else if (toneKey === 'harpa') {
+                    // Petikan arpeggio harpa subuh menyejukkan
+                    const harpNotes = [523.25, 659.25, 783.99, 987.77, 1046.50];
+                    harpNotes.forEach((f, idx) => {
+                        playNote(f, idx * 0.14, 0.9, 'triangle', 1.0);
+                    });
+                } else if (toneKey === 'bedug') {
+                    // Tabuhan bedug mushola: pukulan rendah berirama
+                    const beats = [0.0, 0.35, 0.70, 0.95, 1.20, 1.50];
+                    beats.forEach(b => {
+                        const osc = audioCtxInstance.createOscillator();
+                        const gain = audioCtxInstance.createGain();
+                        const start = now + b;
+                        osc.type = 'sine';
+                        osc.frequency.setValueAtTime(80, start);
+                        osc.frequency.exponentialRampToValueAtTime(42, start + 0.25);
+                        gain.gain.setValueAtTime(0.5, start);
+                        gain.gain.exponentialRampToValueAtTime(0.001, start + 0.3);
+                        osc.connect(gain);
+                        gain.connect(masterGain);
+                        osc.start(start);
+                        osc.stop(start + 0.32);
+                        activeOscillators.push(osc);
+                    });
+                } else if (toneKey === 'beep') {
+                    // Beep ritmis ceria
+                    [0.0, 0.12, 0.28, 0.40].forEach((t, i) => {
+                        playNote(i % 2 === 0 ? 880 : 1174.66, t, 0.09, 'square', 0.1);
+                    });
+                } else {
+                    // Default fallback two-tone chime
+                    playNote(659.25, 0.0, 0.5);
+                    playNote(880.00, 0.18, 0.8);
+                }
             } catch (e) {
-                console.warn('Audio chime warning:', e);
+                console.warn('Audio ringtone playback error:', e);
             }
+        }
+
+        function playChimeSound() {
+            playNotificationRingtone(currentRingtone);
+        }
+
+        function updateActiveRingtoneBadge() {
+            const badgeEl = document.getElementById('activeRingtoneBadgeName');
+            if (badgeEl) {
+                badgeEl.innerText = ringtoneNames[currentRingtone] || 'Adzan Suci';
+            }
+        }
+
+        function openRingtoneModal() {
+            const radios = document.querySelectorAll('input[name="activeRingtoneRadio"]');
+            radios.forEach(r => {
+                r.checked = (r.value === currentRingtone);
+            });
+            const slider = document.getElementById('ringtoneVolumeSlider');
+            if (slider) slider.value = ringtoneVolume || 80;
+            const volLabel = document.getElementById('ringtoneVolumeLabel');
+            if (volLabel) volLabel.innerText = `${ringtoneVolume || 80}%`;
+
+            const audioBadge = document.getElementById('customAudioStatusBadge');
+            if (audioBadge) {
+                if (customAudioData) {
+                    audioBadge.className = 'text-[10px] px-2 py-0.5 rounded-full font-bold bg-pink-100 text-pink-700 dark:bg-pink-900/40 dark:text-pink-300';
+                    audioBadge.innerText = 'Tersedia ✨';
+                } else {
+                    audioBadge.className = 'text-[10px] px-2 py-0.5 rounded-full font-bold bg-slate-200 text-slate-600 dark:bg-slate-700 dark:text-slate-300';
+                    audioBadge.innerText = 'Belum ada file';
+                }
+            }
+
+            document.getElementById('modalRingtone').classList.remove('hidden');
+        }
+
+        function closeRingtoneModal() {
+            stopActiveRingtone();
+            document.getElementById('modalRingtone').classList.add('hidden');
+        }
+
+        function updateRingtoneVolume(val) {
+            ringtoneVolume = parseInt(val) || 80;
+            const label = document.getElementById('ringtoneVolumeLabel');
+            if (label) label.innerText = `${ringtoneVolume}%`;
+        }
+
+        function handleCustomAudioUpload(e) {
+            const file = e.target.files[0];
+            if (!file) return;
+
+            if (file.size > 5 * 1024 * 1024) {
+                showToast('Ukuran file audio maksimal 5MB!', 'warning');
+                return;
+            }
+
+            const reader = new FileReader();
+            reader.onload = function(event) {
+                try {
+                    customAudioData = event.target.result;
+                    localStorage.setItem('asramaku_custom_audio_data', customAudioData);
+                    const badge = document.getElementById('customAudioStatusBadge');
+                    if (badge) {
+                        badge.className = 'text-[10px] px-2 py-0.5 rounded-full font-bold bg-pink-100 text-pink-700 dark:bg-pink-900/40 dark:text-pink-300';
+                        badge.innerText = `${file.name.slice(0, 14)}... ✨`;
+                    }
+                    const customRadio = document.querySelector('input[name="activeRingtoneRadio"][value="custom"]');
+                    if (customRadio) customRadio.checked = true;
+                    showToast(`File audio "${file.name}" berhasil diunggah! 🎵`);
+                    playNotificationRingtone('custom');
+                } catch (err) {
+                    showToast('Gagal memuat file audio, memori lokal penuh.', 'warning');
+                }
+            };
+            reader.readAsDataURL(file);
+        }
+
+        function previewSelectedRingtone(toneKey) {
+            playNotificationRingtone(toneKey);
+        }
+
+        function previewCurrentSelectedRingtone() {
+            const selected = document.querySelector('input[name="activeRingtoneRadio"]:checked');
+            const val = selected ? selected.value : currentRingtone;
+            playNotificationRingtone(val);
+        }
+
+        function previewPengingatTone() {
+            const toneSelect = document.getElementById('pengingatRingtone');
+            const tone = toneSelect ? toneSelect.value : 'default';
+            playNotificationRingtone(tone);
+        }
+
+        function saveRingtoneSettings() {
+            const selected = document.querySelector('input[name="activeRingtoneRadio"]:checked');
+            if (selected) {
+                currentRingtone = selected.value;
+                setStorage('asramaku_ringtone_key', currentRingtone);
+            }
+            setStorage('asramaku_ringtone_volume', ringtoneVolume);
+            updateActiveRingtoneBadge();
+            closeRingtoneModal();
+            showToast(`Nada dering pengingat diubah ke "${ringtoneNames[currentRingtone] || currentRingtone}" 🔔✨`);
         }
 
         function triggerBrowserNotification(title, body) {
@@ -3206,6 +3965,9 @@
             const form = document.getElementById('formAddPengingat');
             if (form) form.reset();
 
+            const ringtoneEl = document.getElementById('pengingatRingtone');
+            if (ringtoneEl) ringtoneEl.value = 'default';
+
             const now = new Date();
             const h = String(now.getHours()).padStart(2, '0');
             const m = String(now.getMinutes()).padStart(2, '0');
@@ -3251,6 +4013,9 @@
             document.getElementById('pengingatPesan').value = notif.pesan || '';
             document.getElementById('pengingatSound').checked = notif.sound !== false;
 
+            const ringtoneEl = document.getElementById('pengingatRingtone');
+            if (ringtoneEl) ringtoneEl.value = notif.ringtone || 'default';
+
             document.getElementById('modalAddPengingat').classList.remove('hidden');
             document.getElementById('pengingatJudul').focus();
         }
@@ -3270,6 +4035,7 @@
             const kategori = document.getElementById('pengingatKategori').value;
             const pesan = document.getElementById('pengingatPesan').value.trim() || `Pengingat jadwal ${judul} tiba pukul ${waktu} WIB.`;
             const sound = document.getElementById('pengingatSound').checked;
+            const ringtone = document.getElementById('pengingatRingtone') ? document.getElementById('pengingatRingtone').value : 'default';
 
             if (!judul || !waktu) {
                 showToast('Judul dan jam wajib diisi!', 'warning');
@@ -3287,13 +4053,14 @@
                         waktu: `Jam ${waktu} WIB`,
                         targetTime: waktu,
                         kategori,
-                        sound
+                        sound,
+                        ringtone
                     };
                     setStorage('asramaku_notifikasi', notifikasiList);
                     closeAddPengingatModal();
                     renderNotifikasi();
                     showToast(`Pengingat "${judul}" berhasil diperbarui! ✨`);
-                    if (sound) playChimeSound();
+                    if (sound) playNotificationRingtone(ringtone);
                     return;
                 }
             }
@@ -3306,7 +4073,8 @@
                 waktu: `Jam ${waktu} WIB`,
                 targetTime: waktu,
                 kategori,
-                sound
+                sound,
+                ringtone
             };
 
             notifikasiList.unshift(newNotif);
@@ -3317,7 +4085,7 @@
             showToast(`Pengingat "${judul}" jam ${waktu} WIB berhasil diaktifkan! 🔔✨`);
 
             if (sound) {
-                playChimeSound();
+                playNotificationRingtone(ringtone);
             }
         }
 
@@ -3342,7 +4110,7 @@
                     setStorage('asramaku_notifikasi', notifikasiList);
 
                     if (isSoundEnabled && notif.sound !== false) {
-                        playChimeSound();
+                        playNotificationRingtone(notif.ringtone || currentRingtone);
                     }
                     triggerBrowserNotification(notif.judul, notif.pesan);
                     showToast(`🔔 PENGINGAT: ${notif.judul} (${notif.pesan})`);
@@ -3811,6 +4579,7 @@
             renderPengumuman();
             renderHukuman();
             renderNotifikasi();
+            updateActiveRingtoneBadge();
             startNotificationScheduler();
         };
     </script>
