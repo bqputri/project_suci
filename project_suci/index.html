@@ -1715,8 +1715,23 @@
     </div>
 
     <script>
-        // --- HELPER STORAGE (WITH IN-MEMORY CACHE) & TOAST SYSTEM ---
+        // --- HELPER STORAGE (IN-MEMORY CACHE + SUPABASE OFFLINE-FIRST SYNC) ---
         const _storageCache = Object.create(null);
+        const SUPABASE_URL = 'https://jghfayicdqegteqtqudx.supabase.co';
+        const SUPABASE_KEY = 'sb_publishable_I7oStR-1Qj07BlnLqv-XHQ_UGXU2h1V';
+        // Hanya data bersama asrama yang disinkronkan ke cloud; checklist harian tetap pribadi per nama!
+        const SHARED_SYNC_KEYS = new Set([
+            'asramaku_santri',
+            'asramaku_mushola',
+            'asramaku_masbuq_logs',
+            'asramaku_piket',
+            'asramaku_pengumuman',
+            'asramaku_hukuman',
+            'asramaku_notifikasi'
+        ]);
+        const _syncTimers = Object.create(null);
+        let _isApplyingCloud = false;
+        let _lastCloudPullAt = 0;
 
         function getStorage(key, defaultData) {
             if (Object.prototype.hasOwnProperty.call(_storageCache, key)) {
@@ -1738,6 +1753,146 @@
                 localStorage.setItem(key, JSON.stringify(data));
             } catch (e) {
                 console.error('Storage Error:', e);
+            }
+            if (!_isApplyingCloud && SHARED_SYNC_KEYS.has(key)) {
+                scheduleCloudPush(key, data);
+            }
+        }
+
+        function markPendingSyncKey(key) {
+            try {
+                const list = JSON.parse(localStorage.getItem('asramaku_pending_sync') || '[]');
+                if (!list.includes(key)) {
+                    list.push(key);
+                    localStorage.setItem('asramaku_pending_sync', JSON.stringify(list));
+                }
+            } catch (e) {}
+        }
+
+        function clearPendingSyncKey(key) {
+            try {
+                const list = JSON.parse(localStorage.getItem('asramaku_pending_sync') || '[]').filter(k => k !== key);
+                localStorage.setItem('asramaku_pending_sync', JSON.stringify(list));
+            } catch (e) {}
+        }
+
+        async function pushKeyToCloud(key, data) {
+            if (!navigator.onLine) {
+                markPendingSyncKey(key);
+                return false;
+            }
+            try {
+                const res = await fetch(`${SUPABASE_URL}/rest/v1/asramaku_sync`, {
+                    method: 'POST',
+                    headers: {
+                        'apikey': SUPABASE_KEY,
+                        'Content-Type': 'application/json',
+                        'Prefer': 'resolution=merge-duplicates,return=minimal'
+                    },
+                    body: JSON.stringify({ key, value: data, updated_at: new Date().toISOString() })
+                });
+                if (res.ok) {
+                    clearPendingSyncKey(key);
+                    return true;
+                }
+                markPendingSyncKey(key);
+                return false;
+            } catch (e) {
+                markPendingSyncKey(key);
+                return false;
+            }
+        }
+
+        function scheduleCloudPush(key, data) {
+            if (_syncTimers[key]) clearTimeout(_syncTimers[key]);
+            _syncTimers[key] = setTimeout(() => {
+                delete _syncTimers[key];
+                pushKeyToCloud(key, data);
+            }, 400);
+        }
+
+        async function flushPendingCloudSync() {
+            if (!navigator.onLine) return;
+            try {
+                const pending = JSON.parse(localStorage.getItem('asramaku_pending_sync') || '[]');
+                for (const key of pending) {
+                    if (SHARED_SYNC_KEYS.has(key)) {
+                        const raw = localStorage.getItem(key);
+                        if (raw) await pushKeyToCloud(key, JSON.parse(raw));
+                    }
+                }
+            } catch (e) {}
+        }
+
+        function applyCloudRow(key, value) {
+            if (value === null || value === undefined) return false;
+            const prevRaw = localStorage.getItem(key);
+            const nextRaw = JSON.stringify(value);
+            if (prevRaw === nextRaw) return false;
+
+            _isApplyingCloud = true;
+            try {
+                setStorage(key, value);
+                if (key === 'asramaku_santri' && Array.isArray(value)) santriList = value;
+                else if (key === 'asramaku_mushola' && typeof value === 'object') musholaPresensiRecords = value;
+                else if (key === 'asramaku_masbuq_logs' && Array.isArray(value)) masbuqLogList = value;
+                else if (key === 'asramaku_piket' && Array.isArray(value)) piketList = value;
+                else if (key === 'asramaku_pengumuman' && Array.isArray(value)) pengumumanList = value;
+                else if (key === 'asramaku_hukuman' && Array.isArray(value)) hukumanList = value;
+                else if (key === 'asramaku_notifikasi' && Array.isArray(value)) notifikasiList = value;
+            } finally {
+                _isApplyingCloud = false;
+            }
+            return true;
+        }
+
+        async function syncFromCloud(force = false) {
+            if (!navigator.onLine) return;
+            const now = Date.now();
+            if (!force && now - _lastCloudPullAt < 12000) return;
+            _lastCloudPullAt = now;
+
+            try {
+                await flushPendingCloudSync();
+                const res = await fetch(`${SUPABASE_URL}/rest/v1/asramaku_sync?select=key,value,updated_at`, {
+                    headers: { 'apikey': SUPABASE_KEY }
+                });
+                if (!res.ok) return;
+                const rows = await res.json();
+                if (!Array.isArray(rows)) return;
+
+                let hasChanges = false;
+                const remoteKeys = new Set();
+                rows.forEach(row => {
+                    if (row && SHARED_SYNC_KEYS.has(row.key)) {
+                        remoteKeys.add(row.key);
+                        if (applyCloudRow(row.key, row.value)) hasChanges = true;
+                    }
+                });
+
+                // Seed cloud pertama kali jika tabel masih kosong agar perangkat lain langsung mendapat data awal
+                if (rows.length === 0) {
+                    const seedMap = {
+                        asramaku_santri: typeof santriList !== 'undefined' ? santriList : null,
+                        asramaku_mushola: typeof musholaPresensiRecords !== 'undefined' ? musholaPresensiRecords : null,
+                        asramaku_masbuq_logs: typeof masbuqLogList !== 'undefined' ? masbuqLogList : null,
+                        asramaku_piket: typeof piketList !== 'undefined' ? piketList : null,
+                        asramaku_pengumuman: typeof pengumumanList !== 'undefined' ? pengumumanList : null,
+                        asramaku_hukuman: typeof hukumanList !== 'undefined' ? hukumanList : null,
+                        asramaku_notifikasi: typeof notifikasiList !== 'undefined' ? notifikasiList : null
+                    };
+                    for (const [k, v] of Object.entries(seedMap)) {
+                        if (v !== null) pushKeyToCloud(k, v);
+                    }
+                }
+
+                if (hasChanges) {
+                    if (typeof markAllTabsDirty === 'function') markAllTabsDirty();
+                    if (typeof ensureTabRendered === 'function') ensureTabRendered(currentActiveTab);
+                    if (typeof renderNotifikasi === 'function') renderNotifikasi();
+                }
+            } catch (e) {
+                // Silent fallback ke data lokal saat offline
             }
         }
 
@@ -4233,9 +4388,15 @@
             dismissPwaBanner();
         });
 
-        // Deteksi status koneksi online / offline
-        window.addEventListener('online', () => showToast('Kembali online! Sinkronisasi data siap 🟢', 'success'));
-        window.addEventListener('offline', () => showToast('Anda dalam mode offline. AsramaKu tetap dapat digunakan 📡', 'warning'));
+        // Deteksi status koneksi online / offline + sinkronisasi cloud otomatis
+        window.addEventListener('online', () => {
+            showToast('Kembali online! Menyinkronkan data asrama 🟢', 'success');
+            syncFromCloud(true);
+        });
+        window.addEventListener('offline', () => showToast('Anda dalam mode offline. Data tetap tersimpan lokal 📡', 'warning'));
+        document.addEventListener('visibilitychange', () => {
+            if (document.visibilityState === 'visible') syncFromCloud(false);
+        });
 
         // Fast Init on DOMContentLoaded (tanpa menunggu aset eksternal selesai)
         document.addEventListener('DOMContentLoaded', function () {
@@ -4278,11 +4439,17 @@
                 ensureTabRendered('jadwal');
             }
 
-            // Tunda inisialisasi non-kritis (notifikasi, badge nada, scheduler) ke idle time
+            // Tunda inisialisasi non-kritis (notifikasi, badge nada, scheduler, cloud sync) ke idle time
             const runDeferredInit = () => {
                 renderNotifikasi();
                 updateActiveRingtoneBadge();
                 startNotificationScheduler();
+                syncFromCloud(true);
+                setInterval(() => {
+                    if (document.visibilityState === 'visible' && navigator.onLine) {
+                        syncFromCloud(false);
+                    }
+                }, 30000);
             };
             if ('requestIdleCallback' in window) {
                 requestIdleCallback(runDeferredInit, { timeout: 500 });
