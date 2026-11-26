@@ -1,5 +1,5 @@
-// AsramaKu Service Worker (PWA)
-const CACHE_NAME = 'asramaku-pwa-v2';
+// AsramaKu Service Worker (PWA - Optimized v3)
+const CACHE_NAME = 'asramaku-pwa-v3';
 const PRECACHE_ASSETS = [
   './',
   './index.html',
@@ -9,73 +9,62 @@ const PRECACHE_ASSETS = [
   './icons/icon-512.png',
   'https://cdn.tailwindcss.com',
   'https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css',
-  'https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Fredoka:wght@400;500;600;700&display=swap'
+  'https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Fredoka:wght@500;600;700&display=swap'
 ];
 
-// Install: Cache initial assets
+// Install: Cache app shell & critical dependencies immediately
 self.addEventListener('install', (event) => {
   self.skipWaiting();
   event.waitUntil(
-    caches.open(CACHE_NAME).then((cache) => {
-      console.log('[SW] Precaching app shell & dependencies');
-      return cache.addAll(PRECACHE_ASSETS).catch((err) => {
-        console.warn('[SW] Some non-critical assets failed to precache:', err);
-      });
-    })
+    caches.open(CACHE_NAME).then((cache) =>
+      Promise.allSettled(PRECACHE_ASSETS.map((url) => cache.add(url)))
+    )
   );
 });
 
-// Activate: Clean up old caches
+// Activate: Clean up old caches immediately
 self.addEventListener('activate', (event) => {
   event.waitUntil(
-    caches.keys().then((keys) => {
-      return Promise.all(
-        keys.map((key) => {
-          if (key !== CACHE_NAME) {
-            console.log('[SW] Removing old cache:', key);
-            return caches.delete(key);
-          }
-        })
-      );
-    }).then(() => self.clients.claim())
+    caches.keys()
+      .then((keys) => Promise.all(keys.filter((k) => k !== CACHE_NAME).map((k) => caches.delete(k))))
+      .then(() => self.clients.claim())
   );
 });
 
-// Fetch: Network First with Cache Fallback for dynamic content, Cache First for static
+// Fetch: Fast Stale-While-Revalidate for instant PWA startup + fresh background updates
 self.addEventListener('fetch', (event) => {
   const request = event.request;
-  
-  // Only handle GET requests
   if (request.method !== 'GET') return;
 
-  // Strategy: Network-First for navigation (HTML), Stale-While-Revalidate for static assets
+  // Navigation (HTML): Network with 1.8s fast timeout -> fallback to cache so slow mobile never stalls
   if (request.mode === 'navigate') {
     event.respondWith(
-      fetch(request)
-        .then((networkResponse) => {
+      Promise.race([
+        fetch(request).then((networkResponse) => {
           if (networkResponse && networkResponse.status === 200) {
             const copy = networkResponse.clone();
             caches.open(CACHE_NAME).then((cache) => cache.put(request, copy));
           }
           return networkResponse;
-        })
-        .catch(() => caches.match('./index.html'))
+        }),
+        new Promise((_, reject) => setTimeout(() => reject(new Error('timeout')), 1800))
+      ]).catch(() => caches.match(request).then((res) => res || caches.match('./index.html')))
     );
     return;
   }
 
-  // Assets: Cache with Network Update
+  // Static assets & CDN: Stale-While-Revalidate (instant from cache, silent update in background)
   event.respondWith(
     caches.match(request).then((cachedResponse) => {
-      const fetchPromise = fetch(request).then((networkResponse) => {
-        if (networkResponse && networkResponse.status === 200) {
-          const responseToCache = networkResponse.clone();
-          caches.open(CACHE_NAME).then((cache) => {
-            cache.put(request, responseToCache);
-          });
-        }
-        return networkResponse;
-      }).catch(() => null);
+      const fetchPromise = fetch(request)
+        .then((networkResponse) => {
+          if (networkResponse && (networkResponse.status === 200 || networkResponse.type === 'opaque')) {
+            const responseToCache = networkResponse.clone();
+            caches.open(CACHE_NAME).then((cache) => cache.put(request, responseToCache));
+          }
+          return networkResponse;
+        })
+        .catch(() => null);
 
       return cachedResponse || fetchPromise;
     })

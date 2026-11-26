@@ -15,12 +15,20 @@
     <link rel="icon" type="image/svg+xml" href="icons/icon.svg">
     <link rel="apple-touch-icon" href="icons/icon-192.png">
 
+    <!-- Resource Hints (Preconnect for faster first load) -->
+    <link rel="preconnect" href="https://cdn.tailwindcss.com">
+    <link rel="preconnect" href="https://cdnjs.cloudflare.com" crossorigin>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
     <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
-    <!-- Font Awesome Icons -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <!-- Google Fonts Plus Jakarta Sans & Quicksand -->
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Fredoka:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Font Awesome Icons (Non-blocking async load) -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" media="print" onload="this.media='all'">
+    <noscript><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"></noscript>
+    <!-- Google Fonts Plus Jakarta Sans & Fredoka (Trimmed weights, non-blocking) -->
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Fredoka:wght@500;600;700&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
+    <noscript><link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Fredoka:wght@500;600;700&display=swap" rel="stylesheet"></noscript>
     
     <script>
         tailwind.config = {
@@ -197,14 +205,41 @@
             user-select: none;
             -webkit-user-select: none;
         }
+
+        /* Performance & Responsive Optimizations (HP, Laptop, Komputer) */
+        .tab-content:not(.hidden) {
+            content-visibility: auto;
+            contain-intrinsic-size: auto 500px;
+        }
+        @media (max-width: 768px) {
+            html.light body, html.dark body {
+                background-attachment: scroll !important;
+            }
+            html.light .glass-card, html.dark .glass-card {
+                backdrop-filter: blur(8px) !important;
+                -webkit-backdrop-filter: blur(8px) !important;
+            }
+            html.light .glass-pill, html.dark .glass-pill {
+                backdrop-filter: blur(6px) !important;
+                -webkit-backdrop-filter: blur(6px) !important;
+            }
+            .overflow-x-auto {
+                -webkit-overflow-scrolling: touch;
+            }
+        }
+        @media (min-width: 1536px) {
+            main.max-w-7xl, header > div.max-w-7xl {
+                max-width: 88rem;
+            }
+        }
     </style>
 </head>
 <body class="font-sans antialiased min-h-screen flex flex-col relative overflow-x-hidden selection:bg-pink-200 selection:text-pink-900">
 
-    <!-- Ambient Glowing Soft Background Elements -->
-    <div class="fixed top-[-5%] left-[-5%] w-96 h-96 bg-pink-200/40 dark:bg-pink-900/20 rounded-full blur-3xl pointer-events-none transition-all"></div>
-    <div class="fixed top-[35%] right-[-10%] w-[500px] h-[500px] bg-purple-200/40 dark:bg-purple-900/20 rounded-full blur-3xl pointer-events-none transition-all"></div>
-    <div class="fixed bottom-[-5%] left-[25%] w-[450px] h-[450px] bg-emerald-100/50 dark:bg-emerald-900/20 rounded-full blur-3xl pointer-events-none transition-all"></div>
+    <!-- Ambient Glowing Soft Background Elements (Optimized for Mobile GPU) -->
+    <div class="fixed top-[-5%] left-[-5%] w-72 h-72 md:w-96 md:h-96 bg-pink-200/35 dark:bg-pink-900/20 rounded-full blur-2xl md:blur-3xl pointer-events-none"></div>
+    <div class="hidden md:block fixed top-[35%] right-[-10%] w-[500px] h-[500px] bg-purple-200/40 dark:bg-purple-900/20 rounded-full blur-3xl pointer-events-none"></div>
+    <div class="hidden md:block fixed bottom-[-5%] left-[25%] w-[450px] h-[450px] bg-emerald-100/50 dark:bg-emerald-900/20 rounded-full blur-3xl pointer-events-none"></div>
 
     <!-- Toast Notification Container -->
     <div id="toastContainer" class="fixed top-20 right-5 z-50 flex flex-col gap-2.5 max-w-sm pointer-events-none"></div>
@@ -287,7 +322,7 @@
             </button>
 
             <!-- Header Google -->
-            <div class="text-center mb-5">
+            <div class="text-center mb-4">
                 <div class="w-12 h-12 mx-auto mb-2 rounded-2xl bg-white dark:bg-slate-800 shadow-md border border-slate-100 dark:border-slate-700 flex items-center justify-center">
                     <svg class="w-7 h-7" viewBox="0 0 24 24">
                         <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
@@ -297,35 +332,32 @@
                     </svg>
                 </div>
                 <h3 class="text-base sm:text-lg font-black text-slate-800 dark:text-slate-100">Login dengan Google</h3>
-                <p class="text-xs text-slate-500 dark:text-slate-400 mt-0.5">Pilih akun Google Anda untuk masuk ke <strong>AsramaKu</strong></p>
+                <p class="text-xs text-slate-500 dark:text-slate-400 mt-0.5">Masukkan akun Google Anda untuk langsung masuk ke <strong>AsramaKu</strong></p>
             </div>
 
-            <!-- List of Detected / Registered Accounts -->
-            <div id="googleAccountsList" class="space-y-2 mb-4">
-                <!-- Rendered dynamically -->
-            </div>
+            <!-- Saved Real Google Accounts (only shown if user previously logged in) -->
+            <div id="googleAccountsList" class="hidden space-y-2 mb-4"></div>
 
-            <!-- Toggle Custom Google Email Form -->
-            <div class="pt-3 border-t border-slate-200/70 dark:border-slate-800">
-                <button type="button" onclick="toggleGoogleCustomInput()" id="btnToggleGoogleCustom" class="w-full p-3 rounded-2xl glass-pill hover:bg-pink-50/50 dark:hover:bg-slate-800 border border-dashed border-pink-300 dark:border-pink-800 text-xs font-bold text-pink-600 dark:text-pink-400 flex items-center justify-center gap-2 transition">
-                    <i class="fa-solid fa-plus-circle text-xs"></i> Gunakan Akun Google Lain (Email Baru)
+            <!-- Google Account Login Form (directly open for instant Google login) -->
+            <div class="pt-1">
+                <button type="button" onclick="toggleGoogleCustomInput()" id="btnToggleGoogleCustom" class="hidden w-full mb-3 p-3 rounded-2xl glass-pill hover:bg-pink-50/50 dark:hover:bg-slate-800 border border-dashed border-pink-300 dark:border-pink-800 text-xs font-bold text-pink-600 dark:text-pink-400 flex items-center justify-center gap-2 transition">
+                    <i class="fa-solid fa-plus-circle text-xs"></i> Gunakan Akun Google Lain
                 </button>
 
-                <!-- Form Custom Google Account Input -->
-                <form id="formGoogleCustom" onsubmit="handleGoogleCustomSubmit(event)" class="hidden mt-4 space-y-3 p-4 rounded-2xl bg-pink-50/40 dark:bg-slate-800/40 border border-pink-100 dark:border-slate-700">
+                <form id="formGoogleCustom" onsubmit="handleGoogleCustomSubmit(event)" class="space-y-3 p-4 rounded-2xl bg-pink-50/40 dark:bg-slate-800/40 border border-pink-100 dark:border-slate-700">
                     <div class="flex items-center gap-1.5 text-[11px] font-bold text-pink-600 dark:text-pink-400">
-                        <i class="fa-solid fa-wand-magic-sparkles"></i> Masuk Langsung Tanpa Kata Sandi
+                        <i class="fa-solid fa-wand-magic-sparkles"></i> Masuk Langsung dengan Akun Google
                     </div>
                     <p class="text-[11px] text-slate-500 dark:text-slate-400 leading-relaxed">
-                        Jika email belum pernah terdaftar, akun baru akan <strong>langsung dibuat otomatis</strong> dan checklist Anda akan dibuat terpisah.
+                        Ketik nama dan email Google Anda — akun akan <strong>langsung aktif otomatis</strong> dengan checklist pribadi terpisah.
                     </p>
                     <div>
-                        <label class="block text-[11px] font-bold text-slate-600 dark:text-slate-300 mb-1">Nama Santriwati / Lengkap</label>
+                        <label class="block text-[11px] font-bold text-slate-600 dark:text-slate-300 mb-1">Nama Lengkap</label>
                         <input type="text" id="googleCustomName" required placeholder="Contoh: Fatimah Az-Zahra" class="w-full glass-input px-3.5 py-2.5 rounded-xl text-xs focus:outline-none border border-pink-200 dark:border-slate-700">
                     </div>
                     <div>
                         <label class="block text-[11px] font-bold text-slate-600 dark:text-slate-300 mb-1">Alamat Email Google (@gmail.com)</label>
-                        <input type="email" id="googleCustomEmail" required placeholder="nama.santri@gmail.com" class="w-full glass-input px-3.5 py-2.5 rounded-xl text-xs focus:outline-none border border-pink-200 dark:border-slate-700">
+                        <input type="email" id="googleCustomEmail" required placeholder="nama.anda@gmail.com" class="w-full glass-input px-3.5 py-2.5 rounded-xl text-xs focus:outline-none border border-pink-200 dark:border-slate-700">
                     </div>
                     <button type="submit" class="btn-bounce w-full py-2.5 rounded-xl font-bold text-xs text-white bg-gradient-to-r from-pink-500 to-purple-600 shadow-md transition">
                         Lanjutkan & Masuk Sekarang ✨
@@ -387,7 +419,7 @@
 
                     <!-- Admin Profile Widget Header -->
                     <div onclick="openProfileModal()" class="glass-pill p-1.5 pr-3 rounded-2xl flex items-center gap-2.5 cursor-pointer hover:bg-white/90 dark:hover:bg-slate-700 transition shadow-sm border border-white/80 dark:border-slate-700">
-                        <img id="headerProfileAvatar" src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&q=80&w=150" alt="Avatar Pengurus" class="w-8 h-8 rounded-xl object-cover ring-2 ring-pink-400/50">
+                        <img id="headerProfileAvatar" src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 80 80'%3E%3Crect width='80' height='80' rx='40' fill='%23f472b6'/%3E%3Ctext x='40' y='51' font-family='sans-serif' font-size='34' font-weight='700' text-anchor='middle' fill='%23fff'%3ES%3C/text%3E%3C/svg%3E" decoding="async" alt="Avatar Pengurus" class="w-8 h-8 rounded-xl object-cover ring-2 ring-pink-400/50">
                         <div class="text-left hidden sm:block">
                             <span id="headerProfileName" class="text-xs font-bold text-slate-800 dark:text-slate-100 block leading-tight">Suci Ramadhani</span>
                             <span id="headerProfileRole" class="text-[10px] text-pink-600 dark:text-pink-400 font-semibold block leading-tight">Santriwati</span>
@@ -400,7 +432,7 @@
     </header>
 
     <!-- Notification Panel Dropdown -->
-    <div id="notificationPanel" class="hidden fixed top-20 right-4 sm:right-8 w-84 sm:w-96 glass-card rounded-3xl shadow-2xl border border-white/80 dark:border-slate-700 z-50 p-5 transition-all duration-300 max-h-[85vh] flex flex-col">
+    <div id="notificationPanel" class="hidden fixed top-20 right-4 sm:right-8 w-[calc(100vw-2rem)] sm:w-96 glass-card rounded-3xl shadow-2xl border border-white/80 dark:border-slate-700 z-50 p-5 transition-all duration-300 max-h-[80vh] flex flex-col">
         <!-- Panel Header -->
         <div class="flex justify-between items-center mb-3 pb-2.5 border-b border-slate-200/50 dark:border-slate-700">
             <div class="flex items-center gap-2">
@@ -1232,7 +1264,7 @@
                 <!-- Avatar Preview + Drag & Drop Upload -->
                 <div class="flex flex-col items-center justify-center pb-2">
                     <div class="relative group">
-                        <img id="modalAvatarPreview" src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&q=80&w=150" alt="Avatar Preview" class="w-24 h-24 rounded-2xl object-cover ring-4 ring-pink-400/50 shadow-md">
+                        <img id="modalAvatarPreview" src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 80 80'%3E%3Crect width='80' height='80' rx='40' fill='%23f472b6'/%3E%3Ctext x='40' y='51' font-family='sans-serif' font-size='34' font-weight='700' text-anchor='middle' fill='%23fff'%3ES%3C/text%3E%3C/svg%3E" loading="lazy" decoding="async" alt="Avatar Preview" class="w-24 h-24 rounded-2xl object-cover ring-4 ring-pink-400/50 shadow-md">
                     </div>
                 </div>
 
@@ -1763,17 +1795,25 @@
     </div>
 
     <script>
-        // --- HELPER STORAGE & TOAST SYSTEM ---
+        // --- HELPER STORAGE (WITH IN-MEMORY CACHE) & TOAST SYSTEM ---
+        const _storageCache = Object.create(null);
+
         function getStorage(key, defaultData) {
+            if (Object.prototype.hasOwnProperty.call(_storageCache, key)) {
+                return _storageCache[key];
+            }
             try {
                 const stored = localStorage.getItem(key);
-                return stored ? JSON.parse(stored) : defaultData;
+                const parsed = stored ? JSON.parse(stored) : defaultData;
+                _storageCache[key] = parsed;
+                return parsed;
             } catch (e) {
                 return defaultData;
             }
         }
 
         function setStorage(key, data) {
+            _storageCache[key] = data;
             try {
                 localStorage.setItem(key, JSON.stringify(data));
             } catch (e) {
@@ -1828,33 +1868,23 @@
             showToast(isDarkMode ? 'Mode Gelap Aktif 🌙' : 'Mode Terang Aktif ☀️', 'info');
         }
 
+        // Lightweight inline SVG pastel avatar (0 network requests, instant offline load)
+        function getPastelAvatar(name) {
+            const initial = ((name || 'S').trim().charAt(0) || 'S').toUpperCase();
+            const svg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 80 80"><defs><linearGradient id="g" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#f472b6"/><stop offset="100%" stop-color="#a855f7"/></linearGradient></defs><rect width="80" height="80" rx="40" fill="url(#g)"/><text x="40" y="51" font-family="sans-serif" font-size="34" font-weight="700" text-anchor="middle" fill="#ffffff">${initial}</text></svg>`;
+            return 'data:image/svg+xml;charset=UTF-8,' + encodeURIComponent(svg);
+        }
+
         // --- EMAIL & GOOGLE AUTHENTICATION SYSTEM ---
+        const DEMO_GOOGLE_EMAILS = ['suci.ramadhani@gmail.com', 'aisyah.azzahra@gmail.com'];
         const defaultEmailAccounts = [
-            {
-                email: 'suci.ramadhani@gmail.com',
-                password: 'google_authenticated',
-                nama: 'Suci Ramadhani',
-                role: 'Santriwati (Ketua Kamar)',
-                user_id: 'user_suci',
-                isGoogle: true,
-                avatar: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&q=80&w=150'
-            },
-            {
-                email: 'aisyah.azzahra@gmail.com',
-                password: 'google_authenticated',
-                nama: 'Aisyah Az-Zahra',
-                role: 'Santriwati',
-                user_id: 'user_teman',
-                isGoogle: true,
-                avatar: 'https://images.unsplash.com/photo-1517841905240-472988babdf9?auto=format&fit=crop&q=80&w=150'
-            },
             {
                 email: 'suci@asrama.id',
                 password: '123456',
                 nama: 'Suci Ramadhani',
                 role: 'Santriwati (Ketua Kamar)',
                 user_id: 'user_suci',
-                avatar: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&q=80&w=150'
+                avatar: getPastelAvatar('Suci')
             },
             {
                 email: 'aisyah@asrama.id',
@@ -1862,7 +1892,7 @@
                 nama: 'Aisyah Az-Zahra',
                 role: 'Santriwati',
                 user_id: 'user_teman',
-                avatar: 'https://images.unsplash.com/photo-1517841905240-472988babdf9?auto=format&fit=crop&q=80&w=150'
+                avatar: getPastelAvatar('Aisyah')
             },
             {
                 email: 'ustadzah@asrama.id',
@@ -1870,11 +1900,14 @@
                 nama: 'Ustadzah Dev',
                 role: 'Pengurus Utama Asrama',
                 user_id: 'user_ustadzah',
-                avatar: 'https://images.unsplash.com/photo-1544005313-94ddf0286df2?auto=format&fit=crop&q=80&w=150'
+                avatar: getPastelAvatar('Ustadzah')
             }
         ];
 
-        let emailAccounts = getStorage('asramaku_email_accounts', defaultEmailAccounts);
+        // Load accounts and scrub old demo Google accounts & broken external URLs automatically
+        let emailAccounts = getStorage('asramaku_email_accounts', defaultEmailAccounts)
+            .filter(acc => acc && acc.email && !DEMO_GOOGLE_EMAILS.includes(acc.email.toLowerCase()));
+        setStorage('asramaku_email_accounts', emailAccounts);
         let loggedInUser = getStorage('asramaku_logged_in_user', null);
 
         // --- GOOGLE SIGN IN HANDLERS ---
@@ -1893,43 +1926,72 @@
         function closeGoogleAuthModal() {
             const modal = document.getElementById('modalGoogleAuth');
             if (modal) modal.classList.add('hidden');
-            const customForm = document.getElementById('formGoogleCustom');
-            if (customForm) customForm.classList.add('hidden');
+        }
+
+        function removeSavedGoogleAccount(e, emailToRemove) {
+            if (e) e.stopPropagation();
+            emailAccounts = emailAccounts.filter(acc => acc.email.toLowerCase() !== emailToRemove.toLowerCase());
+            setStorage('asramaku_email_accounts', emailAccounts);
+            renderGoogleAccountsList();
+            showToast('Akun tersimpan dihapus dari daftar.', 'info');
         }
 
         function renderGoogleAccountsList() {
             const listEl = document.getElementById('googleAccountsList');
+            const toggleBtn = document.getElementById('btnToggleGoogleCustom');
+            const customForm = document.getElementById('formGoogleCustom');
             if (!listEl) return;
             listEl.innerHTML = '';
 
-            // Ambil semua akun Google yang tersedia atau akun default
-            let gAccounts = emailAccounts.filter(acc => acc.isGoogle || (acc.email && acc.email.includes('@gmail.com')));
+            // Hanya tampilkan akun Google asli yang pernah dipakai login oleh pengguna
+            const gAccounts = emailAccounts.filter(acc =>
+                (acc.isGoogle || (acc.email && acc.email.toLowerCase().includes('@gmail.com'))) &&
+                !DEMO_GOOGLE_EMAILS.includes(acc.email.toLowerCase())
+            );
+
             if (gAccounts.length === 0) {
-                gAccounts = defaultEmailAccounts.filter(acc => acc.isGoogle);
+                listEl.classList.add('hidden');
+                if (toggleBtn) toggleBtn.classList.add('hidden');
+                if (customForm) {
+                    customForm.classList.remove('hidden');
+                    const nameInp = document.getElementById('googleCustomName');
+                    if (nameInp) setTimeout(() => nameInp.focus(), 60);
+                }
+                return;
             }
 
+            listEl.classList.remove('hidden');
+            if (toggleBtn) toggleBtn.classList.remove('hidden');
+            if (customForm) customForm.classList.add('hidden');
+
             gAccounts.forEach(acc => {
+                const avatarSrc = (acc.avatar && !acc.avatar.includes('unsplash.com')) ? acc.avatar : getPastelAvatar(acc.nama);
                 const item = document.createElement('div');
                 item.className = "btn-bounce p-3 rounded-2xl glass-pill hover:bg-pink-50 dark:hover:bg-slate-800 border border-slate-200/80 dark:border-slate-700 flex items-center justify-between cursor-pointer transition";
                 item.onclick = () => loginWithGoogleAccount({
                     email: acc.email,
                     nama: acc.nama,
-                    avatar: acc.avatar
+                    avatar: avatarSrc
                 });
                 item.innerHTML = `
-                    <div class="flex items-center gap-3">
-                        <img src="${acc.avatar}" class="w-9 h-9 rounded-full object-cover border border-pink-200 dark:border-slate-700 shadow-sm" alt="${acc.nama}">
-                        <div class="text-left">
-                            <h5 class="text-xs font-bold text-slate-800 dark:text-slate-100 flex items-center gap-1.5">
-                                ${acc.nama}
-                                <span class="text-[9px] px-1.5 py-0.2 rounded-md bg-emerald-100 text-emerald-600 font-bold">Google</span>
+                    <div class="flex items-center gap-3 min-w-0">
+                        <img src="${avatarSrc}" loading="lazy" decoding="async" class="w-9 h-9 rounded-full object-cover border border-pink-200 dark:border-slate-700 shadow-sm shrink-0" alt="${acc.nama}">
+                        <div class="text-left min-w-0">
+                            <h5 class="text-xs font-bold text-slate-800 dark:text-slate-100 flex items-center gap-1.5 truncate">
+                                <span class="truncate">${acc.nama}</span>
+                                <span class="text-[9px] px-1.5 py-0.5 rounded-md bg-emerald-100 text-emerald-600 font-bold shrink-0">Google</span>
                             </h5>
-                            <p class="text-[11px] text-slate-500 dark:text-slate-400 font-mono">${acc.email}</p>
+                            <p class="text-[11px] text-slate-500 dark:text-slate-400 font-mono truncate">${acc.email}</p>
                         </div>
                     </div>
-                    <span class="text-xs text-pink-500 dark:text-pink-400 font-bold px-2.5 py-1 rounded-xl bg-pink-50 dark:bg-pink-950/40 border border-pink-200 dark:border-pink-900/50 flex items-center gap-1">
-                        Pilih <i class="fa-solid fa-chevron-right text-[10px]"></i>
-                    </span>
+                    <div class="flex items-center gap-1.5 shrink-0">
+                        <span class="text-xs text-pink-500 dark:text-pink-400 font-bold px-2.5 py-1 rounded-xl bg-pink-50 dark:bg-pink-950/40 border border-pink-200 dark:border-pink-900/50 flex items-center gap-1">
+                            Masuk <i class="fa-solid fa-chevron-right text-[10px]"></i>
+                        </span>
+                        <button type="button" onclick="removeSavedGoogleAccount(event, '${acc.email.replace(/'/g, "\\'")}')" title="Hapus dari daftar" class="w-7 h-7 rounded-lg text-slate-400 hover:text-rose-500 hover:bg-rose-50 dark:hover:bg-rose-950/40 flex items-center justify-center transition">
+                            <i class="fa-solid fa-xmark text-xs"></i>
+                        </button>
+                    </div>
                 `;
                 listEl.appendChild(item);
             });
@@ -1964,14 +2026,14 @@
             loginWithGoogleAccount({
                 email,
                 nama,
-                avatar: `https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&q=80&w=150`
+                avatar: getPastelAvatar(nama)
             });
         }
 
         function loginWithGoogleAccount(profile) {
             const email = (profile.email || '').toLowerCase().trim();
             const nama = profile.nama || email.split('@')[0];
-            const avatar = profile.avatar || `https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&q=80&w=150`;
+            const avatar = (profile.avatar && !profile.avatar.includes('unsplash.com')) ? profile.avatar : getPastelAvatar(nama);
 
             if (!email) {
                 showToast('Email Google tidak valid!', 'warning');
@@ -2022,34 +2084,8 @@
             if (authScreen) authScreen.classList.add('hidden');
 
             renderAdminProfileUI();
-            if (typeof renderChecklistUserSelector === 'function') renderChecklistUserSelector();
-            if (typeof renderJadwal === 'function') renderJadwal();
-            if (typeof renderSantriTable === 'function') renderSantriTable();
-            if (typeof renderMusholaPresensi === 'function') renderMusholaPresensi();
-            if (typeof renderPiket === 'function') renderPiket();
-            if (typeof renderPengumuman === 'function') renderPengumuman();
-            if (typeof renderHukuman === 'function') renderHukuman();
-        }
-
-        function switchAuthTab(tab) {
-            const loginForm = document.getElementById('formEmailLogin');
-            const regForm = document.getElementById('formEmailRegister');
-            const tabLogin = document.getElementById('tabAuthLogin');
-            const tabReg = document.getElementById('tabAuthRegister');
-
-            if (!loginForm || !regForm) return;
-
-            if (tab === 'login') {
-                loginForm.classList.remove('hidden');
-                regForm.classList.add('hidden');
-                tabLogin.className = 'flex-1 py-2 rounded-xl text-xs font-bold transition-all bg-gradient-to-r from-pink-500 to-purple-500 text-white shadow-md';
-                tabReg.className = 'flex-1 py-2 rounded-xl text-xs font-bold text-slate-600 dark:text-slate-400 transition-all hover:text-pink-600';
-            } else {
-                loginForm.classList.add('hidden');
-                regForm.classList.remove('hidden');
-                tabReg.className = 'flex-1 py-2 rounded-xl text-xs font-bold transition-all bg-gradient-to-r from-pink-500 to-purple-500 text-white shadow-md';
-                tabLogin.className = 'flex-1 py-2 rounded-xl text-xs font-bold text-slate-600 dark:text-slate-400 transition-all hover:text-pink-600';
-            }
+            markAllTabsDirty();
+            ensureTabRendered(currentActiveTab);
         }
 
         function togglePasswordVisibility(inputId, iconId) {
@@ -2063,16 +2099,6 @@
             } else {
                 input.type = 'password';
                 icon.className = 'fa-regular fa-eye';
-            }
-        }
-
-        function quickFillDemo(email, pass) {
-            const emailInput = document.getElementById('loginEmail');
-            const passInput = document.getElementById('loginPassword');
-            if (emailInput && passInput) {
-                emailInput.value = email;
-                passInput.value = pass;
-                handleEmailLogin();
             }
         }
 
@@ -2113,77 +2139,10 @@
             if (authScreen) authScreen.classList.add('hidden');
 
             renderAdminProfileUI();
-            if (typeof renderChecklistUserSelector === 'function') renderChecklistUserSelector();
-            if (typeof renderJadwal === 'function') renderJadwal();
-            if (typeof renderSantriTable === 'function') renderSantriTable();
-            if (typeof renderMusholaPresensi === 'function') renderMusholaPresensi();
-            if (typeof renderPiket === 'function') renderPiket();
-            if (typeof renderPengumuman === 'function') renderPengumuman();
-            if (typeof renderHukuman === 'function') renderHukuman();
+            markAllTabsDirty();
+            ensureTabRendered(currentActiveTab);
 
             showToast(`Assalamu’alaikum, ${account.nama}! Berhasil masuk 🌸`);
-        }
-
-        function handleEmailRegister(e) {
-            e.preventDefault();
-            const nama = (document.getElementById('regFullName')?.value || '').trim();
-            const email = (document.getElementById('regEmail')?.value || '').trim().toLowerCase();
-            const role = document.getElementById('regRole')?.value || 'Santriwati';
-            const password = document.getElementById('regPassword')?.value || '';
-
-            if (!nama || !email || !password) {
-                showToast('Semua kolom wajib diisi!', 'warning');
-                return;
-            }
-
-            if (password.length < 4) {
-                showToast('Kata sandi minimal 4 karakter!', 'warning');
-                return;
-            }
-
-            const existing = emailAccounts.find(acc => acc.email.toLowerCase() === email);
-            if (existing) {
-                showToast('Email sudah terdaftar! Silakan langsung login.', 'warning');
-                switchAuthTab('login');
-                const loginEmail = document.getElementById('loginEmail');
-                if (loginEmail) loginEmail.value = email;
-                return;
-            }
-
-            const newUid = 'user_' + Date.now().toString(36);
-            const newAccount = {
-                email,
-                password,
-                nama,
-                role,
-                user_id: newUid,
-                avatar: `https://images.unsplash.com/photo-${role.includes('Santri') ? '1517841905240-472988babdf9' : '1534528741775-53994a69daeb'}?auto=format&fit=crop&q=80&w=150`
-            };
-
-            emailAccounts.push(newAccount);
-            setStorage('asramaku_email_accounts', emailAccounts);
-
-            if (typeof checklistUsers !== 'undefined' && !checklistUsers.some(u => u.id === newUid)) {
-                checklistUsers.push({ id: newUid, nama });
-                setStorage('asramaku_checklist_users', checklistUsers);
-            }
-
-            // Langsung login
-            loggedInUser = newAccount;
-            setStorage('asramaku_logged_in_user', loggedInUser);
-            activeChecklistUserId = newUid;
-            setStorage('asramaku_active_checklist_user_id', newUid);
-
-            const authScreen = document.getElementById('authScreen');
-            if (authScreen) authScreen.classList.add('hidden');
-
-            renderAdminProfileUI();
-            if (typeof renderChecklistUserSelector === 'function') renderChecklistUserSelector();
-            if (typeof renderJadwal === 'function') renderJadwal();
-            if (typeof renderSantriTable === 'function') renderSantriTable();
-            if (typeof renderMusholaPresensi === 'function') renderMusholaPresensi();
-
-            showToast(`Selamat datang di AsramaKu, ${nama}! Akun berhasil dibuat ✨`);
         }
 
         function handleUserLogout() {
@@ -2191,7 +2150,6 @@
             setStorage('asramaku_logged_in_user', null);
             const authScreen = document.getElementById('authScreen');
             if (authScreen) authScreen.classList.remove('hidden');
-            switchAuthTab('login');
             showToast('Anda telah keluar dari akun.', 'info');
         }
 
@@ -2203,7 +2161,6 @@
                 activeChecklistUserId = loggedInUser.user_id;
             } else {
                 authScreen.classList.remove('hidden');
-                switchAuthTab('login');
             }
         }
 
@@ -2215,7 +2172,7 @@
         const initialProfile = {
             nama: 'Ustadzah Dev',
             jabatan: 'Pengurus Utama Asrama',
-            avatar: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&q=80&w=150',
+            avatar: getPastelAvatar('Ustadzah'),
             kontak: '+62 812-3456-7890'
         };
 
@@ -4280,7 +4237,12 @@
 
             if (nameEl) nameEl.innerText = currentUser.nama;
             if (roleEl) roleEl.innerText = currentUser.role || currentUser.jabatan || 'Santriwati';
-            if (avatarEl && currentUser.avatar) avatarEl.src = currentUser.avatar;
+            if (avatarEl) {
+                const safeAvatar = (currentUser.avatar && !currentUser.avatar.includes('unsplash.com'))
+                    ? currentUser.avatar
+                    : getPastelAvatar(currentUser.nama);
+                avatarEl.src = safeAvatar;
+            }
             if (greetEl) greetEl.innerText = currentUser.nama;
             if (badgeUidEl) badgeUidEl.innerText = currentUser.email || currentUser.user_id;
             if (roleBadgeEl) roleBadgeEl.innerHTML = `✨ Mode ${currentUser.role || currentUser.jabatan || 'Santri'} Soft Glass`;
@@ -4349,8 +4311,46 @@
             });
         }
 
+        // Lazy Tab Rendering Tracker (Hanya render tab saat pertama kali dibuka / berubah)
+        let currentActiveTab = 'jadwal';
+        const dirtyTabs = {
+            jadwal: true,
+            mushola: true,
+            santri: true,
+            piket: true,
+            pengumuman: true,
+            kedisiplinan: true,
+            rekap: true
+        };
+
+        function markAllTabsDirty() {
+            Object.keys(dirtyTabs).forEach(k => { dirtyTabs[k] = true; });
+        }
+
+        function ensureTabRendered(tabName) {
+            if (!dirtyTabs[tabName]) return;
+            dirtyTabs[tabName] = false;
+            if (tabName === 'jadwal') {
+                if (typeof renderChecklistUserSelector === 'function') renderChecklistUserSelector();
+                if (typeof renderJadwal === 'function') renderJadwal();
+            } else if (tabName === 'mushola') {
+                if (typeof renderMusholaPresensi === 'function') renderMusholaPresensi();
+            } else if (tabName === 'santri') {
+                if (typeof renderSantriTable === 'function') renderSantriTable();
+            } else if (tabName === 'piket') {
+                if (typeof renderPiket === 'function') renderPiket();
+            } else if (tabName === 'pengumuman') {
+                if (typeof renderPengumuman === 'function') renderPengumuman();
+            } else if (tabName === 'kedisiplinan') {
+                if (typeof renderHukuman === 'function') renderHukuman();
+            } else if (tabName === 'rekap') {
+                if (typeof renderRekap === 'function') renderRekap();
+            }
+        }
+
         // Tab Switching Logic
         function switchTab(tabName) {
+            currentActiveTab = tabName;
             document.querySelectorAll('.tab-content').forEach(el => el.classList.add('hidden'));
             document.querySelectorAll('.tab-btn').forEach(btn => {
                 if (btn.id === 'tab-all-features') {
@@ -4361,7 +4361,8 @@
             });
 
             // Update Desktop/Top Tabs
-            document.getElementById(`content-${tabName}`).classList.remove('hidden');
+            const targetContent = document.getElementById(`content-${tabName}`);
+            if (targetContent) targetContent.classList.remove('hidden');
             const activeBtn = document.getElementById(`tab-${tabName}`);
             if (activeBtn) {
                 activeBtn.className = "tab-btn btn-bounce px-4 py-2.5 rounded-2xl text-xs sm:text-sm font-bold flex items-center gap-2 whitespace-nowrap bg-gradient-to-r from-pink-500 to-purple-500 text-white shadow-md shadow-pink-500/20 transition-all";
@@ -4375,6 +4376,9 @@
             if (activeBnav) {
                 activeBnav.className = "bnav-btn py-1.5 px-1 rounded-2xl flex flex-col items-center justify-center text-pink-600 dark:text-pink-400 font-bold bg-pink-100/70 dark:bg-pink-950/40 shadow-sm transition-all";
             }
+
+            // Lazy-render tab content on demand
+            ensureTabRendered(tabName);
 
             if (tabName === 'rekap') {
                 updateRekapStats();
@@ -4473,8 +4477,8 @@
         window.addEventListener('online', () => showToast('Kembali online! Sinkronisasi data siap 🟢', 'success'));
         window.addEventListener('offline', () => showToast('Anda dalam mode offline. AsramaKu tetap dapat digunakan 📡', 'warning'));
 
-        // Window Init
-        window.onload = function () {
+        // Fast Init on DOMContentLoaded (tanpa menunggu aset eksternal selesai)
+        document.addEventListener('DOMContentLoaded', function () {
             applyTheme();
             updateClock();
             setInterval(updateClock, 1000);
@@ -4490,14 +4494,6 @@
                 if (bannerCard) bannerCard.classList.add('hidden');
             }
 
-            // Cek hash URL untuk shortcut PWA (contoh: #mushola, #santri)
-            if (window.location.hash) {
-                const targetTab = window.location.hash.replace('#', '');
-                if (['jadwal', 'mushola', 'santri', 'piket', 'pengumuman', 'kedisiplinan', 'rekap'].includes(targetTab)) {
-                    switchTab(targetTab);
-                }
-            }
-
             const picker = document.getElementById('musholaDatePicker');
             if (picker) {
                 picker.value = selectedMusholaDate;
@@ -4505,17 +4501,35 @@
 
             checkAuthSession();
             renderAdminProfileUI();
-            renderChecklistUserSelector();
-            renderSantriTable();
-            renderJadwal();
-            renderMusholaPresensi();
-            renderPiket();
-            renderPengumuman();
-            renderHukuman();
-            renderNotifikasi();
-            updateActiveRingtoneBadge();
-            startNotificationScheduler();
-        };
+
+            // Cek hash URL untuk shortcut PWA (contoh: #mushola, #santri)
+            let initialTab = 'jadwal';
+            if (window.location.hash) {
+                const targetTab = window.location.hash.replace('#', '');
+                if (['jadwal', 'mushola', 'santri', 'piket', 'pengumuman', 'kedisiplinan', 'rekap'].includes(targetTab)) {
+                    initialTab = targetTab;
+                }
+            }
+
+            // Lazy-render hanya tab yang sedang aktif terlebih dahulu
+            if (initialTab !== 'jadwal') {
+                switchTab(initialTab);
+            } else {
+                ensureTabRendered('jadwal');
+            }
+
+            // Tunda inisialisasi non-kritis (notifikasi, badge nada, scheduler) ke idle time
+            const runDeferredInit = () => {
+                renderNotifikasi();
+                updateActiveRingtoneBadge();
+                startNotificationScheduler();
+            };
+            if ('requestIdleCallback' in window) {
+                requestIdleCallback(runDeferredInit, { timeout: 500 });
+            } else {
+                setTimeout(runDeferredInit, 80);
+            }
+        });
     </script>
 </body>
 </html>
