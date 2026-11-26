@@ -2114,9 +2114,31 @@
                 return;
             }
 
-            const account = emailAccounts.find(acc => acc.email.toLowerCase() === email && acc.password === password);
+            let account = emailAccounts.find(acc => acc.email.toLowerCase() === email);
+            let isNewAccount = false;
+
             if (!account) {
-                showToast('Email atau kata sandi tidak cocok. Silakan periksa kembali!', 'error');
+                // Karena menu Daftar Baru telah disederhanakan, email baru otomatis dibuatkan akun & langsung masuk!
+                if (password.length < 4) {
+                    showToast('Kata sandi minimal 4 karakter!', 'warning');
+                    return;
+                }
+                const rawName = email.split('@')[0].replace(/[._-]+/g, ' ');
+                const formattedName = rawName.replace(/\b\w/g, c => c.toUpperCase()) || 'Santriwati';
+                const newUid = 'user_' + Date.now().toString(36);
+                account = {
+                    email,
+                    password,
+                    nama: formattedName,
+                    role: 'Santriwati',
+                    user_id: newUid,
+                    avatar: getPastelAvatar(formattedName)
+                };
+                emailAccounts.push(account);
+                setStorage('asramaku_email_accounts', emailAccounts);
+                isNewAccount = true;
+            } else if (account.password !== password && account.password !== 'google_authenticated') {
+                showToast('Kata sandi tidak cocok untuk email ini. Silakan periksa kembali!', 'error');
                 return;
             }
 
@@ -2142,7 +2164,10 @@
             markAllTabsDirty();
             ensureTabRendered(currentActiveTab);
 
-            showToast(`Assalamu’alaikum, ${account.nama}! Berhasil masuk 🌸`);
+            showToast(isNewAccount
+                ? `Selamat datang di AsramaKu, ${account.nama}! Akun baru langsung aktif ✨`
+                : `Assalamu’alaikum, ${account.nama}! Berhasil masuk 🌸`
+            );
         }
 
         function handleUserLogout() {
