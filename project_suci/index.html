@@ -244,7 +244,7 @@
     <!-- Toast Notification Container -->
     <div id="toastContainer" class="fixed top-20 right-5 z-50 flex flex-col gap-2.5 max-w-sm pointer-events-none"></div>
 
-    <!-- AUTHENTICATION SCREEN: LOGIN / REGISTER EMAIL -->
+    <!-- AUTHENTICATION SCREEN: MASUK CUKUP PAKAI NAMA (TANPA EMAIL & SANDI) -->
     <div id="authScreen" class="fixed inset-0 z-50 bg-slate-900/50 backdrop-blur-xl flex items-center justify-center p-4 transition-all duration-300">
         <div class="glass-card rounded-[2.5rem] max-w-md w-full p-6 sm:p-8 shadow-2xl border border-white/80 dark:border-slate-700 relative overflow-hidden bg-white/95 dark:bg-slate-900/95">
             <!-- Decorative pastel bloom -->
@@ -252,121 +252,41 @@
             <div class="absolute -bottom-16 -left-16 w-40 h-40 bg-purple-400/20 rounded-full blur-2xl pointer-events-none"></div>
 
             <!-- Header / Brand -->
-            <div class="text-center mb-5 relative z-10">
+            <div class="text-center mb-6 relative z-10">
                 <div class="w-16 h-16 mx-auto rounded-3xl bg-gradient-to-tr from-pink-400 to-purple-500 text-white flex items-center justify-center text-3xl shadow-lg shadow-pink-500/25 mb-3">
                     🌸
                 </div>
                 <h2 class="text-2xl font-black text-slate-800 dark:text-slate-100 tracking-tight">AsramaKu</h2>
-                <p class="text-xs text-slate-500 dark:text-slate-400 font-medium mt-1">Masuk dengan Akun Google untuk mengakses data & checklist pribadi Anda.</p>
+                <p class="text-xs text-slate-500 dark:text-slate-400 font-medium mt-1">Cukup ketik nama Anda untuk langsung masuk — tanpa email &amp; tanpa kata sandi.</p>
             </div>
 
-            <!-- ONE-CLICK GOOGLE SIGN IN (UTAMA) -->
-            <div class="mb-4 relative z-10">
-                <button type="button" onclick="handleGoogleSignIn()" class="btn-bounce w-full py-3 px-4 rounded-2xl font-bold text-xs text-slate-700 dark:text-slate-100 bg-white dark:bg-slate-800 border-2 border-pink-200 dark:border-pink-900/50 hover:border-pink-400 dark:hover:border-pink-500 shadow-md shadow-pink-500/10 flex items-center justify-center gap-3 transition-all hover:scale-[1.01]">
-                    <svg class="w-5 h-5 shrink-0" viewBox="0 0 24 24">
-                        <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
-                        <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
-                        <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.06H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.94l2.85-2.22.81-.63z"/>
-                        <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.52 6.16-4.52z"/>
-                    </svg>
-                    <span class="text-xs sm:text-sm font-extrabold">Masuk dengan Akun Google</span>
-                </button>
-                <div class="mt-2 text-center">
-                    <p class="text-[11px] text-pink-600 dark:text-pink-400 font-semibold flex items-center justify-center gap-1.5">
-                        <i class="fa-solid fa-sparkles text-[10px]"></i> Belum terdaftar? Langsung login pake akun Google Anda ✨
-                    </p>
-                </div>
-            </div>
-
-            <!-- Divider -->
-            <div class="flex items-center gap-3 my-4 relative z-10">
-                <div class="h-px bg-slate-200/80 dark:bg-slate-700/80 flex-1"></div>
-                <span class="text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider">atau opsi email sandi</span>
-                <div class="h-px bg-slate-200/80 dark:bg-slate-700/80 flex-1"></div>
-            </div>
-
-            <!-- FORM 1: LOGIN -->
-            <form id="formEmailLogin" onsubmit="handleEmailLogin(event)" class="space-y-4 relative z-10">
+            <!-- SIMPLE NAME-ONLY LOGIN FORM -->
+            <form id="formNameLogin" onsubmit="handleNameLogin(event)" class="space-y-4 relative z-10">
                 <div>
-                    <label class="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1.5 flex items-center gap-1.5">
-                        <i class="fa-regular fa-envelope text-pink-500"></i> Alamat Email
+                    <label for="loginNama" class="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1.5 flex items-center gap-1.5">
+                        <i class="fa-regular fa-user text-pink-500"></i> Nama Lengkap / Panggilan
                     </label>
-                    <input type="email" id="loginEmail" required placeholder="contoh: suci@asrama.id" class="w-full glass-input px-4 py-3 rounded-2xl text-xs focus:outline-none border border-pink-200 dark:border-slate-700">
+                    <input type="text" id="loginNama" required autocomplete="name" placeholder="Contoh: Suci Ramadhani" class="w-full glass-input px-4 py-3.5 rounded-2xl text-sm font-medium focus:outline-none border border-pink-200 dark:border-slate-700">
                 </div>
 
                 <div>
-                    <label class="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1.5 flex items-center gap-1.5">
-                        <i class="fa-solid fa-lock text-purple-500"></i> Kata Sandi
+                    <label for="loginRole" class="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1.5 flex items-center gap-1.5">
+                        <i class="fa-solid fa-sparkles text-purple-500"></i> Masuk Sebagai
                     </label>
-                    <div class="relative">
-                        <input type="password" id="loginPassword" required placeholder="••••••••" class="w-full glass-input px-4 py-3 pr-10 rounded-2xl text-xs focus:outline-none border border-pink-200 dark:border-slate-700">
-                        <button type="button" onclick="togglePasswordVisibility('loginPassword', 'eyeIconLogin')" class="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 text-xs">
-                            <i id="eyeIconLogin" class="fa-regular fa-eye"></i>
-                        </button>
-                    </div>
+                    <select id="loginRole" class="w-full glass-input px-4 py-3 rounded-2xl text-xs font-semibold focus:outline-none border border-pink-200 dark:border-slate-700">
+                        <option value="Santriwati">Santriwati</option>
+                        <option value="Pengurus Asrama">Pengurus Asrama</option>
+                        <option value="Pengabdian">Pengabdian</option>
+                    </select>
                 </div>
 
-                <button type="submit" class="btn-bounce w-full py-3.5 rounded-2xl font-black text-xs text-white bg-gradient-to-r from-pink-500 via-rose-500 to-purple-600 shadow-lg shadow-pink-500/25 transition-all">
+                <button type="submit" class="btn-bounce w-full py-3.5 rounded-2xl font-black text-sm text-white bg-gradient-to-r from-pink-500 via-rose-500 to-purple-600 shadow-lg shadow-pink-500/25 transition-all">
                     Masuk ke AsramaKu ✨
                 </button>
             </form>
-        </div>
-    </div>
 
-    <!-- MODAL GOOGLE SIGN IN (PILIH ATAU MASUKKAN AKUN GOOGLE) -->
-    <div id="modalGoogleAuth" class="hidden fixed inset-0 z-[60] bg-slate-900/60 backdrop-blur-md flex items-center justify-center p-4">
-        <div class="glass-card rounded-[2rem] max-w-md w-full p-6 sm:p-7 shadow-2xl border border-white/90 dark:border-slate-700 bg-white/95 dark:bg-slate-900/95 relative animate-in fade-in zoom-in-95 duration-200">
-            <!-- Close button -->
-            <button type="button" onclick="closeGoogleAuthModal()" class="absolute top-5 right-5 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 w-8 h-8 rounded-full flex items-center justify-center hover:bg-slate-100 dark:hover:bg-slate-800 transition">
-                <i class="fa-solid fa-xmark text-sm"></i>
-            </button>
-
-            <!-- Header Google -->
-            <div class="text-center mb-4">
-                <div class="w-12 h-12 mx-auto mb-2 rounded-2xl bg-white dark:bg-slate-800 shadow-md border border-slate-100 dark:border-slate-700 flex items-center justify-center">
-                    <svg class="w-7 h-7" viewBox="0 0 24 24">
-                        <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
-                        <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
-                        <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.06H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.94l2.85-2.22.81-.63z"/>
-                        <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.52 6.16-4.52z"/>
-                    </svg>
-                </div>
-                <h3 class="text-base sm:text-lg font-black text-slate-800 dark:text-slate-100">Login dengan Google</h3>
-                <p class="text-xs text-slate-500 dark:text-slate-400 mt-0.5">Masukkan akun Google Anda untuk langsung masuk ke <strong>AsramaKu</strong></p>
-            </div>
-
-            <!-- Saved Real Google Accounts (only shown if user previously logged in) -->
-            <div id="googleAccountsList" class="hidden space-y-2 mb-4"></div>
-
-            <!-- Google Account Login Form (directly open for instant Google login) -->
-            <div class="pt-1">
-                <button type="button" onclick="toggleGoogleCustomInput()" id="btnToggleGoogleCustom" class="hidden w-full mb-3 p-3 rounded-2xl glass-pill hover:bg-pink-50/50 dark:hover:bg-slate-800 border border-dashed border-pink-300 dark:border-pink-800 text-xs font-bold text-pink-600 dark:text-pink-400 flex items-center justify-center gap-2 transition">
-                    <i class="fa-solid fa-plus-circle text-xs"></i> Gunakan Akun Google Lain
-                </button>
-
-                <form id="formGoogleCustom" onsubmit="handleGoogleCustomSubmit(event)" class="space-y-3 p-4 rounded-2xl bg-pink-50/40 dark:bg-slate-800/40 border border-pink-100 dark:border-slate-700">
-                    <div class="flex items-center gap-1.5 text-[11px] font-bold text-pink-600 dark:text-pink-400">
-                        <i class="fa-solid fa-wand-magic-sparkles"></i> Masuk Langsung dengan Akun Google
-                    </div>
-                    <p class="text-[11px] text-slate-500 dark:text-slate-400 leading-relaxed">
-                        Ketik nama dan email Google Anda — akun akan <strong>langsung aktif otomatis</strong> dengan checklist pribadi terpisah.
-                    </p>
-                    <div>
-                        <label class="block text-[11px] font-bold text-slate-600 dark:text-slate-300 mb-1">Nama Lengkap</label>
-                        <input type="text" id="googleCustomName" required placeholder="Contoh: Fatimah Az-Zahra" class="w-full glass-input px-3.5 py-2.5 rounded-xl text-xs focus:outline-none border border-pink-200 dark:border-slate-700">
-                    </div>
-                    <div>
-                        <label class="block text-[11px] font-bold text-slate-600 dark:text-slate-300 mb-1">Alamat Email Google (@gmail.com)</label>
-                        <input type="email" id="googleCustomEmail" required placeholder="nama.anda@gmail.com" class="w-full glass-input px-3.5 py-2.5 rounded-xl text-xs focus:outline-none border border-pink-200 dark:border-slate-700">
-                    </div>
-                    <button type="submit" class="btn-bounce w-full py-2.5 rounded-xl font-bold text-xs text-white bg-gradient-to-r from-pink-500 to-purple-600 shadow-md transition">
-                        Lanjutkan & Masuk Sekarang ✨
-                    </button>
-                </form>
-            </div>
-
-            <p class="text-[10px] text-center text-slate-400 mt-4 flex items-center justify-center gap-1">
-                <i class="fa-solid fa-shield-halved text-[9px] text-emerald-500"></i> Data pribadi & checklist Anda terisolasi secara otomatis.
+            <p class="text-[10px] text-center text-slate-400 mt-5 flex items-center justify-center gap-1 relative z-10">
+                <i class="fa-solid fa-shield-halved text-[9px] text-emerald-500"></i> Checklist pribadi otomatis tersimpan sesuai nama Anda.
             </p>
         </div>
     </div>
@@ -1875,288 +1795,44 @@
             return 'data:image/svg+xml;charset=UTF-8,' + encodeURIComponent(svg);
         }
 
-        // --- EMAIL & GOOGLE AUTHENTICATION SYSTEM ---
-        const DEMO_GOOGLE_EMAILS = ['suci.ramadhani@gmail.com', 'aisyah.azzahra@gmail.com'];
-        const defaultEmailAccounts = [
-            {
-                email: 'suci@asrama.id',
-                password: '123456',
-                nama: 'Suci Ramadhani',
-                role: 'Santriwati (Ketua Kamar)',
-                user_id: 'user_suci',
-                avatar: getPastelAvatar('Suci')
-            },
-            {
-                email: 'aisyah@asrama.id',
-                password: '123456',
-                nama: 'Aisyah Az-Zahra',
-                role: 'Santriwati',
-                user_id: 'user_teman',
-                avatar: getPastelAvatar('Aisyah')
-            },
-            {
-                email: 'ustadzah@asrama.id',
-                password: '123456',
-                nama: 'Ustadzah Dev',
-                role: 'Pengurus Utama Asrama',
-                user_id: 'user_ustadzah',
-                avatar: getPastelAvatar('Ustadzah')
-            }
-        ];
-
-        // Load accounts and scrub old demo Google accounts & broken external URLs automatically
-        let emailAccounts = getStorage('asramaku_email_accounts', defaultEmailAccounts)
-            .filter(acc => acc && acc.email && !DEMO_GOOGLE_EMAILS.includes(acc.email.toLowerCase()));
-        setStorage('asramaku_email_accounts', emailAccounts);
+        // --- SIMPLE NAME-ONLY AUTHENTICATION SYSTEM (TANPA EMAIL & SANDI) ---
+        let emailAccounts = [];
         let loggedInUser = getStorage('asramaku_logged_in_user', null);
 
-        // --- GOOGLE SIGN IN HANDLERS ---
-        function handleGoogleSignIn() {
-            openGoogleAuthModal();
-        }
-
-        function openGoogleAuthModal() {
-            const modal = document.getElementById('modalGoogleAuth');
-            if (modal) {
-                modal.classList.remove('hidden');
-                renderGoogleAccountsList();
-            }
-        }
-
-        function closeGoogleAuthModal() {
-            const modal = document.getElementById('modalGoogleAuth');
-            if (modal) modal.classList.add('hidden');
-        }
-
-        function removeSavedGoogleAccount(e, emailToRemove) {
-            if (e) e.stopPropagation();
-            emailAccounts = emailAccounts.filter(acc => acc.email.toLowerCase() !== emailToRemove.toLowerCase());
-            setStorage('asramaku_email_accounts', emailAccounts);
-            renderGoogleAccountsList();
-            showToast('Akun tersimpan dihapus dari daftar.', 'info');
-        }
-
-        function renderGoogleAccountsList() {
-            const listEl = document.getElementById('googleAccountsList');
-            const toggleBtn = document.getElementById('btnToggleGoogleCustom');
-            const customForm = document.getElementById('formGoogleCustom');
-            if (!listEl) return;
-            listEl.innerHTML = '';
-
-            // Hanya tampilkan akun Google asli yang pernah dipakai login oleh pengguna
-            const gAccounts = emailAccounts.filter(acc =>
-                (acc.isGoogle || (acc.email && acc.email.toLowerCase().includes('@gmail.com'))) &&
-                !DEMO_GOOGLE_EMAILS.includes(acc.email.toLowerCase())
-            );
-
-            if (gAccounts.length === 0) {
-                listEl.classList.add('hidden');
-                if (toggleBtn) toggleBtn.classList.add('hidden');
-                if (customForm) {
-                    customForm.classList.remove('hidden');
-                    const nameInp = document.getElementById('googleCustomName');
-                    if (nameInp) setTimeout(() => nameInp.focus(), 60);
-                }
-                return;
-            }
-
-            listEl.classList.remove('hidden');
-            if (toggleBtn) toggleBtn.classList.remove('hidden');
-            if (customForm) customForm.classList.add('hidden');
-
-            gAccounts.forEach(acc => {
-                const avatarSrc = (acc.avatar && !acc.avatar.includes('unsplash.com')) ? acc.avatar : getPastelAvatar(acc.nama);
-                const item = document.createElement('div');
-                item.className = "btn-bounce p-3 rounded-2xl glass-pill hover:bg-pink-50 dark:hover:bg-slate-800 border border-slate-200/80 dark:border-slate-700 flex items-center justify-between cursor-pointer transition";
-                item.onclick = () => loginWithGoogleAccount({
-                    email: acc.email,
-                    nama: acc.nama,
-                    avatar: avatarSrc
-                });
-                item.innerHTML = `
-                    <div class="flex items-center gap-3 min-w-0">
-                        <img src="${avatarSrc}" loading="lazy" decoding="async" class="w-9 h-9 rounded-full object-cover border border-pink-200 dark:border-slate-700 shadow-sm shrink-0" alt="${acc.nama}">
-                        <div class="text-left min-w-0">
-                            <h5 class="text-xs font-bold text-slate-800 dark:text-slate-100 flex items-center gap-1.5 truncate">
-                                <span class="truncate">${acc.nama}</span>
-                                <span class="text-[9px] px-1.5 py-0.5 rounded-md bg-emerald-100 text-emerald-600 font-bold shrink-0">Google</span>
-                            </h5>
-                            <p class="text-[11px] text-slate-500 dark:text-slate-400 font-mono truncate">${acc.email}</p>
-                        </div>
-                    </div>
-                    <div class="flex items-center gap-1.5 shrink-0">
-                        <span class="text-xs text-pink-500 dark:text-pink-400 font-bold px-2.5 py-1 rounded-xl bg-pink-50 dark:bg-pink-950/40 border border-pink-200 dark:border-pink-900/50 flex items-center gap-1">
-                            Masuk <i class="fa-solid fa-chevron-right text-[10px]"></i>
-                        </span>
-                        <button type="button" onclick="removeSavedGoogleAccount(event, '${acc.email.replace(/'/g, "\\'")}')" title="Hapus dari daftar" class="w-7 h-7 rounded-lg text-slate-400 hover:text-rose-500 hover:bg-rose-50 dark:hover:bg-rose-950/40 flex items-center justify-center transition">
-                            <i class="fa-solid fa-xmark text-xs"></i>
-                        </button>
-                    </div>
-                `;
-                listEl.appendChild(item);
-            });
-        }
-
-        function toggleGoogleCustomInput() {
-            const form = document.getElementById('formGoogleCustom');
-            if (!form) return;
-            form.classList.toggle('hidden');
-            if (!form.classList.contains('hidden')) {
-                const nameInp = document.getElementById('googleCustomName');
-                if (nameInp) nameInp.focus();
-            }
-        }
-
-        function handleGoogleCustomSubmit(e) {
-            e.preventDefault();
-            const nameEl = document.getElementById('googleCustomName');
-            const emailEl = document.getElementById('googleCustomEmail');
-            const nama = (nameEl ? nameEl.value : '').trim();
-            let email = (emailEl ? emailEl.value : '').trim().toLowerCase();
-
-            if (!nama || !email) {
-                showToast('Nama dan email wajib diisi!', 'warning');
-                return;
-            }
-
-            if (!email.includes('@')) {
-                email += '@gmail.com';
-            }
-
-            loginWithGoogleAccount({
-                email,
-                nama,
-                avatar: getPastelAvatar(nama)
-            });
-        }
-
-        function loginWithGoogleAccount(profile) {
-            const email = (profile.email || '').toLowerCase().trim();
-            const nama = profile.nama || email.split('@')[0];
-            const avatar = (profile.avatar && !profile.avatar.includes('unsplash.com')) ? profile.avatar : getPastelAvatar(nama);
-
-            if (!email) {
-                showToast('Email Google tidak valid!', 'warning');
-                return;
-            }
-
-            // Cek apakah akun email Google ini sudah pernah terdaftar
-            let account = emailAccounts.find(acc => acc.email.toLowerCase() === email);
-
-            if (!account) {
-                // Otomatis buat akun baru dari akun Google bagi yang belum terdaftar!
-                const newUid = 'user_g_' + Date.now().toString(36);
-                account = {
-                    user_id: newUid,
-                    email: email,
-                    password: 'google_authenticated',
-                    nama: nama,
-                    role: 'Santriwati',
-                    isGoogle: true,
-                    avatar: avatar
-                };
-                emailAccounts.push(account);
-                setStorage('asramaku_email_accounts', emailAccounts);
-
-                // Tambahkan ke checklist users jika belum ada
-                if (typeof checklistUsers !== 'undefined' && !checklistUsers.some(u => u.id === newUid)) {
-                    checklistUsers.push({ id: newUid, nama: nama });
-                    setStorage('asramaku_checklist_users', checklistUsers);
-                }
-                showToast(`Selamat datang di AsramaKu, ${nama}! Akun Google Anda berhasil dibuat & masuk ✨`);
-            } else {
-                if (nama && (!account.nama || account.nama === account.email.split('@')[0])) {
-                    account.nama = nama;
-                    setStorage('asramaku_email_accounts', emailAccounts);
-                }
-                showToast(`Assalamu’alaikum, ${account.nama}! Berhasil masuk dengan Akun Google 🌸`);
-            }
-
-            // Set loggedInUser & isolasi checklist per user
-            loggedInUser = account;
-            setStorage('asramaku_logged_in_user', loggedInUser);
-            activeChecklistUserId = account.user_id;
-            setStorage('asramaku_active_checklist_user_id', activeChecklistUserId);
-
-            // Tutup Google Modal & Auth Screen
-            closeGoogleAuthModal();
-            const authScreen = document.getElementById('authScreen');
-            if (authScreen) authScreen.classList.add('hidden');
-
-            renderAdminProfileUI();
-            markAllTabsDirty();
-            ensureTabRendered(currentActiveTab);
-        }
-
-        function togglePasswordVisibility(inputId, iconId) {
-            const input = document.getElementById(inputId);
-            const icon = document.getElementById(iconId);
-            if (!input || !icon) return;
-
-            if (input.type === 'password') {
-                input.type = 'text';
-                icon.className = 'fa-regular fa-eye-slash';
-            } else {
-                input.type = 'password';
-                icon.className = 'fa-regular fa-eye';
-            }
-        }
-
-        function handleEmailLogin(e) {
+        function handleNameLogin(e) {
             if (e) e.preventDefault();
-            const emailEl = document.getElementById('loginEmail');
-            const passEl = document.getElementById('loginPassword');
-            const email = (emailEl ? emailEl.value : '').trim().toLowerCase();
-            const password = passEl ? passEl.value : '';
+            const namaEl = document.getElementById('loginNama');
+            const roleEl = document.getElementById('loginRole');
+            const nama = (namaEl ? namaEl.value : '').trim();
+            const role = (roleEl ? roleEl.value : 'Santriwati') || 'Santriwati';
 
-            if (!email || !password) {
-                showToast('Harap masukkan email dan kata sandi!', 'warning');
+            if (!nama) {
+                showToast('Silakan masukkan nama Anda terlebih dahulu!', 'warning');
                 return;
             }
 
-            let account = emailAccounts.find(acc => acc.email.toLowerCase() === email);
-            let isNewAccount = false;
+            // Buat user_id konsisten dari nama agar checklist pribadi tetap terjaga saat masuk lagi
+            const slug = nama.toLowerCase().replace(/[^a-z0-9]+/g, '_').replace(/^_|_$/g, '') || 'pengguna';
+            const uid = 'user_' + slug;
 
-            if (!account) {
-                // Karena menu Daftar Baru telah disederhanakan, email baru otomatis dibuatkan akun & langsung masuk!
-                if (password.length < 4) {
-                    showToast('Kata sandi minimal 4 karakter!', 'warning');
-                    return;
-                }
-                const rawName = email.split('@')[0].replace(/[._-]+/g, ' ');
-                const formattedName = rawName.replace(/\b\w/g, c => c.toUpperCase()) || 'Santriwati';
-                const newUid = 'user_' + Date.now().toString(36);
-                account = {
-                    email,
-                    password,
-                    nama: formattedName,
-                    role: 'Santriwati',
-                    user_id: newUid,
-                    avatar: getPastelAvatar(formattedName)
-                };
-                emailAccounts.push(account);
-                setStorage('asramaku_email_accounts', emailAccounts);
-                isNewAccount = true;
-            } else if (account.password !== password && account.password !== 'google_authenticated') {
-                showToast('Kata sandi tidak cocok untuk email ini. Silakan periksa kembali!', 'error');
-                return;
-            }
+            const account = {
+                user_id: uid,
+                nama: nama,
+                role: role,
+                avatar: getPastelAvatar(nama)
+            };
 
-            // Berhasil login
             loggedInUser = account;
             setStorage('asramaku_logged_in_user', loggedInUser);
 
-            // Sinkronkan activeChecklistUserId dengan user_id akun email
-            activeChecklistUserId = account.user_id;
+            activeChecklistUserId = uid;
             setStorage('asramaku_active_checklist_user_id', activeChecklistUserId);
 
-            // Pastikan akun ini ada di selector checklist users
-            if (typeof checklistUsers !== 'undefined' && !checklistUsers.some(u => u.id === account.user_id)) {
-                checklistUsers.push({ id: account.user_id, nama: account.nama });
+            if (typeof checklistUsers !== 'undefined' && !checklistUsers.some(u => u.id === uid)) {
+                checklistUsers.push({ id: uid, nama: nama });
                 setStorage('asramaku_checklist_users', checklistUsers);
             }
 
-            // Tutup auth screen
             const authScreen = document.getElementById('authScreen');
             if (authScreen) authScreen.classList.add('hidden');
 
@@ -2164,10 +1840,7 @@
             markAllTabsDirty();
             ensureTabRendered(currentActiveTab);
 
-            showToast(isNewAccount
-                ? `Selamat datang di AsramaKu, ${account.nama}! Akun baru langsung aktif ✨`
-                : `Assalamu’alaikum, ${account.nama}! Berhasil masuk 🌸`
-            );
+            showToast(`Assalamu’alaikum, ${nama}! Selamat datang di AsramaKu 🌸`);
         }
 
         function handleUserLogout() {
@@ -2175,7 +1848,9 @@
             setStorage('asramaku_logged_in_user', null);
             const authScreen = document.getElementById('authScreen');
             if (authScreen) authScreen.classList.remove('hidden');
-            showToast('Anda telah keluar dari akun.', 'info');
+            const namaEl = document.getElementById('loginNama');
+            if (namaEl) { namaEl.value = ''; setTimeout(() => namaEl.focus(), 50); }
+            showToast('Anda telah keluar. Silakan masukkan nama untuk masuk kembali.', 'info');
         }
 
         function checkAuthSession() {
@@ -2186,6 +1861,8 @@
                 activeChecklistUserId = loggedInUser.user_id;
             } else {
                 authScreen.classList.remove('hidden');
+                const namaEl = document.getElementById('loginNama');
+                if (namaEl) setTimeout(() => namaEl.focus(), 80);
             }
         }
 
