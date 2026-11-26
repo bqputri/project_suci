@@ -1803,7 +1803,7 @@
             if (e) e.preventDefault();
             const namaEl = document.getElementById('loginNama');
             const roleEl = document.getElementById('loginRole');
-            const nama = (namaEl ? namaEl.value : '').trim();
+            const nama = (namaEl ? namaEl.value : '').trim().replace(/\s+/g, ' ');
             const role = (roleEl ? roleEl.value : 'Santriwati') || 'Santriwati';
 
             if (!nama) {
@@ -1811,13 +1811,23 @@
                 return;
             }
 
-            // Buat user_id konsisten dari nama agar checklist pribadi tetap terjaga saat masuk lagi
-            const slug = nama.toLowerCase().replace(/[^a-z0-9]+/g, '_').replace(/^_|_$/g, '') || 'pengguna';
-            const uid = 'user_' + slug;
+            // Cek apakah profil dengan nama yang sama sudah ada di checklistUsers (tidak buat duplikat!)
+            const normNama = nama.toLowerCase();
+            const slug = normNama.replace(/[^a-z0-9]+/g, '_').replace(/^_|_$/g, '') || 'pengguna';
+            let existingUser = null;
+            if (typeof checklistUsers !== 'undefined' && Array.isArray(checklistUsers)) {
+                existingUser = checklistUsers.find(u => {
+                    const uNorm = (u.nama || '').trim().toLowerCase().replace(/\s+/g, ' ');
+                    return u.id === 'user_' + slug || uNorm === normNama || uNorm === `aku (${normNama})` || uNorm === `temanku (${normNama})`;
+                });
+            }
+
+            const uid = existingUser ? existingUser.id : ('user_' + slug);
+            const displayNama = existingUser ? existingUser.nama : nama;
 
             const account = {
                 user_id: uid,
-                nama: nama,
+                nama: existingUser ? nama : displayNama,
                 role: role,
                 avatar: getPastelAvatar(nama)
             };
@@ -1828,7 +1838,8 @@
             activeChecklistUserId = uid;
             setStorage('asramaku_active_checklist_user_id', activeChecklistUserId);
 
-            if (typeof checklistUsers !== 'undefined' && !checklistUsers.some(u => u.id === uid)) {
+            // Hanya tambahkan ke daftar pengguna checklist jika benar-benar pengguna baru
+            if (typeof checklistUsers !== 'undefined' && !existingUser) {
                 checklistUsers.push({ id: uid, nama: nama });
                 setStorage('asramaku_checklist_users', checklistUsers);
             }
@@ -1840,7 +1851,10 @@
             markAllTabsDirty();
             ensureTabRendered(currentActiveTab);
 
-            showToast(`Assalamu’alaikum, ${nama}! Selamat datang di AsramaKu 🌸`);
+            showToast(existingUser
+                ? `Assalamu’alaikum, ${nama}! Masuk ke profil yang sudah ada 🌸`
+                : `Assalamu’alaikum, ${nama}! Selamat datang di AsramaKu 🌸`
+            );
         }
 
         function handleUserLogout() {
