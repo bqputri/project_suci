@@ -2139,6 +2139,40 @@
         let checklistUsers = getStorage('asramaku_checklist_users', defaultChecklistUsers);
         let activeChecklistUserId = getStorage('asramaku_active_checklist_user_id', 'user_suci');
 
+        // Otomatis bersihkan profil pengguna yang duplikat berdasarkan nama (case-insensitive)
+        function deduplicateChecklistUsers() {
+            if (!Array.isArray(checklistUsers)) return;
+            const seen = new Map();
+            const cleaned = [];
+            let changed = false;
+
+            checklistUsers.forEach(u => {
+                if (!u || !u.nama) return;
+                const key = u.nama.trim().toLowerCase().replace(/\s+/g, ' ');
+                if (seen.has(key)) {
+                    changed = true;
+                    const primary = seen.get(key);
+                    if (activeChecklistUserId === u.id) {
+                        activeChecklistUserId = primary.id;
+                        setStorage('asramaku_active_checklist_user_id', activeChecklistUserId);
+                    }
+                    if (loggedInUser && loggedInUser.user_id === u.id) {
+                        loggedInUser.user_id = primary.id;
+                        setStorage('asramaku_logged_in_user', loggedInUser);
+                    }
+                } else {
+                    seen.set(key, u);
+                    cleaned.push(u);
+                }
+            });
+
+            if (changed) {
+                checklistUsers = cleaned;
+                setStorage('asramaku_checklist_users', checklistUsers);
+            }
+        }
+        deduplicateChecklistUsers();
+
         function getActiveUserJadwal() {
             const key = `asramaku_jadwal_${activeChecklistUserId}`;
             const stored = localStorage.getItem(key);
@@ -2347,10 +2381,20 @@
 
         function saveNewChecklistUser(e) {
             e.preventDefault();
-            const nama = document.getElementById('newFriendName').value.trim();
+            const nama = document.getElementById('newFriendName').value.trim().replace(/\s+/g, ' ');
             if (!nama) return;
 
-            const newId = 'user_' + Date.now().toString(36);
+            const normNama = nama.toLowerCase();
+            const existing = checklistUsers.find(u => (u.nama || '').trim().toLowerCase().replace(/\s+/g, ' ') === normNama);
+            if (existing) {
+                closeAddChecklistUserModal();
+                switchChecklistUser(existing.id);
+                showToast(`Profil "${existing.nama}" sudah ada, langsung dialihkan ke profil tersebut 🌸`, 'info');
+                return;
+            }
+
+            const slug = normNama.replace(/[^a-z0-9]+/g, '_').replace(/^_|_$/g, '') || Date.now().toString(36);
+            const newId = 'user_' + slug;
             checklistUsers.push({ id: newId, nama });
             setStorage('asramaku_checklist_users', checklistUsers);
             closeAddChecklistUserModal();
