@@ -4,6 +4,16 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
     <title>FinFlow — Aplikasi Manajemen Keuangan Multi-Mode</title>
+    <!-- PWA Manifest & Meta -->
+    <link rel="manifest" href="./finflow-manifest.json">
+    <meta name="theme-color" content="#EC4899">
+    <meta name="description" content="Kelola keuangan pribadi, pembukuan usaha dagang, hingga portofolio investasi dalam satu aplikasi.">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+    <meta name="apple-mobile-web-app-title" content="FinFlow">
+    <link rel="icon" type="image/png" sizes="192x192" href="./finflow-icon-192.png">
+    <link rel="apple-touch-icon" href="./finflow-icon-192.png">
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- Google Fonts: Nunito -->
@@ -50,6 +60,12 @@
     </style>
 </head>
 <body class="antialiased selection:bg-pink-100 selection:text-pink-800">
+
+    <!-- Offline Status Banner (PWA) -->
+    <div id="offline-banner" class="hidden fixed bottom-20 lg:bottom-4 left-3 right-3 sm:left-auto sm:right-4 z-50 bg-amber-100 border border-amber-300 text-amber-900 px-4 py-2.5 rounded-2xl shadow-md text-xs font-bold flex items-center gap-2">
+        <i data-lucide="wifi-off" class="w-4 h-4 shrink-0 text-amber-700"></i>
+        <span>Mode Offline aktif — data tetap tersimpan di perangkat Anda.</span>
+    </div>
 
     <!-- Toast Notification Container -->
     <div id="toast-container" class="fixed top-3 left-3 right-3 sm:left-auto sm:top-4 sm:right-4 sm:max-w-sm z-50 flex flex-col gap-2 pointer-events-none"></div>
@@ -111,6 +127,9 @@
                     </div>
                     <button onclick="demoQuickLogin()" class="w-full py-3 px-5 bg-emerald-100/80 hover:bg-emerald-200/80 text-emerald-800 font-bold rounded-2xl transition flex items-center justify-center gap-2 text-sm">
                         <i data-lucide="sparkles" class="w-4 h-4"></i> Masuk Cepat (Akun Demo)
+                    </button>
+                    <button id="welcome-install-btn" onclick="triggerPWAInstall()" class="hidden w-full py-3 px-5 bg-sky-100/80 hover:bg-sky-200/80 text-sky-800 border border-sky-200 font-bold rounded-2xl transition flex items-center justify-center gap-2 text-sm">
+                        <i data-lucide="download" class="w-4 h-4"></i> Install Aplikasi ke Perangkat (PWA)
                     </button>
                 </div>
             </div>
@@ -386,6 +405,11 @@
 
                 <!-- Mobile Mode Switcher & Quick Actions -->
                 <div class="flex items-center gap-1.5 sm:gap-3 shrink-0">
+                    <button id="header-install-btn" onclick="triggerPWAInstall()" title="Install Aplikasi FinFlow" class="hidden items-center gap-1.5 px-2.5 sm:px-3 py-2 rounded-2xl bg-pink-100 hover:bg-pink-200/80 text-pink-700 text-xs font-extrabold transition">
+                        <i data-lucide="download" class="w-4 h-4"></i>
+                        <span class="hidden sm:inline">Install App</span>
+                    </button>
+
                     <button onclick="openQuickSearchModal()" title="Pencarian Cepat (Ctrl+K)" class="flex items-center gap-2 px-2.5 sm:px-3.5 py-2 rounded-2xl bg-sky-50 hover:bg-sky-100/80 border border-sky-200/70 text-sky-800 text-xs font-bold transition">
                         <i data-lucide="search" class="w-4 h-4 text-sky-600"></i>
                         <span class="hidden md:inline text-sky-700">Cari catatan...</span>
@@ -787,6 +811,7 @@
         }
 
         function renderPageContent() {
+            saveAppState();
             const container = document.getElementById('page-content');
             container.innerHTML = '';
 
@@ -2209,6 +2234,26 @@
                         </div>
                         <input type="checkbox" checked onchange="showToast('Status keamanan 2FA diperbarui', 'info')" class="w-5 h-5 accent-pink-500 rounded cursor-pointer">
                     </div>
+
+                    <div class="p-5 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                        <div>
+                            <h4 class="font-bold text-slate-800 text-sm">Aplikasi PWA (Install & Offline)</h4>
+                            <p class="text-xs text-slate-500">Pasang FinFlow di layar utama HP/laptop agar bisa dibuka seperti aplikasi native dan tetap berjalan saat offline.</p>
+                        </div>
+                        <button onclick="triggerPWAInstall()" class="shrink-0 inline-flex items-center justify-center gap-2 px-4 py-2 rounded-2xl bg-pink-500 hover:bg-pink-600 text-white text-xs font-bold transition">
+                            <i data-lucide="download" class="w-4 h-4"></i> ${isRunningStandalone() ? 'Sudah Terinstal' : 'Install Aplikasi'}
+                        </button>
+                    </div>
+
+                    <div class="p-5 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                        <div>
+                            <h4 class="font-bold text-slate-800 text-sm">Penyimpanan Lokal (Offline Data)</h4>
+                            <p class="text-xs text-slate-500">Semua catatan tersimpan otomatis di perangkat ini. Anda dapat mengembalikan ke data demo awal kapan saja.</p>
+                        </div>
+                        <button onclick="resetDemoData()" class="shrink-0 inline-flex items-center justify-center gap-2 px-4 py-2 rounded-2xl bg-rose-50 hover:bg-rose-100 text-rose-600 border border-rose-200 text-xs font-bold transition">
+                            <i data-lucide="rotate-ccw" class="w-4 h-4"></i> Reset Data Demo
+                        </button>
+                    </div>
                 </div>
             `;
         }
@@ -2443,8 +2488,167 @@
             }
         });
 
-        // Inisialisasi ikon saat halaman pertama kali dimuat
+        // =====================================================================
+        // F. FITUR PWA (SERVICE WORKER, INSTALL PROMPT, OFFLINE & LOCALSTORAGE)
+        // =====================================================================
+        const STORAGE_KEY = 'finflow_pwa_state_v1';
+        let deferredInstallPrompt = null;
+
+        function saveAppState() {
+            try {
+                localStorage.setItem(STORAGE_KEY, JSON.stringify({
+                    currentMode: state.currentMode,
+                    user: state.user,
+                    mandiri: state.mandiri,
+                    perdagangan: state.perdagangan,
+                    investasi: state.investasi,
+                    notifikasi: state.notifikasi
+                }));
+            } catch (err) {
+                // Abaikan jika storage penuh / mode privat
+            }
+        }
+
+        function loadAppState() {
+            try {
+                const raw = localStorage.getItem(STORAGE_KEY);
+                if (!raw) return;
+                const saved = JSON.parse(raw);
+                if (saved.currentMode) state.currentMode = saved.currentMode;
+                if (saved.user) Object.assign(state.user, saved.user);
+                if (saved.mandiri) Object.assign(state.mandiri, saved.mandiri);
+                if (saved.perdagangan) Object.assign(state.perdagangan, saved.perdagangan);
+                if (saved.investasi) Object.assign(state.investasi, saved.investasi);
+                if (Array.isArray(saved.notifikasi)) state.notifikasi = saved.notifikasi;
+            } catch (err) {
+                // Gunakan data bawaan jika JSON rusak
+            }
+        }
+
+        function resetDemoData() {
+            openConfirmDeleteModal(
+                'Reset Data ke Demo Awal?',
+                'Semua perubahan transaksi lokal akan dikembalikan ke data contoh awal FinFlow.',
+                () => {
+                    localStorage.removeItem(STORAGE_KEY);
+                    showToast('Data demo dikembalikan. Memuat ulang...', 'info');
+                    setTimeout(() => window.location.reload(), 600);
+                }
+            );
+        }
+
+        function isRunningStandalone() {
+            return window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone === true;
+        }
+
+        function updateInstallButtonsVisibility() {
+            const welcomeBtn = document.getElementById('welcome-install-btn');
+            const headerBtn = document.getElementById('header-install-btn');
+            const standalone = isRunningStandalone();
+
+            if (welcomeBtn) {
+                welcomeBtn.classList.toggle('hidden', standalone);
+            }
+            if (headerBtn) {
+                if (standalone) {
+                    headerBtn.classList.add('hidden');
+                    headerBtn.classList.remove('flex');
+                } else {
+                    headerBtn.classList.remove('hidden');
+                    headerBtn.classList.add('flex');
+                }
+            }
+        }
+
+        async function triggerPWAInstall() {
+            if (isRunningStandalone()) {
+                showToast('FinFlow sudah terinstal di perangkat Anda!', 'success');
+                return;
+            }
+            if (deferredInstallPrompt) {
+                deferredInstallPrompt.prompt();
+                const { outcome } = await deferredInstallPrompt.userChoice;
+                if (outcome === 'accepted') {
+                    showToast('Menginstal FinFlow ke perangkat Anda...', 'success');
+                }
+                deferredInstallPrompt = null;
+                updateInstallButtonsVisibility();
+                return;
+            }
+
+            const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
+            openModal(`
+                <div class="flex justify-between items-center mb-3">
+                    <h3 class="font-extrabold text-lg text-slate-800 flex items-center gap-2">
+                        <i data-lucide="smartphone" class="w-5 h-5 text-pink-500"></i> Install FinFlow (PWA)
+                    </h3>
+                    <button onclick="closeModal()" class="p-1.5 rounded-xl hover:bg-pink-50"><i data-lucide="x" class="w-5 h-5"></i></button>
+                </div>
+                <p class="text-sm text-slate-600 mb-4 leading-relaxed">
+                    ${isIOS
+                        ? 'Di Safari iPhone/iPad, ketuk tombol <strong>Bagikan (Share)</strong> di bagian bawah layar, lalu pilih <strong>"Tambah ke Layar Utama" (Add to Home Screen)</strong>.'
+                        : 'Klik ikon <strong>Install / Tambah ke Layar Utama</strong> di bilah alamat browser (Chrome/Edge) atau buka menu titik tiga browser lalu pilih <strong>"Install app" / "Tambahkan ke layar utama"</strong>.'}
+                </p>
+                <button onclick="closeModal()" class="w-full py-2.5 bg-pink-500 hover:bg-pink-600 text-white font-bold rounded-2xl text-sm">Mengerti</button>
+            `);
+        }
+
+        function updateOnlineStatus() {
+            const banner = document.getElementById('offline-banner');
+            if (!banner) return;
+            if (navigator.onLine) {
+                banner.classList.add('hidden');
+            } else {
+                banner.classList.remove('hidden');
+                showToast('Anda sedang offline. FinFlow tetap berjalan normal.', 'warning');
+            }
+        }
+
+        window.addEventListener('beforeinstallprompt', (e) => {
+            e.preventDefault();
+            deferredInstallPrompt = e;
+            updateInstallButtonsVisibility();
+        });
+
+        window.addEventListener('appinstalled', () => {
+            deferredInstallPrompt = null;
+            updateInstallButtonsVisibility();
+            showToast('FinFlow berhasil diinstal ke perangkat Anda!', 'success');
+        });
+
+        window.addEventListener('online', () => {
+            updateOnlineStatus();
+            showToast('Koneksi internet kembali terhubung!', 'success');
+        });
+        window.addEventListener('offline', updateOnlineStatus);
+
+        function registerServiceWorker() {
+            if ('serviceWorker' in navigator && (location.protocol === 'https:' || location.hostname === 'localhost' || location.hostname === '127.0.0.1')) {
+                navigator.serviceWorker.register('./finflow-sw.js').then((reg) => {
+                    reg.addEventListener('updatefound', () => {
+                        const newWorker = reg.installing;
+                        if (!newWorker) return;
+                        newWorker.addEventListener('statechange', () => {
+                            if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
+                                showToast('Pembaruan FinFlow tersedia! Muat ulang untuk versi terbaru.', 'info');
+                            }
+                        });
+                    });
+                }).catch(() => {
+                    // Service worker gagal didaftarkan
+                });
+            }
+        }
+
+        // Inisialisasi aplikasi & PWA saat halaman pertama kali dimuat
         window.addEventListener('DOMContentLoaded', () => {
+            loadAppState();
+            const unreadCount = state.notifikasi.filter(n => !n.dibaca).length;
+            const badge = document.getElementById('sidebar-notif-badge');
+            if (badge) badge.textContent = String(unreadCount);
+            updateInstallButtonsVisibility();
+            updateOnlineStatus();
+            registerServiceWorker();
             lucide.createIcons();
         });
     </script>

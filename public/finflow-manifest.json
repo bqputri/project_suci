@@ -1,0 +1,47 @@
+{
+  "id": "./finflow.html",
+  "name": "FinFlow — Manajemen Keuangan Multi-Mode",
+  "short_name": "FinFlow",
+  "description": "Kelola keuangan pribadi, pembukuan usaha dagang, hingga portofolio investasi dalam satu aplikasi pastel.",
+  "start_url": "./finflow.html",
+  "scope": "./",
+  "display": "standalone",
+  "display_override": ["standalone", "minimal-ui"],
+  "orientation": "portrait-primary",
+  "background_color": "#FFFBF7",
+  "theme_color": "#EC4899",
+  "lang": "id",
+  "categories": ["finance", "business", "productivity"],
+  "icons": [
+    {
+      "src": "./finflow-icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "./finflow-icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "maskable"
+    },
+    {
+      "src": "./finflow-icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "./finflow-icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    },
+    {
+      "src": "./finflow-icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    }
+  ]
+}
