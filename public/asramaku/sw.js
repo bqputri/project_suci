@@ -1,5 +1,5 @@
-// AsramaKu Service Worker (PWA - Optimized v5)
-const CACHE_NAME = 'asramaku-pwa-v5';
+// AsramaKu Service Worker (PWA - Optimized v6)
+const CACHE_NAME = 'asramaku-pwa-v6';
 const PRECACHE_ASSETS = [
   './',
   './index.html',

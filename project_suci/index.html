@@ -1318,12 +1318,13 @@
     <div id="modalHukuman" class="hidden fixed inset-0 bg-slate-900/40 backdrop-blur-md z-50 flex items-center justify-center p-4">
         <div class="glass-card rounded-3xl max-w-md w-full p-6 shadow-2xl border border-white/80 dark:border-slate-700">
             <div class="flex justify-between items-center mb-4">
-                <h3 class="font-bold text-slate-800 dark:text-slate-100 text-base">Catat Pelanggaran Santriwati</h3>
+                <h3 id="hukumanModalTitle" class="font-bold text-slate-800 dark:text-slate-100 text-base">Catat Pelanggaran Santriwati</h3>
                 <button onclick="closeHukumanModal()" class="text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 w-8 h-8 rounded-full flex items-center justify-center hover:bg-slate-100/50">
                     <i class="fa-solid fa-xmark text-lg"></i>
                 </button>
             </div>
             <form id="formHukuman" onsubmit="saveHukuman(event)" class="space-y-4">
+                <input type="hidden" id="hukumanEditId" value="">
                 <div>
                     <label class="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">Nama Santriwati</label>
                     <input type="text" id="punishName" required placeholder="Contoh: Nabila Putri" class="w-full glass-input px-3.5 py-2.5 rounded-2xl text-xs focus:outline-none">
@@ -1338,7 +1339,7 @@
                 </div>
                 <div class="flex justify-end gap-2 pt-2">
                     <button type="button" onclick="closeHukumanModal()" class="px-4 py-2 text-xs font-bold text-slate-600 dark:text-slate-300 glass-pill hover:bg-white/80 rounded-2xl">Batal</button>
-                    <button type="submit" class="btn-bounce px-4 py-2 text-xs font-bold text-white bg-gradient-to-r from-rose-500 to-red-600 rounded-2xl shadow-md">Simpan Catatan</button>
+                    <button type="submit" id="hukumanSubmitBtn" class="btn-bounce px-4 py-2 text-xs font-bold text-white bg-gradient-to-r from-rose-500 to-red-600 rounded-2xl shadow-md">Simpan Catatan</button>
                 </div>
             </form>
         </div>
@@ -3281,39 +3282,46 @@
             if (!tbody) return;
             tbody.innerHTML = '';
 
-            if (hukumanList.length === 0) {
-                tbody.innerHTML = `<tr><td colspan="5" class="p-8 text-center text-slate-400 font-medium">Tidak ada catatan pelanggaran aktif. Asrama tertib & kondusif! 🎉</td></tr>`;
-                return;
-            }
-
             let pendingCount = 0;
 
-            hukumanList.forEach(item => {
-                if (item.status === 'Belum Selesai') pendingCount++;
+            if (hukumanList.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="5" class="p-8 text-center text-slate-400 font-medium">Tidak ada catatan pelanggaran aktif. Asrama tertib & kondusif! 🎉</td></tr>`;
+            } else {
+                hukumanList.forEach(item => {
+                    if (item.status === 'Belum Selesai') pendingCount++;
 
-                const tr = document.createElement('tr');
-                tr.className = "hover:bg-rose-50/30 dark:hover:bg-slate-700/30 transition border-b border-white/40 dark:border-slate-700/40";
-                tr.innerHTML = `
-                    <td class="p-4 font-bold text-xs text-slate-800 dark:text-slate-100">${item.nama}</td>
-                    <td class="p-4 text-xs text-rose-600 dark:text-rose-400 font-semibold">${item.pelanggaran}</td>
-                    <td class="p-4 text-xs text-slate-700 dark:text-slate-300">${item.hukuman}</td>
-                    <td class="p-4">
-                        <span class="px-2.5 py-1 rounded-full text-[10px] font-bold ${
-                            item.status === 'Selesai' 
-                                ? 'bg-emerald-100 text-emerald-700 dark:bg-emerald-950/50 dark:text-emerald-300 border border-emerald-300' 
-                                : 'bg-rose-100 text-rose-700 dark:bg-rose-950/50 dark:text-rose-300 border border-rose-300'
-                        }">${item.status}</span>
-                    </td>
-                    <td class="p-4 text-right">
-                        <button onclick="toggleHukumanStatus(${item.id})" class="btn-bounce px-3 py-1.5 rounded-xl text-xs font-bold text-white transition ${
-                            item.status === 'Selesai' ? 'bg-slate-400 hover:bg-slate-500' : 'bg-rose-500 hover:bg-rose-600'
-                        }">
-                            ${item.status === 'Selesai' ? 'Batalkan' : 'Tandai Tuntas'}
-                        </button>
-                    </td>
-                `;
-                tbody.appendChild(tr);
-            });
+                    const tr = document.createElement('tr');
+                    tr.className = "hover:bg-rose-50/30 dark:hover:bg-slate-700/30 transition border-b border-white/40 dark:border-slate-700/40";
+                    tr.innerHTML = `
+                        <td class="p-4 font-bold text-xs text-slate-800 dark:text-slate-100">${item.nama}</td>
+                        <td class="p-4 text-xs text-rose-600 dark:text-rose-400 font-semibold">${item.pelanggaran}</td>
+                        <td class="p-4 text-xs text-slate-700 dark:text-slate-300">${item.hukuman}</td>
+                        <td class="p-4">
+                            <span class="px-2.5 py-1 rounded-full text-[10px] font-bold ${
+                                item.status === 'Selesai' 
+                                    ? 'bg-emerald-100 text-emerald-700 dark:bg-emerald-950/50 dark:text-emerald-300 border border-emerald-300' 
+                                    : 'bg-rose-100 text-rose-700 dark:bg-rose-950/50 dark:text-rose-300 border border-rose-300'
+                            }">${item.status}</span>
+                        </td>
+                        <td class="p-4 text-right">
+                            <div class="inline-flex items-center justify-end gap-1.5">
+                                <button type="button" onclick="toggleHukumanStatus(${item.id})" class="btn-bounce px-3 py-1.5 rounded-xl text-xs font-bold text-white transition ${
+                                    item.status === 'Selesai' ? 'bg-slate-400 hover:bg-slate-500' : 'bg-rose-500 hover:bg-rose-600'
+                                }">
+                                    ${item.status === 'Selesai' ? 'Batalkan' : 'Tandai Tuntas'}
+                                </button>
+                                <button type="button" onclick="openEditHukumanModal(${item.id})" title="Edit pelanggaran" class="btn-bounce w-8 h-8 rounded-xl glass-pill border border-amber-200 dark:border-amber-800 text-amber-600 dark:text-amber-400 hover:bg-amber-50 dark:hover:bg-amber-950/40 flex items-center justify-center transition">
+                                    <i class="fa-solid fa-pen text-xs"></i>
+                                </button>
+                                <button type="button" onclick="deleteHukuman(${item.id})" title="Hapus pelanggaran" class="btn-bounce w-8 h-8 rounded-xl glass-pill border border-rose-200 dark:border-rose-800 text-rose-500 hover:bg-rose-50 dark:hover:bg-rose-950/40 flex items-center justify-center transition">
+                                    <i class="fa-solid fa-trash text-xs"></i>
+                                </button>
+                            </div>
+                        </td>
+                    `;
+                    tbody.appendChild(tr);
+                });
+            }
 
             const statElem = document.getElementById('statPendingPunishment');
             if (statElem) statElem.innerText = `${pendingCount} Santri`;
@@ -3322,22 +3330,81 @@
             if (statSantriElem) statSantriElem.innerText = `${santriList.length} Santriwati`;
         }
 
-        function openHukumanModal() { document.getElementById('modalHukuman').classList.remove('hidden'); }
-        function closeHukumanModal() { document.getElementById('modalHukuman').classList.add('hidden'); }
+        function openHukumanModal() {
+            const editIdEl = document.getElementById('hukumanEditId');
+            if (editIdEl) editIdEl.value = '';
+            const titleEl = document.getElementById('hukumanModalTitle');
+            if (titleEl) titleEl.innerText = 'Catat Pelanggaran Santriwati';
+            const btnEl = document.getElementById('hukumanSubmitBtn');
+            if (btnEl) btnEl.innerText = 'Simpan Catatan';
+            const form = document.getElementById('formHukuman');
+            if (form) form.reset();
+            document.getElementById('modalHukuman').classList.remove('hidden');
+        }
+
+        function openEditHukumanModal(id) {
+            const item = hukumanList.find(h => h.id === id);
+            if (!item) return;
+
+            const editIdEl = document.getElementById('hukumanEditId');
+            if (editIdEl) editIdEl.value = id;
+            const titleEl = document.getElementById('hukumanModalTitle');
+            if (titleEl) titleEl.innerText = 'Edit Catatan Pelanggaran';
+            const btnEl = document.getElementById('hukumanSubmitBtn');
+            if (btnEl) btnEl.innerText = 'Simpan Perubahan';
+
+            document.getElementById('punishName').value = item.nama || '';
+            document.getElementById('punishViolation').value = item.pelanggaran || '';
+            document.getElementById('punishTask').value = item.hukuman || '';
+            document.getElementById('modalHukuman').classList.remove('hidden');
+        }
+
+        function closeHukumanModal() {
+            document.getElementById('modalHukuman').classList.add('hidden');
+            const editIdEl = document.getElementById('hukumanEditId');
+            if (editIdEl) editIdEl.value = '';
+            const form = document.getElementById('formHukuman');
+            if (form) form.reset();
+        }
 
         function saveHukuman(e) {
             e.preventDefault();
+            const editId = (document.getElementById('hukumanEditId')?.value || '').trim();
             const nama = document.getElementById('punishName').value.trim();
             const pelanggaran = document.getElementById('punishViolation').value.trim();
             const hukuman = document.getElementById('punishTask').value.trim();
+
+            if (!nama || !pelanggaran || !hukuman) return;
+
+            if (editId) {
+                const idx = hukumanList.findIndex(h => String(h.id) === String(editId));
+                if (idx !== -1) {
+                    hukumanList[idx] = { ...hukumanList[idx], nama, pelanggaran, hukuman };
+                    setStorage('asramaku_hukuman', hukumanList);
+                    renderHukuman();
+                    closeHukumanModal();
+                    showToast(`Catatan pelanggaran ${nama} berhasil diperbarui! ✨`);
+                    return;
+                }
+            }
 
             hukumanList.push({ id: Date.now(), nama, pelanggaran, hukuman, status: 'Belum Selesai' });
             setStorage('asramaku_hukuman', hukumanList);
 
             renderHukuman();
             closeHukumanModal();
-            document.getElementById('formHukuman').reset();
             showToast('Catatan pelanggaran disimpan.', 'warning');
+        }
+
+        function deleteHukuman(id) {
+            const item = hukumanList.find(h => h.id === id);
+            if (!item) return;
+            if (!confirm(`Hapus catatan pelanggaran milik "${item.nama}"?`)) return;
+
+            hukumanList = hukumanList.filter(h => h.id !== id);
+            setStorage('asramaku_hukuman', hukumanList);
+            renderHukuman();
+            showToast(`Catatan pelanggaran "${item.nama}" telah dihapus.`, 'info');
         }
 
         function toggleHukumanStatus(id) {
